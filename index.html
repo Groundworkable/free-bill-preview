@@ -15,6 +15,33 @@
     .results{display:none;margin-top:24px;padding:22px;border:1px solid rgba(7,54,43,.18);border-radius:20px;background:var(--soft);text-align:center}.results.show,.cta.show{display:block}.kicker{margin:0 0 9px;color:var(--green);font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.bill-name{margin:0;font-family:Georgia,serif;font-size:1.4rem}.big{margin:14px 0 0;color:var(--green);font-family:Georgia,serif;font-size:clamp(3rem,15vw,5rem);font-weight:700;line-height:.95}.big-label{margin:7px 0 0;color:var(--green);font-weight:900;text-transform:uppercase}.shift{margin:20px 0 0;line-height:1.5}.meaning{margin:17px 0 0;padding-top:17px;border-top:1px solid rgba(7,54,43,.18);color:var(--green);font-family:Georgia,serif;font-size:1.18rem;font-weight:700;line-height:1.45}.note{margin:10px 0 0;color:var(--muted);font-size:.76rem;line-height:1.45}
     .cta{display:none;text-align:center;padding-top:0}.cta h3{margin:0;color:var(--green);font-family:Georgia,serif;font-size:1.55rem}.cta p{margin:10px auto 18px;color:var(--muted);line-height:1.5}.primary{background:var(--green);color:white}.secondary{margin-top:10px;border:1px solid var(--gold);color:var(--green);opacity:.55;cursor:not-allowed}.footer{text-align:center;padding:22px 16px 0;color:var(--muted);font-size:.74rem;line-height:1.55}.footer strong{display:block;margin-bottom:6px;color:var(--green);font-family:Georgia,serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase}
     @media(min-width:650px){form,.cta{padding-left:40px;padding-right:40px}.hero{padding:38px 38px 28px}}
+  
+    .survey-button {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 10px;
+      padding: 15px 20px;
+      border: 2px solid var(--green);
+      border-radius: 14px;
+      background: var(--cream);
+      color: var(--green);
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      opacity: 1;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .survey-button:hover,
+    .survey-button:focus-visible {
+      background: var(--green);
+      color: var(--cream);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
   </style>
 </head>
 <body>
@@ -30,7 +57,7 @@
       <p class="error" id="error"></p>
       <section class="results" id="results" aria-live="polite"><p class="kicker">Your Groundwork Preview</p><h3 class="bill-name" id="resultName"></h3><p class="big" id="hours">0</p><p class="big-label">WORKING HOURS</p><p class="shift" id="shift"></p><p class="meaning" id="meaning"></p><p class="note">This simplified preview uses a standard 40-hour weekly schedule. The full converter personalizes results using your actual work schedule.</p></section>
     </form>
-    <section class="cta" id="cta"><h3>Imagine seeing every bill and purchase translated into WORKING HOURS.</h3><p>The full Bill-to-Working-Hours Converter organizes your complete bill picture—not just one item.</p><a class="primary" href="https://payhip.com/groundworkbyable" target="_blank" rel="noopener noreferrer">View the Full Converter</a><a class="secondary" href="https://docs.google.com/forms/d/e/1FAIpQLSfn0wnUSrZSJxoRNiSVAfmAMQJqgkhcZ6UnT5WO19YPI1xHXw/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Complete a 2-minute survey and receive $3 off.</a></section>
+    <section class="cta" id="cta"><h3>Imagine seeing every bill and purchase translated into WORKING HOURS.</h3><p>The full Bill-to-Working-Hours Converter organizes all of your bills—not just one.</p><a class="primary" href="https://payhip.com/groundworkbyable" target="_blank" rel="noopener noreferrer">View the Full Converter</a><a class="secondary survey-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfn0wnUSrZSJxoRNiSVAfmAMQJqgkhcZ6UnT5WO19YPI1xHXw/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Complete a 2-minute survey and receive $3 off.</a></section>
   </section>
   <footer class="footer">
       <span class="be-fruitful">Be Fruitful.</span>
