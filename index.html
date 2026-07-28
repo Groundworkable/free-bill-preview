@@ -2,29 +2,360 @@
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KZSJ1W4PXH"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KZSJ1W4PXH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'G-KZSJ1W4PXH');
-</script>
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'G-KZSJ1W4PXH');
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Groundwork | Free Working-Time Preview</title>
+
   <style>
-    :root{--green:#07362B;--gold:#D9B45B;--cream:#F7F2E8;--soft:#DDEED8;--white:#FFF;--ink:#16241F;--muted:#5E6A65}
-    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,var(--cream),#EFE8DA);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
-    .wrap{width:min(100%,760px);margin:auto;padding:24px 16px 48px}.brand{text-align:center;padding:10px 0 20px}.brand h1{margin:0;color:var(--green);font-family:Georgia,serif;font-size:clamp(2rem,8vw,3.2rem);letter-spacing:.08em}.brand p{margin:9px 0 0;color:#795E20;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
-    .card{overflow:hidden;background:#FFFDF7;border:1px solid rgba(217,180,91,.75);border-radius:26px;box-shadow:0 18px 50px rgba(7,54,43,.13)}
-    .hero{padding:30px 24px 22px;background:var(--green);color:white;text-align:center}.tag{display:inline-block;padding:7px 12px;border:1px solid rgba(217,180,91,.7);border-radius:999px;color:var(--gold);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero h2{margin:14px 0 0;font-family:Georgia,serif;font-size:clamp(1.8rem,7vw,2.8rem);line-height:1.08}.hero p{margin:13px auto 0;max-width:540px;color:rgba(255,255,255,.84);line-height:1.55}
-    form,.cta{padding:24px}.field{margin-bottom:18px}label{display:block;margin-bottom:8px;color:var(--green);font-weight:800}.input-wrap{position:relative}.dollar{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--green)}input{width:100%;min-height:54px;border:1px solid #CFC7B6;border-radius:14px;background:white;font:inherit;font-size:1rem;outline:none}input[type=text]{padding:14px 16px}input[type=number]{padding:14px 16px 14px 36px}input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(217,180,91,.18)}.hint{display:block;margin-top:6px;color:var(--muted);font-size:.78rem;line-height:1.4}
-    button,.primary,.secondary{display:flex;width:100%;min-height:54px;align-items:center;justify-content:center;border-radius:14px;font:inherit;font-weight:800;text-align:center;text-decoration:none}.calc{border:0;background:var(--gold);color:var(--green);cursor:pointer}.error{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#FFF0E8;color:#9A3412;font-size:.88rem;font-weight:700}
-    .results{display:none;margin-top:24px;padding:22px;border:1px solid rgba(7,54,43,.18);border-radius:20px;background:var(--soft);text-align:center}.results.show,.cta.show{display:block}.kicker{margin:0 0 9px;color:var(--green);font-size:.78rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.bill-name{margin:0;font-family:Georgia,serif;font-size:1.4rem}.big{margin:14px 0 0;color:var(--green);font-family:Georgia,serif;font-size:clamp(3rem,15vw,5rem);font-weight:700;line-height:.95}.big-label{margin:7px 0 0;color:var(--green);font-weight:900;text-transform:uppercase}.shift{margin:20px 0 0;line-height:1.5}.meaning{margin:17px 0 0;padding-top:17px;border-top:1px solid rgba(7,54,43,.18);color:var(--green);font-family:Georgia,serif;font-size:1.18rem;font-weight:700;line-height:1.45}.note{margin:10px 0 0;color:var(--muted);font-size:.76rem;line-height:1.45}
-    .cta{display:none;text-align:center;padding-top:0}.cta h3{margin:0;color:var(--green);font-family:Georgia,serif;font-size:1.55rem}.cta p{margin:10px auto 18px;color:var(--muted);line-height:1.5}.primary{background:var(--green);color:white}.secondary{margin-top:10px;border:1px solid var(--gold);color:var(--green);opacity:.55;cursor:not-allowed}.footer{text-align:center;padding:22px 16px 0;color:var(--muted);font-size:.74rem;line-height:1.55}.footer strong{display:block;margin-bottom:6px;color:var(--green);font-family:Georgia,serif;font-size:1rem;letter-spacing:.08em;text-transform:uppercase}
-    @media(min-width:650px){form,.cta{padding-left:40px;padding-right:40px}.hero{padding:38px 38px 28px}}
-  
+    :root {
+      --green: #07362B;
+      --gold: #D9B45B;
+      --cream: #F7F2E8;
+      --soft: #DDEED8;
+      --white: #FFF;
+      --ink: #16241F;
+      --muted: #5E6A65;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, var(--cream), #EFE8DA);
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+    }
+
+    .wrap {
+      width: min(100%, 760px);
+      margin: auto;
+      padding: 24px 16px 48px;
+    }
+
+    .brand {
+      text-align: center;
+      padding: 10px 0 20px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      color: var(--green);
+      font-family: Georgia, serif;
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      letter-spacing: .08em;
+    }
+
+    .brand p {
+      margin: 9px 0 0;
+      color: #795E20;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .card {
+      overflow: hidden;
+      background: #FFFDF7;
+      border: 1px solid rgba(217, 180, 91, .75);
+      border-radius: 26px;
+      box-shadow: 0 18px 50px rgba(7, 54, 43, .13);
+    }
+
+    .hero {
+      padding: 30px 24px 22px;
+      background: var(--green);
+      color: white;
+      text-align: center;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 12px;
+      border: 1px solid rgba(217, 180, 91, .7);
+      border-radius: 999px;
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 14px 0 0;
+      font-family: Georgia, serif;
+      font-size: clamp(1.8rem, 7vw, 2.8rem);
+      line-height: 1.08;
+    }
+
+    .hero p {
+      margin: 13px auto 0;
+      max-width: 540px;
+      color: rgba(255, 255, 255, .84);
+      line-height: 1.55;
+    }
+
+    form,
+    .cta {
+      padding: 24px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .dollar {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    input {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid #CFC7B6;
+      border-radius: 14px;
+      background: white;
+      font: inherit;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input[type="text"] {
+      padding: 14px 16px;
+    }
+
+    input[type="number"] {
+      padding: 14px 16px 14px 36px;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(217, 180, 91, .18);
+    }
+
+    .hint {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.4;
+    }
+
+    button,
+    .primary,
+    .secondary {
+      display: flex;
+      width: 100%;
+      min-height: 54px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .calc {
+      border: 0;
+      background: var(--gold);
+      color: var(--green);
+      cursor: pointer;
+    }
+
+    .error {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #FFF0E8;
+      color: #9A3412;
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .results {
+      display: none;
+      margin-top: 24px;
+      padding: 22px;
+      border: 1px solid rgba(7, 54, 43, .18);
+      border-radius: 20px;
+      background: var(--soft);
+      text-align: center;
+    }
+
+    .results.show,
+    .cta.show {
+      display: block;
+    }
+
+    .kicker {
+      margin: 0 0 9px;
+      color: var(--green);
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .bill-name {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 1.4rem;
+    }
+
+    .big {
+      margin: 14px 0 0;
+      color: var(--green);
+      font-family: Georgia, serif;
+      font-size: clamp(3rem, 15vw, 5rem);
+      font-weight: 700;
+      line-height: .95;
+    }
+
+    .big-label {
+      margin: 7px 0 0;
+      color: var(--green);
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .shift {
+      margin: 20px 0 0;
+      line-height: 1.5;
+    }
+
+    .meaning {
+      margin: 17px 0 0;
+      padding-top: 17px;
+      border-top: 1px solid rgba(7, 54, 43, .18);
+      color: var(--green);
+      font-family: Georgia, serif;
+      font-size: 1.18rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1.45;
+    }
+
+    .reaction {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(7, 54, 43, .18);
+    }
+
+    .reaction-question {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .reaction-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .reaction-button {
+      min-height: 44px;
+      padding: 8px;
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      background: white;
+      color: var(--green);
+      cursor: pointer;
+      font-size: .88rem;
+      font-weight: 800;
+    }
+
+    .reaction-button:hover,
+    .reaction-button:focus-visible,
+    .reaction-button.selected {
+      background: var(--green);
+      color: white;
+    }
+
+    .reaction-button:disabled {
+      cursor: default;
+      opacity: .55;
+    }
+
+    .reaction-button.selected {
+      opacity: 1;
+    }
+
+    .reaction-thanks {
+      margin: 12px 0 0;
+      color: var(--green);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .cta {
+      display: none;
+      text-align: center;
+      padding-top: 0;
+    }
+
+    .cta h3 {
+      margin: 0;
+      color: var(--green);
+      font-family: Georgia, serif;
+      font-size: 1.55rem;
+    }
+
+    .cta p {
+      margin: 10px auto 18px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .primary {
+      background: var(--green);
+      color: white;
+    }
+
+    .secondary {
+      margin-top: 10px;
+      border: 1px solid var(--gold);
+      color: var(--green);
+    }
+
     .survey-button {
       display: block;
       width: 100%;
@@ -40,7 +371,7 @@
       text-decoration: none;
       opacity: 1;
       cursor: pointer;
-      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      transition: background-color .2s ease, color .2s ease, transform .2s ease;
     }
 
     .survey-button:hover,
@@ -51,153 +382,405 @@
       outline: none;
     }
 
+    .footer {
+      text-align: center;
+      padding: 22px 16px 0;
+      color: var(--muted);
+      font-size: .74rem;
+      line-height: 1.55;
+    }
+
+    .footer strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green);
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 650px) {
+      form,
+      .cta {
+        padding-left: 40px;
+        padding-right: 40px;
+      }
+
+      .hero {
+        padding: 38px 38px 28px;
+      }
+    }
   </style>
 </head>
+
 <body>
-<main class="wrap">
-  <header class="brand"><h1>GROUNDWORK</h1><p>By Able Systems LLC</p></header>
-  <section class="card">
-    <div class="hero"><span class="tag">Free Bill Preview</span><h2>How many hours of your life does this cost?</h2><p>Translate a bill, purchase, or expense into WORKING HOURS—in under a minute.</p></div>
-    <form id="form" novalidate>
-      <div class="field"><label for="pay">Your hourly pay</label><div class="input-wrap"><span class="dollar">$</span><input id="pay" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="20" required></div><span class="hint">Use the amount you are comfortable using for this preview.</span></div>
-      <div class="field"><label for="billName">Bill or purchase name</label><input id="billName" type="text" maxlength="40" placeholder="Rent, phone bill, sneakers..." required></div>
-      <div class="field"><label for="billAmount">Amount</label><div class="input-wrap"><span class="dollar">$</span><input id="billAmount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="1200" required></div></div>
-      <button class="calc" type="submit">Show Me My Working Hours</button>
-      <p class="error" id="error"></p>
-      <section class="results" id="results" aria-live="polite"><p class="kicker">Your Groundwork Preview</p><h3 class="bill-name" id="resultName"></h3><p class="big" id="hours">0</p><p class="big-label">WORKING HOURS</p><p class="shift" id="shift"></p><p class="meaning" id="meaning"></p><p class="note">This simplified preview uses a standard 40-hour weekly schedule. The full converter personalizes results using your actual work schedule.</p></section>
-    </form>
-    <section class="cta" id="cta"><h3>Imagine seeing every bill and purchase translated into WORKING HOURS.</h3><p>The full Bill-to-Working-Hours Converter organizes all of your bills—not just one.</p><a class="primary" href="https://payhip.com/groundworkbyable" target="_blank" rel="noopener noreferrer">Get the Full Converter</a><a class="secondary survey-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfn0wnUSrZSJxoRNiSVAfmAMQJqgkhcZ6UnT5WO19YPI1xHXw/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Complete a 2-minute survey and receive $3 off.</a></section>
-  </section>
-  <footer class="footer">
+  <main class="wrap">
+    <header class="brand">
+      <h1>GROUNDWORK</h1>
+      <p>By Able Systems LLC</p>
+    </header>
+
+    <section class="card">
+      <div class="hero">
+        <span class="tag">Free Bill Preview</span>
+        <h2>How many hours of your life does this cost?</h2>
+        <p>Translate a bill, purchase, or expense into WORKING HOURS—in under a minute.</p>
+      </div>
+
+      <form id="form" novalidate>
+        <div class="field">
+          <label for="pay">Your hourly pay</label>
+          <div class="input-wrap">
+            <span class="dollar">$</span>
+            <input
+              id="pay"
+              type="number"
+              min="0.01"
+              step="0.01"
+              inputmode="decimal"
+              placeholder="20"
+              required
+            />
+          </div>
+          <span class="hint">Use the amount you are comfortable using for this preview.</span>
+        </div>
+
+        <div class="field">
+          <label for="billName">Bill or purchase name</label>
+          <input
+            id="billName"
+            type="text"
+            maxlength="40"
+            placeholder="Rent, phone bill, sneakers..."
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="billAmount">Amount</label>
+          <div class="input-wrap">
+            <span class="dollar">$</span>
+            <input
+              id="billAmount"
+              type="number"
+              min="0.01"
+              step="0.01"
+              inputmode="decimal"
+              placeholder="1200"
+              required
+            />
+          </div>
+        </div>
+
+        <button class="calc" type="submit">Show Me My Working Hours</button>
+        <p class="error" id="error"></p>
+
+        <section class="results" id="results" aria-live="polite">
+          <p class="kicker">Your Groundwork Preview</p>
+          <h3 class="bill-name" id="resultName"></h3>
+          <p class="big" id="hours">0</p>
+          <p class="big-label">WORKING HOURS</p>
+          <p class="shift" id="shift"></p>
+          <p class="meaning" id="meaning"></p>
+          <p class="note">
+            This simplified preview uses a standard 40-hour weekly schedule.
+            The full converter personalizes results using your actual work schedule.
+          </p>
+
+          <div class="reaction" id="reaction">
+            <p class="reaction-question">
+              Did seeing this expense in working hours change how you think about it?
+            </p>
+
+            <div class="reaction-options">
+              <button
+                type="button"
+                class="reaction-button"
+                data-reaction="yes"
+                aria-pressed="false"
+              >
+                Yes
+              </button>
+
+              <button
+                type="button"
+                class="reaction-button"
+                data-reaction="a_little"
+                aria-pressed="false"
+              >
+                A little
+              </button>
+
+              <button
+                type="button"
+                class="reaction-button"
+                data-reaction="no"
+                aria-pressed="false"
+              >
+                No
+              </button>
+            </div>
+
+            <p class="reaction-thanks" id="reactionThanks" hidden>
+              Thank you. Your response was recorded.
+            </p>
+          </div>
+        </section>
+      </form>
+
+      <section class="cta" id="cta">
+        <h3>Imagine seeing every bill and purchase translated into WORKING HOURS.</h3>
+        <p>The full Bill-to-Working-Hours Converter organizes all of your bills—not just one.</p>
+
+        <a
+          class="primary"
+          id="payhipButton"
+          href="https://payhip.com/groundworkbyable"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Get the Full Converter
+        </a>
+
+        <a
+          class="secondary survey-button"
+          id="surveyButton"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfn0wnUSrZSJxoRNiSVAfmAMQJqgkhcZ6UnT5WO19YPI1xHXw/viewform?usp=publish-editor"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Complete a 2-minute survey and receive $3 off.
+        </a>
+      </section>
+    </section>
+
+    <footer class="footer">
       <span class="be-fruitful">Be Fruitful.</span>
-      <div style="margin-bottom: 8px; color: var(--green); font-family: Georgia, 'Times New Roman', serif; font-size: 0.9rem; line-height: 1.45;">
+
+      <div
+        style="
+          margin-bottom: 8px;
+          color: var(--green);
+          font-family: Georgia, 'Times New Roman', serif;
+          font-size: .9rem;
+          line-height: 1.45;
+        "
+      >
         Groundwork begins by changing how you see time.
       </div>
+
       Groundwork by Able Systems LLC<br />
       This educational preview is not financial advice.
     </footer>
-</main>
-<script>
-const form = document.getElementById('form');
-const error = document.getElementById('error');
-const results = document.getElementById('results');
-const cta = document.getElementById('cta');
+  </main>
 
-const money = value =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 2
-  }).format(value);
+  <script>
+    const form = document.getElementById('form');
+    const error = document.getElementById('error');
+    const results = document.getElementById('results');
+    const cta = document.getElementById('cta');
+    const payhipButton = document.getElementById('payhipButton');
+    const surveyButton = document.getElementById('surveyButton');
+    const reactionButtons = document.querySelectorAll('.reaction-button');
+    const reactionThanks = document.getElementById('reactionThanks');
 
-const plural = (value, singular, pluralForm = `${singular}s`) =>
-  `${value} ${value === 1 ? singular : pluralForm}`;
+    function sendGroundworkEvent(eventName) {
+      if (typeof gtag === 'function') {
+        gtag('event', eventName);
+      }
+    }
 
-function splitWorkingTime(decimalHours) {
-  const totalMinutes = Math.round(decimalHours * 60);
-  return {
-    totalMinutes,
-    hours: Math.floor(totalMinutes / 60),
-    minutes: totalMinutes % 60
-  };
-}
+    const money = value =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 2
+      }).format(value);
 
-function formatMainTime(decimalHours) {
-  const { hours, minutes } = splitWorkingTime(decimalHours);
-  if (minutes === 0) return hours.toLocaleString('en-US');
-  return `${hours.toLocaleString('en-US')}h ${minutes}m`;
-}
+    const plural = (value, singular, pluralForm = `${singular}s`) =>
+      `${value} ${value === 1 ? singular : pluralForm}`;
 
-function formatShiftBreakdown(decimalHours) {
-  const { totalMinutes } = splitWorkingTime(decimalHours);
-  const shiftMinutes = 8 * 60;
-  const fullShifts = Math.floor(totalMinutes / shiftMinutes);
-  const remainingMinutes = totalMinutes % shiftMinutes;
-  const remainingHours = Math.floor(remainingMinutes / 60);
-  const minutes = remainingMinutes % 60;
+    function splitWorkingTime(decimalHours) {
+      const totalMinutes = Math.round(decimalHours * 60);
 
-  const parts = [];
-  if (fullShifts) parts.push(plural(fullShifts, 'full eight-hour shift'));
-  if (remainingHours) parts.push(plural(remainingHours, 'hour'));
-  if (minutes) parts.push(plural(minutes, 'minute'));
+      return {
+        totalMinutes,
+        hours: Math.floor(totalMinutes / 60),
+        minutes: totalMinutes % 60
+      };
+    }
 
-  if (!parts.length) return 'less than one minute of work';
-  if (parts.length === 1) return parts[0];
-  return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
-}
+    function formatMainTime(decimalHours) {
+      const { hours, minutes } = splitWorkingTime(decimalHours);
 
-function formatWeekBreakdown(decimalHours) {
-  const { totalMinutes } = splitWorkingTime(decimalHours);
-  const weekMinutes = 40 * 60;
-  const dayMinutes = 8 * 60;
+      if (minutes === 0) {
+        return hours.toLocaleString('en-US');
+      }
 
-  const fullWeeks = Math.floor(totalMinutes / weekMinutes);
-  let remainder = totalMinutes % weekMinutes;
+      return `${hours.toLocaleString('en-US')}h ${minutes}m`;
+    }
 
-  const fullDays = Math.floor(remainder / dayMinutes);
-  remainder %= dayMinutes;
+    function formatShiftBreakdown(decimalHours) {
+      const { totalMinutes } = splitWorkingTime(decimalHours);
+      const shiftMinutes = 8 * 60;
+      const fullShifts = Math.floor(totalMinutes / shiftMinutes);
+      const remainingMinutes = totalMinutes % shiftMinutes;
+      const remainingHours = Math.floor(remainingMinutes / 60);
+      const minutes = remainingMinutes % 60;
+      const parts = [];
 
-  const hours = Math.floor(remainder / 60);
-  const minutes = remainder % 60;
+      if (fullShifts) {
+        parts.push(plural(fullShifts, 'full eight-hour shift'));
+      }
 
-  const parts = [];
-  if (fullWeeks) parts.push(plural(fullWeeks, 'full 40-hour workweek'));
-  if (fullDays) parts.push(plural(fullDays, 'workday'));
-  if (hours) parts.push(plural(hours, 'hour'));
-  if (minutes) parts.push(plural(minutes, 'minute'));
+      if (remainingHours) {
+        parts.push(plural(remainingHours, 'hour'));
+      }
 
-  if (!parts.length) return 'less than one minute of WORKING HOURS';
-  if (parts.length === 1) return parts[0];
-  return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
-}
+      if (minutes) {
+        parts.push(plural(minutes, 'minute'));
+      }
 
-form.addEventListener('submit', event => {
-  event.preventDefault();
+      if (!parts.length) {
+        return 'less than one minute of work';
+      }
 
-  const pay = Number(document.getElementById('pay').value);
-  const amount = Number(document.getElementById('billAmount').value);
-  const name = document.getElementById('billName').value.trim() || 'This bill';
+      if (parts.length === 1) {
+        return parts[0];
+      }
 
-  error.style.display = 'none';
-  error.textContent = '';
+      return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
+    }
 
-  if (!Number.isFinite(pay) || pay <= 0) {
-    error.textContent = 'Enter an hourly pay amount greater than $0.';
-    error.style.display = 'block';
-    results.classList.remove('show');
-    cta.classList.remove('show');
-    return;
-  }
+    function formatWeekBreakdown(decimalHours) {
+      const { totalMinutes } = splitWorkingTime(decimalHours);
+      const weekMinutes = 40 * 60;
+      const dayMinutes = 8 * 60;
+      const fullWeeks = Math.floor(totalMinutes / weekMinutes);
+      let remainder = totalMinutes % weekMinutes;
+      const fullDays = Math.floor(remainder / dayMinutes);
 
-  if (!Number.isFinite(amount) || amount <= 0) {
-    error.textContent = 'Enter a bill amount greater than $0.';
-    error.style.display = 'block';
-    results.classList.remove('show');
-    cta.classList.remove('show');
-    return;
-  }
+      remainder %= dayMinutes;
 
-  const workingHours = amount / pay;
+      const hours = Math.floor(remainder / 60);
+      const minutes = remainder % 60;
+      const parts = [];
 
-  document.getElementById('resultName').textContent =
-    `${name} at ${money(amount)} costs`;
+      if (fullWeeks) {
+        parts.push(plural(fullWeeks, 'full 40-hour workweek'));
+      }
 
-  document.getElementById('hours').textContent =
-    formatMainTime(workingHours);
+      if (fullDays) {
+        parts.push(plural(fullDays, 'workday'));
+      }
 
-  document.getElementById('shift').textContent =
-    `That is ${formatShiftBreakdown(workingHours)}.`;
+      if (hours) {
+        parts.push(plural(hours, 'hour'));
+      }
 
-  document.getElementById('meaning').textContent =
-    `In Groundwork language: ${formatWeekBreakdown(workingHours)} every month.`;
+      if (minutes) {
+        parts.push(plural(minutes, 'minute'));
+      }
 
-  results.classList.add('show');
-  cta.classList.add('show');
+      if (!parts.length) {
+        return 'less than one minute of WORKING HOURS';
+      }
 
-  setTimeout(() => {
-    results.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 80);
-});
-</script>
+      if (parts.length === 1) {
+        return parts[0];
+      }
+
+      return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const pay = Number(document.getElementById('pay').value);
+      const amount = Number(document.getElementById('billAmount').value);
+      const name =
+        document.getElementById('billName').value.trim() || 'This bill';
+
+      error.style.display = 'none';
+      error.textContent = '';
+
+      if (!Number.isFinite(pay) || pay <= 0) {
+        error.textContent = 'Enter an hourly pay amount greater than $0.';
+        error.style.display = 'block';
+        results.classList.remove('show');
+        cta.classList.remove('show');
+        return;
+      }
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        error.textContent = 'Enter a bill amount greater than $0.';
+        error.style.display = 'block';
+        results.classList.remove('show');
+        cta.classList.remove('show');
+        return;
+      }
+
+      const workingHours = amount / pay;
+
+      document.getElementById('resultName').textContent =
+        `${name} at ${money(amount)} costs`;
+
+      document.getElementById('hours').textContent =
+        formatMainTime(workingHours);
+
+      document.getElementById('shift').textContent =
+        `That is ${formatShiftBreakdown(workingHours)}.`;
+
+      document.getElementById('meaning').textContent =
+        `In Groundwork language: ${formatWeekBreakdown(workingHours)} every month.`;
+
+      results.classList.add('show');
+      cta.classList.add('show');
+
+      // Measures the action only. Pay, bill name, amount, and result are not sent.
+      sendGroundworkEvent('calculation_completed');
+
+      setTimeout(() => {
+        results.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 80);
+    });
+
+    payhipButton.addEventListener('click', () => {
+      sendGroundworkEvent('payhip_click');
+    });
+
+    surveyButton.addEventListener('click', () => {
+      sendGroundworkEvent('survey_click');
+    });
+
+    let reactionSubmitted = false;
+
+    reactionButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (reactionSubmitted) {
+          return;
+        }
+
+        reactionSubmitted = true;
+
+        const reaction = button.dataset.reaction;
+        sendGroundworkEvent(`reaction_${reaction}`);
+
+        reactionButtons.forEach(option => {
+          option.disabled = true;
+          option.classList.remove('selected');
+          option.setAttribute('aria-pressed', 'false');
+        });
+
+        button.classList.add('selected');
+        button.setAttribute('aria-pressed', 'true');
+        reactionThanks.hidden = false;
+      });
+    });
+  </script>
 </body>
 </html>
