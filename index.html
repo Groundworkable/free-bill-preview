@@ -16,7 +16,7 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Groundwork | Free Working-Time Preview</title>
+  <title>Groundwork | Free Preview</title>
 
   <style>
     :root {
@@ -27,6 +27,10 @@
       --white: #FFF;
       --ink: #16241F;
       --muted: #5E6A65;
+      --cyan: #00E6E6;
+      --cyan-soft: #BFF7F7;
+      --danger-bg: #FFF0E8;
+      --danger-text: #9A3412;
     }
 
     * {
@@ -41,7 +45,7 @@
     }
 
     .wrap {
-      width: min(100%, 760px);
+      width: min(100%, 800px);
       margin: auto;
       padding: 24px 16px 48px;
     }
@@ -104,9 +108,43 @@
 
     .hero p {
       margin: 13px auto 0;
-      max-width: 540px;
+      max-width: 560px;
       color: rgba(255, 255, 255, .84);
       line-height: 1.55;
+    }
+
+    .preview-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 18px 24px 0;
+      background: #FFFDF7;
+    }
+
+    .switch-button {
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      background: white;
+      color: var(--green);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+    }
+
+    .switch-button.active {
+      background: var(--gold);
+      color: var(--green);
+      border-color: var(--gold);
+    }
+
+    .preview-panel {
+      display: none;
+    }
+
+    .preview-panel.active {
+      display: block;
     }
 
     form,
@@ -129,16 +167,26 @@
       position: relative;
     }
 
-    .dollar {
+    .dollar,
+    .percent-sign {
       position: absolute;
-      left: 16px;
       top: 50%;
       transform: translateY(-50%);
       font-weight: 800;
       color: var(--green);
+      pointer-events: none;
     }
 
-    input {
+    .dollar {
+      left: 16px;
+    }
+
+    .percent-sign {
+      right: 16px;
+    }
+
+    input,
+    select {
       width: 100%;
       min-height: 54px;
       border: 1px solid #CFC7B6;
@@ -149,7 +197,8 @@
       outline: none;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    select {
       padding: 14px 16px;
     }
 
@@ -157,7 +206,12 @@
       padding: 14px 16px 14px 36px;
     }
 
-    input:focus {
+    .percent-input {
+      padding-right: 42px !important;
+    }
+
+    input:focus,
+    select:focus {
       border-color: var(--gold);
       box-shadow: 0 0 0 4px rgba(217, 180, 91, .18);
     }
@@ -197,8 +251,8 @@
       margin-top: 14px;
       padding: 12px 14px;
       border-radius: 12px;
-      background: #FFF0E8;
-      color: #9A3412;
+      background: var(--danger-bg);
+      color: var(--danger-text);
       font-size: .88rem;
       font-weight: 700;
     }
@@ -270,6 +324,38 @@
       color: var(--muted);
       font-size: .76rem;
       line-height: 1.45;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .result-tile {
+      padding: 15px;
+      border: 1px solid rgba(7, 54, 43, .18);
+      border-radius: 12px;
+      background: white;
+    }
+
+    .result-tile span {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .result-tile strong {
+      display: block;
+      margin-top: 6px;
+      color: var(--green);
+      font-family: Georgia, serif;
+      font-size: 1.5rem;
     }
 
     .reaction {
@@ -359,7 +445,6 @@
     .survey-button {
       display: block;
       width: 100%;
-      box-sizing: border-box;
       margin-top: 10px;
       padding: 15px 20px;
       border: 2px solid var(--green);
@@ -369,7 +454,6 @@
       font-weight: 800;
       text-align: center;
       text-decoration: none;
-      opacity: 1;
       cursor: pointer;
       transition: background-color .2s ease, color .2s ease, transform .2s ease;
     }
@@ -382,6 +466,10 @@
       outline: none;
     }
 
+    .tax-value-field[hidden] {
+      display: none;
+    }
+
     .footer {
       text-align: center;
       padding: 22px 16px 0;
@@ -390,7 +478,7 @@
       line-height: 1.55;
     }
 
-    .footer strong {
+    .be-fruitful {
       display: block;
       margin-bottom: 6px;
       color: var(--green);
@@ -410,6 +498,10 @@
       .hero {
         padding: 38px 38px 28px;
       }
+
+      .result-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
@@ -423,135 +515,316 @@
 
     <section class="card">
       <div class="hero">
-        <span class="tag">Free Bill Preview</span>
-        <h2>How many hours of your life does this cost?</h2>
-        <p>Translate a bill, purchase, or expense into WORKING HOURS—in under a minute.</p>
+        <span class="tag" id="heroTag">Free Bill Preview</span>
+        <h2 id="heroTitle">How many hours of your life does this cost?</h2>
+        <p id="heroText">Translate a bill, purchase, or expense into working hours—in under a minute.</p>
       </div>
 
-      <form id="form" novalidate>
-        <div class="field">
-          <label for="pay">Your hourly pay</label>
-          <div class="input-wrap">
-            <span class="dollar">$</span>
+      <div class="preview-switcher" role="tablist" aria-label="Choose a Groundwork preview">
+        <button
+          type="button"
+          class="switch-button active"
+          id="billTab"
+          role="tab"
+          aria-selected="true"
+          aria-controls="billPreview"
+        >
+          Bill-to-Working-Hours
+        </button>
+
+        <button
+          type="button"
+          class="switch-button"
+          id="variableTab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="variablePreview"
+        >
+          Variable Income
+        </button>
+      </div>
+
+      <section class="preview-panel active" id="billPreview" role="tabpanel" aria-labelledby="billTab">
+        <form id="billForm" novalidate>
+          <div class="field">
+            <label for="pay">Your hourly pay</label>
+            <div class="input-wrap">
+              <span class="dollar">$</span>
+              <input
+                id="pay"
+                type="number"
+                min="0.01"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="20"
+                required
+              />
+            </div>
+            <span class="hint">Use the amount you are comfortable using for this preview.</span>
+          </div>
+
+          <div class="field">
+            <label for="billName">Bill or purchase name</label>
             <input
-              id="pay"
-              type="number"
-              min="0.01"
-              step="0.01"
-              inputmode="decimal"
-              placeholder="20"
+              id="billName"
+              type="text"
+              maxlength="40"
+              placeholder="Rent, phone bill, sneakers..."
               required
             />
           </div>
-          <span class="hint">Use the amount you are comfortable using for this preview.</span>
-        </div>
 
-        <div class="field">
-          <label for="billName">Bill or purchase name</label>
-          <input
-            id="billName"
-            type="text"
-            maxlength="40"
-            placeholder="Rent, phone bill, sneakers..."
-            required
-          />
-        </div>
-
-        <div class="field">
-          <label for="billAmount">Amount</label>
-          <div class="input-wrap">
-            <span class="dollar">$</span>
-            <input
-              id="billAmount"
-              type="number"
-              min="0.01"
-              step="0.01"
-              inputmode="decimal"
-              placeholder="1200"
-              required
-            />
+          <div class="field">
+            <label for="billAmount">Amount</label>
+            <div class="input-wrap">
+              <span class="dollar">$</span>
+              <input
+                id="billAmount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="1200"
+                required
+              />
+            </div>
           </div>
-        </div>
 
-        <button class="calc" type="submit">Show Me My Working Hours</button>
-        <p class="error" id="error"></p>
+          <button class="calc" type="submit">Show Me My Working Hours</button>
+          <p class="error" id="billError"></p>
 
-        <section class="results" id="results" aria-live="polite">
-          <p class="kicker">Your Groundwork Preview</p>
-          <h3 class="bill-name" id="resultName"></h3>
-          <p class="big" id="hours">0</p>
-          <p class="big-label">WORKING HOURS</p>
-          <p class="shift" id="shift"></p>
-          <p class="meaning" id="meaning"></p>
-          <p class="note">
-            This simplified preview uses a standard 40-hour weekly schedule.
-            The full converter personalizes results using your actual work schedule.
-          </p>
-
-          <div class="reaction" id="reaction">
-            <p class="reaction-question">
-              Did seeing this expense in working hours change how you think about it?
+          <section class="results" id="billResults" aria-live="polite">
+            <p class="kicker">Your Groundwork Preview</p>
+            <h3 class="bill-name" id="resultName"></h3>
+            <p class="big" id="hours">0</p>
+            <p class="big-label">Working Hours</p>
+            <p class="shift" id="shift"></p>
+            <p class="meaning" id="meaning"></p>
+            <p class="note">
+              This simplified preview uses a standard 40-hour weekly schedule.
+              The full converter personalizes results using your actual work schedule.
             </p>
 
-            <div class="reaction-options">
-              <button
-                type="button"
-                class="reaction-button"
-                data-reaction="yes"
-                aria-pressed="false"
-              >
-                Yes
-              </button>
+            <div class="reaction">
+              <p class="reaction-question">
+                Did seeing this expense in working hours change how you think about it?
+              </p>
 
-              <button
-                type="button"
-                class="reaction-button"
-                data-reaction="a_little"
-                aria-pressed="false"
-              >
-                A little
-              </button>
+              <div class="reaction-options">
+                <button type="button" class="reaction-button" data-reaction="yes" aria-pressed="false">Yes</button>
+                <button type="button" class="reaction-button" data-reaction="a_little" aria-pressed="false">A little</button>
+                <button type="button" class="reaction-button" data-reaction="no" aria-pressed="false">No</button>
+              </div>
 
-              <button
-                type="button"
-                class="reaction-button"
-                data-reaction="no"
-                aria-pressed="false"
-              >
-                No
-              </button>
+              <p class="reaction-thanks" id="reactionThanks" hidden>
+                Thank you. Your response was recorded.
+              </p>
+            </div>
+          </section>
+        </form>
+
+        <section class="cta" id="billCta">
+          <h3>Imagine seeing every bill and purchase translated into working hours.</h3>
+          <p>The full Bill-to-Working-Hours Converter organizes all of your bills—not just one.</p>
+
+          <a
+            class="primary"
+            id="billPayhipButton"
+            href="https://payhip.com/Groundworkbyable"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get the Full Converter
+          </a>
+
+          <a
+            class="secondary survey-button"
+            id="surveyButton"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfn0wnUSrZSJxoRNiSVAfmAMQJqgkhcZ6UnT5WO19YPI1xHXw/viewform?usp=publish-editor"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Complete a 2-minute survey and receive $3 off.
+          </a>
+        </section>
+      </section>
+
+      <section class="preview-panel" id="variablePreview" role="tabpanel" aria-labelledby="variableTab">
+        <form id="variableForm" novalidate>
+          <div class="field">
+            <label for="responsibilityName">Responsibility name</label>
+            <input
+              id="responsibilityName"
+              type="text"
+              maxlength="40"
+              placeholder="Rent, payroll, equipment..."
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="responsibilityAmount">Amount needed</label>
+            <div class="input-wrap">
+              <span class="dollar">$</span>
+              <input
+                id="responsibilityAmount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="1200"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="fundsAvailable">Funds already available</label>
+            <div class="input-wrap">
+              <span class="dollar">$</span>
+              <input
+                id="fundsAvailable"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="300"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="earningDays">Planned earning days</label>
+            <input
+              id="earningDays"
+              type="number"
+              min="1"
+              max="365"
+              step="1"
+              inputmode="numeric"
+              placeholder="15"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="taxMethod">Tax reserve method</label>
+            <select id="taxMethod">
+              <option value="none">None</option>
+              <option value="percentage">Percentage of gross</option>
+              <option value="fixed">Fixed amount per earning day</option>
+            </select>
+          </div>
+
+          <div class="field tax-value-field" id="percentageField" hidden>
+            <label for="taxPercentage">Tax reserve percentage</label>
+            <div class="input-wrap">
+              <input
+                class="percent-input"
+                id="taxPercentage"
+                type="number"
+                min="0"
+                max="99.99"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="20"
+              />
+              <span class="percent-sign">%</span>
+            </div>
+          </div>
+
+          <div class="field tax-value-field" id="fixedField" hidden>
+            <label for="fixedTax">Fixed reserve per earning day</label>
+            <div class="input-wrap">
+              <span class="dollar">$</span>
+              <input
+                id="fixedTax"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+                placeholder="25"
+              />
+            </div>
+          </div>
+
+          <button class="calc" type="submit">Show Me My Earning Target</button>
+          <p class="error" id="variableError"></p>
+
+          <section class="results" id="variableResults" aria-live="polite">
+            <p class="kicker">Your Variable Income Preview</p>
+            <h3 class="bill-name" id="variableResultName"></h3>
+
+            <div class="result-grid">
+              <div class="result-tile">
+                <span>Still needed after available funds</span>
+                <strong id="usableNeeded">$0.00</strong>
+              </div>
+
+              <div class="result-tile">
+                <span>Gross amount to earn</span>
+                <strong id="grossTarget">$0.00</strong>
+              </div>
+
+              <div class="result-tile">
+                <span>Daily gross target</span>
+                <strong id="dailyGrossTarget">$0.00</strong>
+              </div>
+
+              <div class="result-tile">
+                <span>Planned earning days</span>
+                <strong id="earningDaysResult">0</strong>
+              </div>
             </div>
 
-            <p class="reaction-thanks" id="reactionThanks" hidden>
-              Thank you. Your response was recorded.
+            <p class="note">
+              This free preview calculates one responsibility only. The full Variable Income Edition
+              supports up to 100 responsibilities, 365 earning-day entries, revised targets, tax-reserve
+              tracking, and ahead-or-behind progress.
             </p>
-          </div>
+
+            <div class="reaction" id="variableReaction">
+              <p class="reaction-question">
+                Did seeing this responsibility as an earning-day target make the amount feel clearer?
+              </p>
+
+              <div class="reaction-options">
+                <button type="button" class="reaction-button variable-reaction-button" data-reaction="yes" aria-pressed="false">Yes</button>
+                <button type="button" class="reaction-button variable-reaction-button" data-reaction="a_little" aria-pressed="false">A little</button>
+                <button type="button" class="reaction-button variable-reaction-button" data-reaction="no" aria-pressed="false">No</button>
+              </div>
+
+              <p class="reaction-thanks" id="variableReactionThanks" hidden>
+                Thank you. Your response was recorded.
+              </p>
+            </div>
+          </section>
+        </form>
+
+        <section class="cta" id="variableCta">
+          <h3>Build the complete plan and adjust it as real earnings come in.</h3>
+          <p>The full Variable Income Edition turns multiple responsibilities into a live earning-day plan.</p>
+
+          <a
+            class="primary"
+            id="variablePayhipButton"
+            href="https://payhip.com/b/7crgq"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get the Variable Income Edition
+          </a>
+
+          <a
+            class="secondary survey-button"
+            id="variableSurveyButton"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdPPo0kEMZKqw2JyJtSa2wfnb5OgyG0qHb5bG-7ty21qYLpOg/viewform?usp=dialog"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Complete a 2-minute survey and receive $3 off.
+          </a>
         </section>
-      </form>
-
-      <section class="cta" id="cta">
-        <h3>Imagine seeing every bill and purchase translated into WORKING HOURS.</h3>
-        <p>The full Bill-to-Working-Hours Converter organizes all of your bills—not just one.</p>
-
-        <a
-          class="primary"
-          id="payhipButton"
-          href="https://payhip.com/groundworkbyable"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Get the Full Converter
-        </a>
-
-        <a
-          class="secondary survey-button"
-          id="surveyButton"
-          href="https://docs.google.com/forms/d/e/1FAIpQLSfn0wnUSrZSJxoRNiSVAfmAMQJqgkhcZ6UnT5WO19YPI1xHXw/viewform?usp=publish-editor"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Complete a 2-minute survey and receive $3 off.
-        </a>
       </section>
     </section>
 
@@ -576,20 +849,45 @@
   </main>
 
   <script>
-    const form = document.getElementById('form');
-    const error = document.getElementById('error');
-    const results = document.getElementById('results');
-    const cta = document.getElementById('cta');
-    const payhipButton = document.getElementById('payhipButton');
-    const surveyButton = document.getElementById('surveyButton');
-    const reactionButtons = document.querySelectorAll('.reaction-button');
-    const reactionThanks = document.getElementById('reactionThanks');
+    const billTab = document.getElementById('billTab');
+    const variableTab = document.getElementById('variableTab');
+    const billPreview = document.getElementById('billPreview');
+    const variablePreview = document.getElementById('variablePreview');
+    const heroTag = document.getElementById('heroTag');
+    const heroTitle = document.getElementById('heroTitle');
+    const heroText = document.getElementById('heroText');
 
-    function sendGroundworkEvent(eventName) {
+    function sendGroundworkEvent(eventName, parameters = {}) {
       if (typeof gtag === 'function') {
-        gtag('event', eventName);
+        gtag('event', eventName, parameters);
       }
     }
+
+    function setPreview(mode) {
+      const billActive = mode === 'bill';
+
+      billTab.classList.toggle('active', billActive);
+      variableTab.classList.toggle('active', !billActive);
+      billTab.setAttribute('aria-selected', String(billActive));
+      variableTab.setAttribute('aria-selected', String(!billActive));
+      billPreview.classList.toggle('active', billActive);
+      variablePreview.classList.toggle('active', !billActive);
+
+      if (billActive) {
+        heroTag.textContent = 'Free Bill Preview';
+        heroTitle.textContent = 'How many hours of your life does this cost?';
+        heroText.textContent = 'Translate a bill, purchase, or expense into working hours—in under a minute.';
+        sendGroundworkEvent('preview_bill_selected', { preview_type: 'bill_to_working_hours', interaction_stage: 'preview_selected' });
+      } else {
+        heroTag.textContent = 'Free Variable Income Preview';
+        heroTitle.textContent = 'What do you need to earn per earning day?';
+        heroText.textContent = 'Turn one responsibility into a clear gross earning target—in under a minute.';
+        sendGroundworkEvent('preview_variable_selected', { preview_type: 'variable_income', interaction_stage: 'preview_selected' });
+      }
+    }
+
+    billTab.addEventListener('click', () => setPreview('bill'));
+    variableTab.addEventListener('click', () => setPreview('variable'));
 
     const money = value =>
       new Intl.NumberFormat('en-US', {
@@ -684,7 +982,7 @@
       }
 
       if (!parts.length) {
-        return 'less than one minute of WORKING HOURS';
+        return 'less than one minute of working hours';
       }
 
       if (parts.length === 1) {
@@ -694,30 +992,38 @@
       return `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
     }
 
-    form.addEventListener('submit', event => {
+    const billForm = document.getElementById('billForm');
+    const billError = document.getElementById('billError');
+    const billResults = document.getElementById('billResults');
+    const billCta = document.getElementById('billCta');
+    const billPayhipButton = document.getElementById('billPayhipButton');
+    const surveyButton = document.getElementById('surveyButton');
+    const reactionButtons = document.querySelectorAll('.reaction-button');
+    const reactionThanks = document.getElementById('reactionThanks');
+
+    billForm.addEventListener('submit', event => {
       event.preventDefault();
 
       const pay = Number(document.getElementById('pay').value);
       const amount = Number(document.getElementById('billAmount').value);
-      const name =
-        document.getElementById('billName').value.trim() || 'This bill';
+      const name = document.getElementById('billName').value.trim() || 'This bill';
 
-      error.style.display = 'none';
-      error.textContent = '';
+      billError.style.display = 'none';
+      billError.textContent = '';
 
       if (!Number.isFinite(pay) || pay <= 0) {
-        error.textContent = 'Enter an hourly pay amount greater than $0.';
-        error.style.display = 'block';
-        results.classList.remove('show');
-        cta.classList.remove('show');
+        billError.textContent = 'Enter an hourly pay amount greater than $0.';
+        billError.style.display = 'block';
+        billResults.classList.remove('show');
+        billCta.classList.remove('show');
         return;
       }
 
       if (!Number.isFinite(amount) || amount <= 0) {
-        error.textContent = 'Enter a bill amount greater than $0.';
-        error.style.display = 'block';
-        results.classList.remove('show');
-        cta.classList.remove('show');
+        billError.textContent = 'Enter a bill amount greater than $0.';
+        billError.style.display = 'block';
+        billResults.classList.remove('show');
+        billCta.classList.remove('show');
         return;
       }
 
@@ -735,26 +1041,26 @@
       document.getElementById('meaning').textContent =
         `In Groundwork language: this costs ${formatWeekBreakdown(workingHours)} of your working time.`;
 
-      results.classList.add('show');
-      cta.classList.add('show');
+      billResults.classList.add('show');
+      billCta.classList.add('show');
 
       // Measures the action only. Pay, bill name, amount, and result are not sent.
-      sendGroundworkEvent('calculation_completed');
+      sendGroundworkEvent('bill_calculation_completed', { preview_type: 'bill_to_working_hours', interaction_stage: 'calculation_completed' });
 
       setTimeout(() => {
-        results.scrollIntoView({
+        billResults.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         });
       }, 80);
     });
 
-    payhipButton.addEventListener('click', () => {
-      sendGroundworkEvent('payhip_click');
+    billPayhipButton.addEventListener('click', () => {
+      sendGroundworkEvent('bill_payhip_click', { preview_type: 'bill_to_working_hours', interaction_stage: 'product_click' });
     });
 
     surveyButton.addEventListener('click', () => {
-      sendGroundworkEvent('survey_click');
+      sendGroundworkEvent('bill_survey_click', { preview_type: 'bill_to_working_hours', interaction_stage: 'survey_click' });
     });
 
     let reactionSubmitted = false;
@@ -768,7 +1074,7 @@
         reactionSubmitted = true;
 
         const reaction = button.dataset.reaction;
-        sendGroundworkEvent(`reaction_${reaction}`);
+        sendGroundworkEvent(`bill_reaction_${reaction}`, { preview_type: 'bill_to_working_hours', interaction_stage: 'reaction' });
 
         reactionButtons.forEach(option => {
           option.disabled = true;
@@ -779,6 +1085,150 @@
         button.classList.add('selected');
         button.setAttribute('aria-pressed', 'true');
         reactionThanks.hidden = false;
+      });
+    });
+
+    const variableForm = document.getElementById('variableForm');
+    const variableError = document.getElementById('variableError');
+    const variableResults = document.getElementById('variableResults');
+    const variableCta = document.getElementById('variableCta');
+    const variablePayhipButton = document.getElementById('variablePayhipButton');
+    const variableSurveyButton = document.getElementById('variableSurveyButton');
+    const variableReactionButtons = document.querySelectorAll('.variable-reaction-button');
+    const variableReactionThanks = document.getElementById('variableReactionThanks');
+    const taxMethod = document.getElementById('taxMethod');
+    const percentageField = document.getElementById('percentageField');
+    const fixedField = document.getElementById('fixedField');
+
+    taxMethod.addEventListener('change', () => {
+      percentageField.hidden = taxMethod.value !== 'percentage';
+      fixedField.hidden = taxMethod.value !== 'fixed';
+    });
+
+    variableForm.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const name =
+        document.getElementById('responsibilityName').value.trim() || 'This responsibility';
+      const amount = Number(document.getElementById('responsibilityAmount').value);
+      const funds = Number(document.getElementById('fundsAvailable').value || 0);
+      const days = Number(document.getElementById('earningDays').value);
+      const method = taxMethod.value;
+      const percentage = Number(document.getElementById('taxPercentage').value || 0);
+      const fixedPerDay = Number(document.getElementById('fixedTax').value || 0);
+
+      variableError.style.display = 'none';
+      variableError.textContent = '';
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        variableError.textContent = 'Enter a responsibility amount greater than $0.';
+        variableError.style.display = 'block';
+        variableResults.classList.remove('show');
+        variableCta.classList.remove('show');
+        return;
+      }
+
+      if (!Number.isFinite(funds) || funds < 0) {
+        variableError.textContent = 'Funds already available cannot be negative.';
+        variableError.style.display = 'block';
+        variableResults.classList.remove('show');
+        variableCta.classList.remove('show');
+        return;
+      }
+
+      if (!Number.isFinite(days) || days < 1 || days > 365) {
+        variableError.textContent = 'Enter planned earning days from 1 to 365.';
+        variableError.style.display = 'block';
+        variableResults.classList.remove('show');
+        variableCta.classList.remove('show');
+        return;
+      }
+
+      if (method === 'percentage' && (!Number.isFinite(percentage) || percentage < 0 || percentage >= 100)) {
+        variableError.textContent = 'Enter a tax reserve percentage from 0 up to 99.99%.';
+        variableError.style.display = 'block';
+        variableResults.classList.remove('show');
+        variableCta.classList.remove('show');
+        return;
+      }
+
+      if (method === 'fixed' && (!Number.isFinite(fixedPerDay) || fixedPerDay < 0)) {
+        variableError.textContent = 'Enter a fixed reserve amount of $0 or more.';
+        variableError.style.display = 'block';
+        variableResults.classList.remove('show');
+        variableCta.classList.remove('show');
+        return;
+      }
+
+      const usableNeeded = Math.max(amount - funds, 0);
+      let grossTarget = usableNeeded;
+
+      if (method === 'percentage') {
+        grossTarget = usableNeeded === 0 ? 0 : usableNeeded / (1 - percentage / 100);
+      } else if (method === 'fixed') {
+        grossTarget = usableNeeded + (fixedPerDay * days);
+      }
+
+      const dailyTarget = grossTarget / days;
+
+      document.getElementById('variableResultName').textContent =
+        `${name} becomes this earning target:`;
+      document.getElementById('usableNeeded').textContent = money(usableNeeded);
+      document.getElementById('grossTarget').textContent = money(grossTarget);
+      document.getElementById('dailyGrossTarget').textContent = money(dailyTarget);
+      document.getElementById('earningDaysResult').textContent = plural(days, 'day');
+
+      variableResults.classList.add('show');
+      variableCta.classList.add('show');
+
+      // Measures the action only. No entered financial values are sent.
+      sendGroundworkEvent('variable_calculation_completed', { preview_type: 'variable_income', interaction_stage: 'calculation_completed' });
+
+      setTimeout(() => {
+        variableResults.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 80);
+    });
+
+    variablePayhipButton.addEventListener('click', () => {
+      sendGroundworkEvent('variable_payhip_click', { preview_type: 'variable_income', interaction_stage: 'product_click' });
+    });
+
+    variableSurveyButton.addEventListener('click', () => {
+      sendGroundworkEvent('variable_survey_click', {
+        preview_type: 'variable_income',
+        interaction_stage: 'survey_click'
+      });
+    });
+
+    let variableReactionSubmitted = false;
+
+    variableReactionButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (variableReactionSubmitted) {
+          return;
+        }
+
+        variableReactionSubmitted = true;
+
+        const reaction = button.dataset.reaction;
+
+        sendGroundworkEvent(`variable_reaction_${reaction}`, {
+          preview_type: 'variable_income',
+          interaction_stage: 'reaction'
+        });
+
+        variableReactionButtons.forEach(option => {
+          option.disabled = true;
+          option.classList.remove('selected');
+          option.setAttribute('aria-pressed', 'false');
+        });
+
+        button.classList.add('selected');
+        button.setAttribute('aria-pressed', 'true');
+        variableReactionThanks.hidden = false;
       });
     });
   </script>
