@@ -58,3 +58,11 @@
 .legal-links a{font-weight:800;color:var(--green)}
 @media(max-width:980px){.product-proof-grid{grid-template-columns:1fr}.mobile-proof{max-width:430px;margin-inline:auto;width:100%}}
 @media(max-width:660px){.proof-head{display:block;padding:22px 18px 15px}.proof-chip{display:inline-flex;margin-top:12px}.exchange-proof{grid-template-columns:1fr;margin:0 18px;padding:20px}.exchange-side{margin-top:18px;padding:16px 0 0;border-left:0;border-top:1px solid rgba(217,180,91,.26)}.liquid-proof{grid-template-columns:1fr;padding:20px 18px 15px}.liquid-stats{grid-template-columns:1fr}.pulse-proof{padding:0 18px 22px}.pulse-grid{grid-template-columns:1fr 1fr}.mobile-proof{max-width:100%}.legal-page{padding:52px 0 72px}}
+
+/* Final storefront cleanup */
+@media (min-width:981px){
+  .product-truth{padding-bottom:56px}
+  .thesis{padding-top:62px}
+  .brand-story{padding-top:82px;padding-bottom:58px}
+  .tools-now{padding-top:46px}
+}
