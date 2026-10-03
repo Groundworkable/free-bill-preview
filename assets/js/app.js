@@ -248,6 +248,13 @@ earlyAccessForm.addEventListener('submit', async event => {
 
   if (!earlyAccessForm.reportValidity()) return;
 
+  const honeypot = earlyAccessForm.elements.namedItem('website');
+  if (honeypot && honeypot.value) {
+    earlyAccessForm.reset();
+    earlyAccessStatus.textContent = 'Thanks — your beta access request was sent.';
+    return;
+  }
+
   if (!EARLY_ACCESS_ENDPOINT) {
     earlyAccessStatus.textContent = 'This draft form is ready, but the Google Sheet connection still needs to be activated.';
     return;
@@ -255,7 +262,7 @@ earlyAccessForm.addEventListener('submit', async event => {
 
   const submitButton = earlyAccessForm.querySelector('button[type="submit"]');
   submitButton.disabled = true;
-  submitButton.textContent = 'Joining...';
+  submitButton.textContent = 'Sending request...';
 
   try {
     const body = new URLSearchParams(new FormData(earlyAccessForm));
@@ -267,12 +274,12 @@ earlyAccessForm.addEventListener('submit', async event => {
     });
 
     earlyAccessForm.reset();
-    earlyAccessStatus.textContent = 'Thanks — your Early Access request was sent.';
+    earlyAccessStatus.textContent = 'Thanks — your beta access request was sent.';
     sendGroundworkEvent('early_access_submitted');
   } catch (error) {
     earlyAccessStatus.textContent = 'The form could not be submitted. Please try again.';
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = 'Join Early Access';
+    submitButton.textContent = 'Request Beta Access';
   }
 });
