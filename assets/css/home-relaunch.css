@@ -52,7 +52,13 @@ body.home-relaunch{background:#F7F2E8}
 .home-relaunch .relaunch-branches .campaign-card h3{font-size:2rem}
 .home-relaunch .relaunch-branches .campaign-card:hover{border-color:#B28F47;transform:translateY(-2px);transition:transform .18s}
 .home-relaunch .relaunch-branches .campaign-card .number{color:#89692D}
-.home-relaunch .product-truth{background:#EFE9DC}
+/* Light dashboard showcase: override the original dark-section text palette. */
+.home-relaunch .product-truth{background:#EFE9DC;color:#07362B}
+.home-relaunch .product-truth .section-intro h2{color:#07362B}
+.home-relaunch .product-truth .section-intro p{color:#40564A}
+.home-relaunch .product-truth .kicker{color:#896521}
+.home-relaunch .product-truth .product-proof-note{color:#45594E}
+.home-relaunch .product-truth .product-meta span{color:#2B4C3C;border-color:#CDBE9E;background:#F8F4EA}
 .home-relaunch .early-access{background:#F7F2E8}
 .home-relaunch .tools-now{background:#EBE4D6}
 .home-relaunch .site-header a:focus-visible,.home-relaunch .relaunch-actions a:focus-visible,.home-relaunch .home-nav-mobile summary:focus-visible{outline:3px solid #B79447;outline-offset:3px}
