@@ -1,0 +1,97 @@
+/* Groundwork by Able — public homepage redesign, 2026-10-14.
+   Scoped to the homepage to protect calculators, terms and marketing branches. */
+body.home-relaunch{background:#F7F2E8}
+.home-relaunch .site-header{background:rgba(247,242,232,.98);border-bottom:1px solid #DBD2BD}
+.home-relaunch .site-header .nav{min-height:86px;gap:18px}
+.home-relaunch .home-brand{display:flex;align-items:center;gap:12px;min-width:0;text-decoration:none}
+.home-relaunch .home-brand img{height:55px;width:55px;object-fit:contain;background:#07362B;border-radius:3px;padding:7px}
+.home-relaunch .home-brand span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.home-relaunch .home-brand strong{font:500 1.44rem/1 Georgia,serif;letter-spacing:-.015em;color:#07362B}
+.home-relaunch .home-brand small{font:700 .58rem/1.4 Arial,sans-serif;color:#896E35;letter-spacing:.14em;text-transform:uppercase}
+.home-relaunch .nav-links{gap:clamp(11px,1.3vw,20px)}
+.home-relaunch .nav-links>a:not(.nav-cta){font-size:.70rem;letter-spacing:.025em;text-transform:none;color:#294c3d;white-space:nowrap}
+.home-relaunch .nav-links>a:not(.nav-cta):hover{color:#967331}
+.home-relaunch .nav-links .nav-cta{white-space:nowrap;border-radius:3px;background:#07362B;color:#FFF7E8;box-shadow:none}
+.home-relaunch .home-nav-mobile{display:none}
+.home-relaunch .relaunch-hero{position:relative;isolation:isolate;overflow:hidden;background:#F7F2E8 url('/assets/images/groundwork-contours.svg') center center/cover no-repeat;padding:clamp(65px,7.4vw,118px) 0 clamp(75px,8vw,126px);border-bottom:1px solid #DDD4C1}
+.home-relaunch .relaunch-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(247,242,232,.58) 0%,rgba(247,242,232,.78) 52%,rgba(247,242,232,.52) 100%);z-index:-1}
+.home-relaunch .relaunch-hero::after{display:none}
+.home-relaunch .relaunch-hero .wrap{position:relative}
+.home-relaunch .relaunch-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(330px,.75fr);gap:clamp(40px,5.3vw,100px);align-items:center}
+.home-relaunch .relaunch-overline{display:flex;align-items:center;gap:11px;color:#745A25;text-transform:uppercase;font-size:.73rem;font-weight:900;letter-spacing:.18em}
+.home-relaunch .relaunch-overline:before{content:"";width:36px;height:1px;background:#B8903B;flex:none}
+.home-relaunch .relaunch-copy h1{margin:26px 0 27px;max-width:880px;color:#07362B;font:500 clamp(3.75rem,7.2vw,7.2rem)/.96 Georgia,serif;letter-spacing:-.054em}
+.home-relaunch .relaunch-copy h1 em{font-style:normal;color:#A88436}
+.home-relaunch .relaunch-copy .lead{max-width:645px;margin:0;color:#3F5449;font:400 clamp(1.07rem,1.45vw,1.22rem)/1.8 Arial,sans-serif}
+.home-relaunch .relaunch-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:33px}
+.home-relaunch .relaunch-actions a{min-height:52px;padding:14px 21px;text-align:center;border:1px solid #07362B;font-weight:800;font-size:.85rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;transition:background .18s,color .18s}
+.home-relaunch .relaunch-actions a.primary{color:#F7F2E8;background:#07362B}
+.home-relaunch .relaunch-actions a.primary:hover{background:#165343}
+.home-relaunch .relaunch-actions a.outline{color:#07362B;background:rgba(247,242,232,.8)}
+.home-relaunch .relaunch-actions a.outline:hover{background:#E6DBC3}
+.home-relaunch .relaunch-trust{font-size:.82rem;line-height:1.6;color:#59695D;margin:23px 0 0}
+.home-relaunch .relaunch-trust a{color:#07362B;font-weight:800}
+.home-relaunch .relaunch-brand-panel{position:relative;overflow:hidden;background:radial-gradient(circle at 55% 30%,#164B39,#052B22 75%);color:#F7F2E8;min-height:500px;padding:38px clamp(25px,3.4vw,60px);box-shadow:0 29px 75px rgba(7,54,43,.16);border:1px solid #204d3e;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.home-relaunch .relaunch-brand-panel:before{content:"";position:absolute;inset:0;background:url('/assets/images/groundwork-contours.svg') center/cover;opacity:.12;mix-blend-mode:screen;pointer-events:none}
+.home-relaunch .relaunch-brand-panel>*{position:relative}
+.home-relaunch .relaunch-brand-panel .relaunch-mark{display:block;width:190px;max-width:76%;height:auto;margin:0 auto 13px;filter:drop-shadow(0 10px 12px rgba(0,0,0,.13))}
+.home-relaunch .relaunch-brand-panel .relaunch-wordmark{font:500 clamp(2.05rem,3.1vw,3.2rem)/1.13 Georgia,serif;letter-spacing:.014em;color:#D9B45B;margin:0}
+.home-relaunch .relaunch-brand-panel .relaunch-byline{margin:10px 0 0;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#E0C587}
+.home-relaunch .relaunch-panel-divider{width:80px;height:1px;background:#B79242;margin:30px auto 20px}
+.home-relaunch .relaunch-brand-panel .relaunch-statement{max-width:370px;font:400 1.35rem/1.45 Georgia,serif;color:#F5EEDC;margin:0 auto}
+.home-relaunch .relaunch-brand-panel .relaunch-subline{margin:18px auto 0;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#C8D7CE}
+.home-relaunch .relaunch-pillars{background:#07362B;color:#F7F2E8;border-top:1px solid rgba(217,180,91,.46);border-bottom:1px solid rgba(217,180,91,.46)}
+.home-relaunch .relaunch-pillars .wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.home-relaunch .relaunch-pillar{display:flex;align-items:center;justify-content:center;gap:16px;padding:23px 15px;min-width:0}
+.home-relaunch .relaunch-pillar + .relaunch-pillar{border-left:1px solid rgba(217,180,91,.32)}
+.home-relaunch .relaunch-pillar span{font-size:.62rem;letter-spacing:.12em;color:#D9B45B;font-weight:900}
+.home-relaunch .relaunch-pillar strong{font:500 clamp(1.08rem,1.5vw,1.42rem)/1.2 Georgia,serif}
+.home-relaunch .relaunch-branches{background:#F7F2E8 url('/assets/images/groundwork-contours.svg') 50% 90%/cover no-repeat;border-bottom:1px solid #D9D1C0}
+.home-relaunch .relaunch-branches .section-heading{max-width:720px}
+.home-relaunch .relaunch-branches .campaign-card{background:rgba(255,252,245,.94);border-color:#C9BA99;min-height:250px;box-shadow:0 18px 36px rgba(7,54,43,.04)}
+.home-relaunch .relaunch-branches .campaign-card h3{font-size:2rem}
+.home-relaunch .relaunch-branches .campaign-card:hover{border-color:#B28F47;transform:translateY(-2px);transition:transform .18s}
+.home-relaunch .relaunch-branches .campaign-card .number{color:#89692D}
+.home-relaunch .product-truth{background:#EFE9DC}
+.home-relaunch .early-access{background:#F7F2E8}
+.home-relaunch .tools-now{background:#EBE4D6}
+.home-relaunch .site-header a:focus-visible,.home-relaunch .relaunch-actions a:focus-visible,.home-relaunch .home-nav-mobile summary:focus-visible{outline:3px solid #B79447;outline-offset:3px}
+@media(max-width:1100px){
+ .home-relaunch .nav-links>a:not(.nav-cta){display:none}
+ .home-relaunch .home-nav-mobile{display:block;position:relative;margin-left:auto}
+ .home-relaunch .home-nav-mobile summary{list-style:none;border:1px solid #B7BBA7;border-radius:3px;padding:10px 15px;cursor:pointer;font-size:.8rem;font-weight:800;color:#07362B}
+ .home-relaunch .home-nav-mobile summary::-webkit-details-marker{display:none}
+ .home-relaunch .home-nav-mobile .home-mobile-links{position:absolute;top:calc(100% + 8px);right:0;z-index:60;display:flex;flex-direction:column;min-width:225px;background:#F7F2E8;border:1px solid #D8D0BE;box-shadow:0 15px 35px #07362B22;padding:8px}
+ .home-relaunch .home-mobile-links a{display:block;padding:12px;text-decoration:none;font-weight:800;font-size:.85rem;color:#07362B}
+ .home-relaunch .home-mobile-links a:hover{background:#EBE2D0}
+ .home-relaunch .relaunch-layout{grid-template-columns:minmax(0,1.1fr) minmax(280px,.8fr);gap:32px}
+ .home-relaunch .relaunch-brand-panel{min-height:470px;padding:30px}
+}
+@media(max-width:760px){
+ .home-relaunch .site-header .nav{min-height:68px;gap:8px}
+ .home-relaunch .home-brand img{width:39px;height:39px;padding:5px}
+ .home-relaunch .home-brand strong{font-size:1.1rem}
+ .home-relaunch .home-brand small{font-size:.47rem;letter-spacing:.065em}
+ .home-relaunch .nav-links .nav-cta{min-height:39px;padding:8px 11px;font-size:.71rem}
+ .home-relaunch .relaunch-hero{padding:62px 0 68px;background-position:27% 50%}
+ .home-relaunch .relaunch-layout{grid-template-columns:1fr;gap:38px}
+ .home-relaunch .relaunch-copy h1{font-size:clamp(3.2rem,11.3vw,5.1rem)}
+ .home-relaunch .relaunch-brand-panel{min-height:390px}
+ .home-relaunch .relaunch-brand-panel .relaunch-mark{width:145px}
+ .home-relaunch .relaunch-pillars .wrap{grid-template-columns:1fr}
+ .home-relaunch .relaunch-pillar{justify-content:flex-start;padding:15px 20px}
+ .home-relaunch .relaunch-pillar + .relaunch-pillar{border-left:0;border-top:1px solid rgba(217,180,91,.3)}
+ .home-relaunch .relaunch-branches{background-size:auto 100%}
+}
+@media(max-width:480px){
+ .home-relaunch .home-brand img{width:34px;height:34px}
+ .home-relaunch .home-brand strong{font-size:1rem}
+ .home-relaunch .home-brand small{font-size:.42rem}
+ .home-relaunch .home-nav-mobile summary{padding:8px 10px;font-size:.7rem}
+ .home-relaunch .nav-links .nav-cta{font-size:.68rem;min-height:36px;padding:5px 9px}
+ .home-relaunch .relaunch-overline{font-size:.60rem;letter-spacing:.12em}
+ .home-relaunch .relaunch-copy h1{font-size:clamp(2.95rem,11.1vw,4.4rem)}
+ .home-relaunch .relaunch-actions{flex-direction:column}
+ .home-relaunch .relaunch-actions a{width:100%}
+ .home-relaunch .relaunch-brand-panel{padding:28px 18px}
+}
