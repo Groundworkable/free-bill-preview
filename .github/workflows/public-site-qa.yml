@@ -1,0 +1,19 @@
+name: Groundwork public site QA
+on:
+  pull_request:
+    paths:
+      - "**/*.html"
+      - "assets/css/**"
+      - "assets/images/**"
+      - "assets/js/**"
+      - "sitemap.xml"
+      - "robots.txt"
+      - "scripts/public_site_qa.py"
+      - ".github/workflows/public-site-qa.yml"
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run public HTML link, existing tool, and sitemap checks
+        run: python3 scripts/public_site_qa.py
