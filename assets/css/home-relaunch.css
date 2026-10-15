@@ -112,3 +112,15 @@ body.home-relaunch{background:#F7F2E8}
 
 /* Preserve primary marketing CTA when Business is present in the navigation. */
 @media (max-width:1260px){.home-relaunch .nav-links>a:not(.nav-cta){display:none}.home-relaunch .home-nav-mobile{display:block;position:relative;margin-left:auto}}
+
+/* Groundwork public homepage footer: match the three-room Connect experience. */
+.home-relaunch .home-main-footer{background:#052C23;color:#F7F2E8;border-top:1px solid #31584C;padding:54px 0 24px}
+.home-relaunch .home-footer-grid{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:clamp(22px,4vw,65px);align-items:start}
+.home-relaunch .home-main-footer strong{display:block;color:#F7F2E8;font:500 1.25rem Georgia,serif}
+.home-relaunch .home-main-footer span,.home-relaunch .home-main-footer p{display:block;color:#C2D0C5;font:.82rem/1.7 Arial,sans-serif;text-align:left;margin:12px 0 0}
+.home-relaunch .home-main-footer h2{font:800 .7rem Arial,sans-serif;letter-spacing:.15em;text-transform:uppercase;color:#D9B45B;margin:0 0 19px}
+.home-relaunch .home-main-footer a{display:block;color:#E1E9E3;font:.84rem/1.5 Arial,sans-serif;text-decoration:none;margin:0 0 11px}
+.home-relaunch .home-main-footer a:hover,.home-relaunch .home-main-footer a:focus-visible{color:#D9B45B;text-decoration:underline}
+.home-relaunch .home-footer-legal{border-top:1px solid #31584C;color:#A9C3B0;margin-top:31px;padding-top:17px;font:.73rem/1.5 Arial,sans-serif}
+@media(max-width:760px){.home-relaunch .home-footer-grid{grid-template-columns:1fr 1fr}.home-relaunch .home-footer-identity{grid-column:1/-1}}
+@media(max-width:480px){.home-relaunch .home-footer-grid{grid-template-columns:1fr}.home-relaunch .home-footer-identity{grid-column:auto}}
