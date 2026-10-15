@@ -124,3 +124,12 @@ body.home-relaunch{background:#F7F2E8}
 .home-relaunch .home-footer-legal{border-top:1px solid #31584C;color:#A9C3B0;margin-top:31px;padding-top:17px;font:.73rem/1.5 Arial,sans-serif}
 @media(max-width:760px){.home-relaunch .home-footer-grid{grid-template-columns:1fr 1fr}.home-relaunch .home-footer-identity{grid-column:1/-1}}
 @media(max-width:480px){.home-relaunch .home-footer-grid{grid-template-columns:1fr}.home-relaunch .home-footer-identity{grid-column:auto}}
+
+/* Two-step public working-life calculator. */
+.bill-input-group{padding:18px 0 22px}
+.bill-input-group+.bill-input-group{border-top:1px solid #DDD3BF;margin-top:4px}
+.bill-step-label{display:flex;gap:12px;align-items:center;color:#07362B;font:600 1.26rem Georgia,serif;margin:0 0 19px}
+.bill-step-label span{font:900 .7rem Arial,sans-serif;letter-spacing:.08em;color:#987330;border:1px solid #D9B45B;border-radius:99px;min-width:31px;height:31px;display:inline-flex;align-items:center;justify-content:center}
+.bill-rate-detail{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px;margin-top:21px;padding:14px 0;border-top:1px solid #C8D8CF;color:#375849;font:.89rem/1.5 Arial,sans-serif}
+.bill-rate-detail strong{font:600 1.3rem Georgia,serif;color:#07362B}
+@media(max-width:580px){.bill-input-group{padding:12px 0 18px}.bill-step-label{font-size:1.1rem}}
