@@ -77,3 +77,16 @@
 
 /* Official uploaded brand assets */
 .campaign-logo img{object-fit:cover;border-radius:3px;background:#062E24}
+
+/* Direct early-access application on the dedicated marketing room. */
+.campaign-intake-grid{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:clamp(28px,5vw,78px);align-items:start}
+.campaign-intake-grid .section-heading{margin-top:14px}
+.campaign-intake-grid .campaign-intake-note{max-width:520px;margin:28px 0;color:#465A50;line-height:1.7}
+.campaign-intake-grid .early-access-form{width:100%;min-width:0}
+.campaign-intake-grid .early-access-form .field input,
+.campaign-intake-grid .early-access-form .field select,
+.campaign-intake-grid .early-access-form .field textarea{width:100%}
+.campaign-intake-grid .early-access-form .legal-note{color:#C4D4CA}
+.campaign-intake-grid .early-access-form .legal-note a{color:#D9B45B}
+@media(max-width:980px){.campaign-intake-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.campaign-intake-grid .early-access-form{padding:24px 18px}.campaign-intake-grid .early-grid{grid-template-columns:1fr}}
