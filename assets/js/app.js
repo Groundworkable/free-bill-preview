@@ -74,7 +74,7 @@ function setPreview(mode) {
   if (billActive) {
     previewEyebrow.textContent = 'Free Bill Preview';
     previewTitle.textContent = 'How many hours of your life does this cost?';
-    previewText.textContent = 'Translate a bill, purchase, or expense into working hours—in under a minute.';
+    previewText.textContent = 'Start with take-home pay and hours worked, then see what a bill costs in working life.';
     sendGroundworkEvent('preview_bill_selected');
   } else {
     previewEyebrow.textContent = 'Free Variable Income Preview';
@@ -95,39 +95,56 @@ const billCta = document.getElementById('billCta');
 billForm.addEventListener('submit', event => {
   event.preventDefault();
 
-  const pay = Number(document.getElementById('pay').value);
-  const amount = Number(document.getElementById('billAmount').value);
-  const name = document.getElementById('billName').value.trim() || 'This bill';
+  const takeHomeInput = document.getElementById('takeHomePay').value;
+  const hoursInput = document.getElementById('hoursWorked').value;
+  const amountInput = document.getElementById('billAmount').value;
+  const name = document.getElementById('billName').value.trim();
+  const takeHome = Number(takeHomeInput);
+  const worked = Number(hoursInput);
+  const amount = Number(amountInput);
 
   billError.style.display = 'none';
   billError.textContent = '';
-
-  if (!Number.isFinite(pay) || pay <= 0) {
-    billError.textContent = 'Enter an hourly pay amount greater than $0.';
+  const fail = message => {
+    billError.textContent = message;
     billError.style.display = 'block';
     billResults.classList.remove('show');
     billCta.classList.remove('show');
+  };
+
+  if (!takeHomeInput || !Number.isFinite(takeHome) || takeHome <= 0) {
+    fail('Enter a take-home paycheck amount greater than $0.');
     return;
   }
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    billError.textContent = 'Enter a bill amount greater than $0.';
-    billError.style.display = 'block';
-    billResults.classList.remove('show');
-    billCta.classList.remove('show');
+  if (!hoursInput || !Number.isFinite(worked) || worked <= 0) {
+    fail('Enter the number of hours worked for that paycheck, greater than zero.');
     return;
   }
-
-  const workingHours = amount / pay;
+  if (!amountInput || !Number.isFinite(amount) || amount <= 0) {
+    fail('Enter a bill amount greater than $0.');
+    return;
+  }
+  if (!name) {
+    fail('Enter a name for the bill.');
+    return;
+  }
+  // Working-life equivalence uses the net hourly rate from this same paycheck.
+  const netRate = takeHome / worked;
+  const workingHours = amount / netRate;
+  if (!Number.isFinite(workingHours) || !Number.isFinite(netRate) ||
+      !Number.isFinite(workingHours * 60) || workingHours < 0) {
+    fail('These values are too large to calculate. Check the paycheck and bill amounts.');
+    return;
+  }
 
   document.getElementById('resultName').textContent =
-    `${name} at ${money(amount)} costs`;
-
+    `${name} at ${money(amount)} represents`;
   document.getElementById('hours').textContent =
     formatMainTime(workingHours);
-
+  document.getElementById('takeHomeRate').textContent =
+    `${money(netRate)}/hr`;
   document.getElementById('meaning').textContent =
-    `In Groundwork language: this costs ${formatWeekBreakdown(workingHours)} of your working time.`;
+    `That's equivalent to ${formatWeekBreakdown(workingHours)} of work at your take-home rate.`;
 
   billResults.classList.add('show');
   billCta.classList.add('show');
