@@ -109,3 +109,6 @@ body.home-relaunch{background:#F7F2E8}
 .home-relaunch .relaunch-official-caption{position:relative;color:#E0C382;font-size:.68rem;font-weight:700;letter-spacing:.17em;text-transform:uppercase;margin:-6px auto 0}
 .home-relaunch .home-brand img{object-fit:cover;padding:0;background:#062E24}
 @media(max-width:760px){.home-relaunch .relaunch-brand-panel{min-height:0;padding:20px}.home-relaunch .relaunch-official-logo{width:min(100%,390px)}}
+
+/* Preserve primary marketing CTA when Business is present in the navigation. */
+@media (max-width:1260px){.home-relaunch .nav-links>a:not(.nav-cta){display:none}.home-relaunch .home-nav-mobile{display:block;position:relative;margin-left:auto}}
