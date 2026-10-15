@@ -63,3 +63,15 @@ assert "mode: 'no-cors'" in shared_js, "Existing cross-origin endpoint behavior 
 assert "opaque response" in shared_js, "Must disclose uncertain API outcome"
 assert "sendGroundworkEvent('early_access_submitted')" not in Path("assets/js/app.js").read_text(encoding="utf-8"), "Old handler not fully removed"
 print("PASS shared beta intake script, both form locations, and anchor checks")
+
+# Paycheck-first working-life preview must derive the effective take-home hourly rate.
+page = Path("index.html").read_text(encoding="utf-8")
+calculator = Path("assets/js/app.js").read_text(encoding="utf-8")
+for field_id in ("takeHomePay", "hoursWorked", "billAmount", "billName", "takeHomeRate"):
+    assert f'id="{field_id}"' in page, f"Missing paycheck-first form field: {field_id}"
+assert 'id="pay"' not in page, "Old hourly-pay-only input still on homepage"
+assert "const netRate = takeHome / worked;" in calculator
+assert "const workingHours = amount / netRate;" in calculator
+assert "standard 40-hour weekly schedule" not in page
+assert "billForm.addEventListener('submit'" in calculator
+print("PASS take-home paycheck -> hours worked -> bill calculation preview")
