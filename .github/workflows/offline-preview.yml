@@ -72,3 +72,90 @@ jobs:
           path: groundwork-local-preview/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Build standalone homepage preview (styles, images and calculator included)
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, mimetypes, re
+          root=Path.cwd().resolve()
+          html=(root/'index.html').read_text(encoding='utf-8')
+          def resolve(ref, base):
+              if not ref or ref.startswith(('data:', 'https:', 'http:', '//', '#')):
+                  return None
+              if ref.startswith('/'):
+                  path=root/ref.lstrip('/')
+              else:
+                  path=base.parent/ref.split('?',1)[0]
+              path=path.resolve()
+              if root not in path.parents and path != root:
+                  return None
+              return path if path.is_file() else None
+          def data_url(file):
+              mime=mimetypes.guess_type(file.name)[0] or 'application/octet-stream'
+              return 'data:'+mime+';base64,'+base64.b64encode(file.read_bytes()).decode('ascii')
+          def embed_css_urls(text, cssfile):
+              def inline(match):
+                  raw=match.group(1).strip().strip("\"'")
+                  file=resolve(raw,cssfile)
+                  return 'url("'+data_url(file)+'")' if file else match.group(0)
+              return re.sub(r'url\(([^)]+)\)',inline,text)
+          def stylesheet(match):
+              tag=match.group(0)
+              if not re.search(r'\brel=["\']stylesheet["\']',tag,re.I): return tag
+              href=re.search(r'\bhref=["\']([^"\']+)["\']',tag)
+              cssfile=resolve(href.group(1),root/'index.html') if href else None
+              if not cssfile: return tag
+              css=embed_css_urls(cssfile.read_text(encoding='utf-8'),cssfile)
+              return '<style>\n'+css+'\n</style>'
+          html=re.sub(r'<link\b[^>]*>',stylesheet,html,flags=re.I)
+          def inline_images(match):
+              file=resolve(match.group(2),root/'index.html')
+              return match.group(1)+data_url(file)+match.group(3) if file else match.group(0)
+          html=re.sub(r'(\bsrc=["\'])(/??assets/[^"\']+)(["\'])',inline_images,html)
+          html=re.sub(r'<script\b[^>]*src=["\'][^"\']*googletagmanager[^"\']*["\'][^>]*></script>', '', html, flags=re.I)
+          html=re.sub(r'<script>\s*window\.dataLayer\s*=.*?</script>', '', html, flags=re.I|re.S)
+          def inline_scripts(match):
+              tag=match.group(0)
+              m=re.search(r'<script\b[^>]*src=["\']([^"\']+)["\']',tag)
+              file=resolve(m.group(1),root/'index.html') if m else None
+              if not file or file.suffix!='.js': return tag
+              js=file.read_text(encoding='utf-8').replace('</script>','<\\/script>')
+              return '<script>\n'+js+'\n</script>'
+          html=re.sub(r'<script\b[^>]*src=["\'][^"\']+["\'][^>]*></script>',inline_scripts,html,flags=re.I)
+          # Protect beta intake; calculators remain interactive.
+          guard="""<script>
+          document.addEventListener('submit', function(event) {
+            if (event.target.matches('[data-groundwork-intake]')) {
+              event.preventDefault(); event.stopImmediatePropagation();
+              alert('Preview only: beta applications are disabled.');
+            }
+          }, true);
+          document.addEventListener('click', function(event) {
+            const link=event.target.closest('a[href]');
+            if (!link) return;
+            const url=link.getAttribute('href');
+            if (url && (/^\/(?!#)/.test(url) || /\.html(?:#|$)/.test(url))) {
+              event.preventDefault();
+              alert('This review file previews the homepage only. Other site pages remain unchanged.');
+            }
+          }, true);
+          </script>"""
+          html=html.replace('</head>',guard+'</head>')
+          html=html.replace('<body class="home-relaunch">','<body class="home-relaunch"><div style="background:#D9B45B;color:#07362B;padding:10px;text-align:center;font:600 14px Arial,sans-serif">LOCAL REVIEW COPY — NOT THE LIVE WEBSITE</div>',1)
+          html=html.replace('<title>','<title>[PREVIEW] ',1)
+          out=root/'groundwork-one-file-preview'
+          out.mkdir(exist_ok=True)
+          (out/'GROUNDWORK-PREVIEW.html').write_text(html,encoding='utf-8')
+          (out/'README.txt').write_text('Double-click GROUNDWORK-PREVIEW.html to open it in Chrome. Everything needed to display the homepage is included in that single HTML file. No need to extract the other assets. Beta applications and links to other pages are disabled in this preview. The live website is unchanged.\n',encoding='utf-8')
+          print('Standalone preview built:', len(html), 'characters. Included CSS:', html.count('<style>'))
+          if html.count('<style>') < 5 or 'data:image/' not in html:
+              raise SystemExit('Standalone preview missing expected CSS or images')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: groundwork-ONE-FILE-preview
+          path: groundwork-one-file-preview/
+          if-no-files-found: error
+          retention-days: 14
