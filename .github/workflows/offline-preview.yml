@@ -1,0 +1,74 @@
+name: Groundwork offline website preview
+on:
+  pull_request:
+    paths:
+      - "**/*.html"
+      - "assets/**"
+      - ".github/workflows/offline-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create safe, self-contained local review copy
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          import re
+          root = Path('groundwork-local-preview')
+          root.mkdir(exist_ok=True)
+          for path in Path('.').iterdir():
+              if path.is_file() and path.suffix.lower() in {'.html', '.ico', '.png', '.txt', '.webmanifest', '.xml'}:
+                  shutil.copy2(path, root / path.name)
+          shutil.copytree('assets', root / 'assets', dirs_exist_ok=True)
+          for path in root.rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              # Convert root-relative asset and internal page links for file:// preview.
+              text = re.sub(r'(["\'])/(assets/)', r'\1\2', text)
+              text = re.sub(r'(["\'])/(index\.html|why-groundwork\.html|explore\.html|early-access\.html|privacy\.html|beta-terms\.html)', r'\1\2', text)
+              text = text.replace('href="/#', 'href="index.html#')
+              text = text.replace('href="/"', 'href="index.html"')
+              text = text.replace('<title>', '<title>[LOCAL PREVIEW] ')
+              # Do not register local previews as real website visits.
+              text = re.sub(r'<script[^>]*src="https://www.googletagmanager.com/gtag/js[^"]*"[^>]*></script>', '', text)
+              text = re.sub(r'<script>\s*window\.dataLayer\s*=.*?</script>', '', text, flags=re.DOTALL)
+              safety = """<script>
+                document.addEventListener('submit', function (event) {
+                  if (event.target.matches('[data-groundwork-intake]')) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    alert('Preview only — beta applications are disabled in this review copy.');
+                  }
+                }, true);
+              </script>"""
+              text = text.replace('</head>', safety + '</head>')
+              path.write_text(text, encoding='utf-8')
+          for path in root.rglob('*.css'):
+              text = path.read_text(encoding='utf-8')
+              text = text.replace('url(/assets/', 'url(../')
+              text = text.replace('url("/assets/', 'url("../')
+              text = text.replace("url('/assets/", "url('../")
+              path.write_text(text, encoding='utf-8')
+          (root / 'START_HERE.txt').write_text(
+              'GROUNDWORK WEBSITE REVIEW COPY\n\n'
+              '1. Open this folder after extracting the downloaded ZIP.\n'
+              '2. Double-click index.html to open it in Chrome.\n'
+              '3. Check the top buttons and scroll to the calculators and the section beneath them.\n'
+              '4. Beta application submissions are intentionally disabled. Do not test live sign-in or purchase links in preview.\n\n'
+              'This is NOT the live site. Approve the pull request only after reviewing.\n',
+              encoding='utf-8'
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: groundwork-website-review-copy
+          path: groundwork-local-preview/
+          if-no-files-found: error
+          retention-days: 14
