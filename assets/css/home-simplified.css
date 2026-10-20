@@ -9,6 +9,8 @@
 .home-relaunch.gw-simplified .preview-section{padding:clamp(38px,5vw,70px) 0}
 .home-relaunch.gw-simplified .product-truth{padding:clamp(46px,6vw,80px) 0}
 .home-relaunch.gw-simplified .product-truth .section-intro{margin-bottom:26px}
+.home-relaunch.gw-simplified .product-truth .section-intro h2{white-space:normal;font-size:clamp(2.4rem,4.2vw,3.5rem);line-height:1.1;max-width:600px}
+.home-relaunch.gw-simplified .product-truth .section-intro>div{min-width:0}
 .home-relaunch.gw-simplified .gw-dashboard-disclosure,.home-relaunch.gw-simplified .gw-download-disclosure{background:#FBF8F0;border:1px solid #D9C9AA;border-radius:16px;overflow:hidden}
 .home-relaunch.gw-simplified details>summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px clamp(19px,3.5vw,42px);cursor:pointer;list-style:none}
 .home-relaunch.gw-simplified details>summary::-webkit-details-marker{display:none}
