@@ -44,7 +44,7 @@ for page in pages:
 text=Path("index.html").read_text(encoding="utf-8")
 assert 'id="billForm"' in text
 assert 'id="variableForm"' in text
-assert 'id="earlyAccessForm"' in text
+assert 'id="earlyAccessForm"' in Path("early-access.html").read_text(encoding="utf-8")
 assert 'assets/js/app.js' in text
 assert 'G-KZSJ1W4PXH' in text
 assert "groundworkbyable.online" in Path("CNAME").read_text()
@@ -55,14 +55,17 @@ print("PASS existing free tools, beta form, Google Analytics, custom domain, sit
 index_text = Path("index.html").read_text(encoding="utf-8")
 early_text = Path("early-access.html").read_text(encoding="utf-8")
 shared_js = Path("assets/js/early-access.js").read_text(encoding="utf-8")
-for page, html in (("index.html", index_text), ("early-access.html", early_text)):
+for page, html in (("early-access.html", early_text),):
     assert 'data-groundwork-intake' in html, f"Missing public signup in {page}"
     assert 'data-intake-status' in html, f"Missing submission feedback in {page}"
     assert "early-access.js" in html, f"Missing shared intake handler in {page}"
+assert 'href="/early-access.html#request-form"' in index_text, "Homepage must link to beta form"
+assert 'id="earlyAccessForm"' not in index_text, "Duplicate homepage form"
+assert "early-access.js" not in index_text, "Homepage should not load intake script"
 assert "mode: 'no-cors'" in shared_js, "Existing cross-origin endpoint behavior unexpectedly changed"
 assert "opaque response" in shared_js, "Must disclose uncertain API outcome"
 assert "sendGroundworkEvent('early_access_submitted')" not in Path("assets/js/app.js").read_text(encoding="utf-8"), "Old handler not fully removed"
-print("PASS shared beta intake script, both form locations, and anchor checks")
+print("PASS dedicated beta form, homepage access CTA and existing intake script")
 
 # Paycheck-first working-life preview must derive the effective take-home hourly rate.
 page = Path("index.html").read_text(encoding="utf-8")
