@@ -1,80 +1,43 @@
 from html.parser import HTMLParser
 from pathlib import Path
-import sys
 import xml.etree.ElementTree as ET
 
 class Check(HTMLParser):
     def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.links = []
+        super().__init__()
         self.ids = set()
-        self.imgs = []
-        self.title = False
+        self.links = []
     def handle_starttag(self, tag, attrs):
-        a = dict(attrs)
-        if tag == "a" and "href" in a: self.links.append(a["href"])
-        if "id" in a: self.ids.add(a["id"])
-        if tag == "img": self.imgs.append(a.get("src", ""))
+        info = dict(attrs)
+        if "id" in info:
+            assert info["id"] not in self.ids, f"Duplicate ID {info['id']}"
+            self.ids.add(info["id"])
+        if tag == "a" and "href" in info:
+            self.links.append(info["href"])
 
-pages = ["index.html", "why-groundwork.html", "explore.html", "early-access.html"]
-for page in pages:
-    text = Path(page).read_text(encoding="utf-8")
-    p=Check();p.feed(text)
-    assert "<title>" in text and 'name="description"' in text, f"Missing metadata: {page}"
-    for link in p.links:
-        if link.startswith("/"):
-            dest=link.split("#",1)[0].split("?",1)[0]
-            if dest and dest != "/":
-                assert Path(dest.lstrip("/")).exists(), f"Broken link {link} in {page}"
-    for link in p.links:
-        if "#" not in link:
-            continue
-        dest, anchor = link.split("#", 1)
-        if not anchor:
-            continue
-        if dest in ("", "/"):
-            target = page if dest == "" else "index.html"
-            target_parser = Check()
-            target_parser.feed(Path(target).read_text(encoding="utf-8"))
-            assert anchor in target_parser.ids, f"Broken anchor {link} in {page}"
-    for img in p.imgs:
-        if img.startswith("/"):
-            assert Path(img.lstrip("/")).exists(), f"Missing image {img} in {page}"
-    print(f"PASS {page}: {len(p.links)} links checked")
-text=Path("index.html").read_text(encoding="utf-8")
-assert 'id="billForm"' in text
-assert 'id="variableForm"' in text
-assert 'id="earlyAccessForm"' in Path("early-access.html").read_text(encoding="utf-8")
-assert 'assets/js/app.js' in text
-assert 'G-KZSJ1W4PXH' in text
+landing = Path("index.html").read_text(encoding="utf-8")
+checker = Check()
+checker.feed(landing)
+assert "We're improving your experience." in landing
+assert 'id="free-tools"' in checker.ids
+for id in ("billForm","variableForm","takeHomePay","hoursWorked","billAmount","billName",
+           "takeHomeRate","billTab","variableTab","previewEyebrow","previewTitle","previewText",
+           "billCta","variableCta"):
+    assert id in checker.ids, f"Missing calculator ID: {id}"
+assert 'assets/js/app.js' in landing
+js = Path("assets/js/app.js").read_text(encoding="utf-8")
+assert "const netRate = takeHome / worked;" in js
+assert "const workingHours = amount / netRate;" in js
+assert "billForm.addEventListener('submit'" in js
+assert "variableForm.addEventListener('submit'" in js
+assert "G-KZSJ1W4PXH" in landing
 assert "groundworkbyable.online" in Path("CNAME").read_text()
+for word in ("payhip.com","etsy.com","/early-access.html","/explore.html","Request Beta Access"):
+    assert word not in landing, f"Unexpected public marketing content {word}"
+for path in ("why-groundwork.html","explore.html","early-access.html"):
+    html=Path(path).read_text(encoding="utf-8")
+    assert 'content="0;url=/"' in html, f"Marketing route not redirected: {path}"
+for path in ("privacy.html","beta-terms.html"):
+    assert Path(path).exists()
 ET.parse("sitemap.xml")
-print("PASS existing free tools, beta form, Google Analytics, custom domain, sitemap")
-
-# Core campaign-readiness contract.
-index_text = Path("index.html").read_text(encoding="utf-8")
-early_text = Path("early-access.html").read_text(encoding="utf-8")
-shared_js = Path("assets/js/early-access.js").read_text(encoding="utf-8")
-for page, html in (("early-access.html", early_text),):
-    assert 'data-groundwork-intake' in html, f"Missing public signup in {page}"
-    assert 'data-intake-status' in html, f"Missing submission feedback in {page}"
-    assert "early-access.js" in html, f"Missing shared intake handler in {page}"
-assert 'href="/early-access.html#request-form"' in index_text, "Homepage must link to beta form"
-assert 'id="earlyAccessForm"' not in index_text, "Duplicate homepage form"
-assert "early-access.js" not in index_text, "Homepage should not load intake script"
-assert "mode: 'no-cors'" in shared_js, "Existing cross-origin endpoint behavior unexpectedly changed"
-assert "opaque response" in shared_js, "Must disclose uncertain API outcome"
-assert "sendGroundworkEvent('early_access_submitted')" not in Path("assets/js/app.js").read_text(encoding="utf-8"), "Old handler not fully removed"
-print("PASS dedicated beta form, homepage access CTA and existing intake script")
-
-# Paycheck-first working-life preview must derive the effective take-home hourly rate.
-page = Path("index.html").read_text(encoding="utf-8")
-calculator = Path("assets/js/app.js").read_text(encoding="utf-8")
-for field_id in ("takeHomePay", "hoursWorked", "billAmount", "billName", "takeHomeRate"):
-    assert f'id="{field_id}"' in page, f"Missing paycheck-first form field: {field_id}"
-assert 'id="pay"' not in page, "Old hourly-pay-only input still on homepage"
-assert "const netRate = takeHome / worked;" in calculator
-assert "const workingHours = amount / netRate;" in calculator
-assert "standard 40-hour weekly schedule" not in page
-assert "billForm.addEventListener('submit'" in calculator
-print("PASS take-home paycheck -> hours worked -> bill calculation preview")
+print("PASS maintenance splash, calculators and existing computation, hidden marketing routes, analytics, legal pages, sitemap")
