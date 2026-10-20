@@ -19,7 +19,7 @@ landing = Path("index.html").read_text(encoding="utf-8")
 checker = Check()
 checker.feed(landing)
 assert "We're improving your experience." in landing
-assert 'id="free-tools"' in checker.ids
+assert "free-tools" in checker.ids
 for id in ("billForm","variableForm","takeHomePay","hoursWorked","billAmount","billName",
            "takeHomeRate","billTab","variableTab","previewEyebrow","previewTitle","previewText",
            "billCta","variableCta"):
