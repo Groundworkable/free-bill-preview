@@ -44,8 +44,7 @@ def check_page(browser, name, viewport):
         page.locator("#startInquiry").click()
         assert page.locator("#contactModal").is_visible()
         assert page.locator("#contactPlan").input_value() == key
-        print("DEBUG", name, key, "summary text", repr(page.locator("#contactSummary").text_content()), "visible", page.locator("#contactSummary").is_visible(), "errors", errors, flush=True)
-        assert price in page.locator("#contactSummary").text_content(), (key, repr(page.locator("#contactSummary").text_content()), page.locator("#contactPlan").input_value())
+         assert price in page.locator("#contactSummary").inner_text(), (key, page.locator("#contactSummary").inner_text())
         assert "email draft" in page.locator("#contactCopyAndEmail").inner_text().lower()
         assert "does not send inquiries" in page.locator("#contactStatus").inner_text().lower()
         page.locator("#closeContact").click()
