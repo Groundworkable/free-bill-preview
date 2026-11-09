@@ -210,7 +210,7 @@ function syncInterestChips(){
 }
 function syncFromJourney(){
   if(!modalInitialized || !interestsModified){
-    $('[data-interest]').forEach(e=>e.checked=e.value===currentAudience);
+    $$('[data-interest]').forEach(e=>e.checked=e.value===currentAudience);
   }
   if(!modalInitialized || !contactPlanModified){
     $('#contactPlan').value=currentAudience==='education'?'exploring':currentPlan;
