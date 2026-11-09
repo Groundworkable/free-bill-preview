@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "**/*.html"
+      - "media/**"
       - "assets/**"
       - ".github/workflows/offline-preview.yml"
   workflow_dispatch:
@@ -15,56 +16,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Create safe, self-contained local review copy
+      - name: Package approved public pages and Bloom media
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import shutil
-          import re
-          root = Path('groundwork-local-preview')
+          root=Path('groundwork-local-preview')
           root.mkdir(exist_ok=True)
-          for path in Path('.').iterdir():
-              if path.is_file() and path.suffix.lower() in {'.html', '.ico', '.png', '.txt', '.webmanifest', '.xml'}:
-                  shutil.copy2(path, root / path.name)
-          shutil.copytree('assets', root / 'assets', dirs_exist_ok=True)
-          for path in root.rglob('*.html'):
-              text = path.read_text(encoding='utf-8')
-              # Convert root-relative asset and internal page links for file:// preview.
-              text = re.sub(r'(["\'])/(assets/)', r'\1\2', text)
-              text = re.sub(r'(["\'])/(index\.html|why-groundwork\.html|explore\.html|early-access\.html|privacy\.html|beta-terms\.html)', r'\1\2', text)
-              text = text.replace('href="/#', 'href="index.html#')
-              text = text.replace('href="/"', 'href="index.html"')
-              text = text.replace('<title>', '<title>[LOCAL PREVIEW] ')
-              # Do not register local previews as real website visits.
-              text = re.sub(r'<script[^>]*src="https://www.googletagmanager.com/gtag/js[^"]*"[^>]*></script>', '', text)
-              text = re.sub(r'<script>\s*window\.dataLayer\s*=.*?</script>', '', text, flags=re.DOTALL)
-              safety = """<script>
-                document.addEventListener('submit', function (event) {
-                  if (event.target.matches('[data-groundwork-intake]')) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    alert('Preview only — beta applications are disabled in this review copy.');
-                  }
-                }, true);
-              </script>"""
-              text = text.replace('</head>', safety + '</head>')
-              path.write_text(text, encoding='utf-8')
-          for path in root.rglob('*.css'):
-              text = path.read_text(encoding='utf-8')
-              text = text.replace('url(/assets/', 'url(../')
-              text = text.replace('url("/assets/', 'url("../')
-              text = text.replace("url('/assets/", "url('../")
-              path.write_text(text, encoding='utf-8')
-          (root / 'START_HERE.txt').write_text(
-              'GROUNDWORK WEBSITE REVIEW COPY\n\n'
-              '1. Open this folder after extracting the downloaded ZIP.\n'
-              '2. Double-click index.html to open it in Chrome.\n'
-              '3. Check the top buttons and scroll to the calculators and the section beneath them.\n'
-              '4. Beta application submissions are intentionally disabled. Do not test live sign-in or purchase links in preview.\n\n'
-              'This is NOT the live site. Approve the pull request only after reviewing.\n',
-              encoding='utf-8'
-          )
+          pages=['index.html','tour.html','free-tools.html','organizations.html',
+                 'about.html','faqs.html','contact.html','careers.html','legal.html',
+                 'privacy.html','beta-terms.html']
+          for name in pages:
+              shutil.copy2(name,root/name)
+          for folder in ['media','assets']:
+              shutil.copytree(folder,root/folder,dirs_exist_ok=True)
+          for name in ['favicon.ico','apple-touch-icon.png','robots.txt','sitemap.xml']:
+              if Path(name).exists():
+                  shutil.copy2(name,root/name)
+          (root/'START_HERE.txt').write_text(
+              'GROUNDWORK WEBSITE REVIEW COPY — NOT LIVE\n\n'
+              'Start with index.html, or run a local static server if your browser blocks file:// pages.\n'
+              'Explore the approved entrance, Bloom, tour, free tools, organizations, company and legal pages.\n'
+              'No customer registration, checkout, or subscription activation is connected.\n'
+              'Email drafts need to be reviewed and sent by the visitor.\n'
+              'This is a preview, not proof that the live website has passed launch checks.\n',
+              encoding='utf-8')
+          assert (root/'media/bloom-orbit.mp4').stat().st_size > 1_000_000
+          assert (root/'media/bloom-poster.jpg').exists()
           PY
       - uses: actions/upload-artifact@v4
         with:
@@ -72,86 +51,29 @@ jobs:
           path: groundwork-local-preview/
           if-no-files-found: error
           retention-days: 14
-
-      - name: Build standalone homepage preview (styles, images and calculator included)
+      - name: Build one-file approved entrance visual preview
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import base64, mimetypes, re
-          root=Path.cwd().resolve()
-          html=(root/'index.html').read_text(encoding='utf-8')
-          def resolve(ref, base):
-              if not ref or ref.startswith(('data:', 'https:', 'http:', '//', '#')):
-                  return None
-              if ref.startswith('/'):
-                  path=root/ref.lstrip('/')
-              else:
-                  path=base.parent/ref.split('?',1)[0]
-              path=path.resolve()
-              if root not in path.parents and path != root:
-                  return None
-              return path if path.is_file() else None
-          def data_url(file):
-              mime=mimetypes.guess_type(file.name)[0] or 'application/octet-stream'
-              return 'data:'+mime+';base64,'+base64.b64encode(file.read_bytes()).decode('ascii')
-          def embed_css_urls(text, cssfile):
-              def inline(match):
-                  raw=match.group(1).strip().strip("\"'")
-                  file=resolve(raw,cssfile)
-                  return 'url("'+data_url(file)+'")' if file else match.group(0)
-              return re.sub(r'url\(([^)]+)\)',inline,text)
-          def stylesheet(match):
-              tag=match.group(0)
-              if not re.search(r'\brel=["\']stylesheet["\']',tag,re.I): return tag
-              href=re.search(r'\bhref=["\']([^"\']+)["\']',tag)
-              cssfile=resolve(href.group(1),root/'index.html') if href else None
-              if not cssfile: return tag
-              css=embed_css_urls(cssfile.read_text(encoding='utf-8'),cssfile)
-              return '<style>\n'+css+'\n</style>'
-          html=re.sub(r'<link\b[^>]*>',stylesheet,html,flags=re.I)
-          def inline_images(match):
-              file=resolve(match.group(2),root/'index.html')
-              return match.group(1)+data_url(file)+match.group(3) if file else match.group(0)
-          html=re.sub(r'(\bsrc=["\'])(/??assets/[^"\']+)(["\'])',inline_images,html)
-          html=re.sub(r'<script\b[^>]*src=["\'][^"\']*googletagmanager[^"\']*["\'][^>]*></script>', '', html, flags=re.I)
-          html=re.sub(r'<script>\s*window\.dataLayer\s*=.*?</script>', '', html, flags=re.I|re.S)
-          def inline_scripts(match):
-              tag=match.group(0)
-              m=re.search(r'<script\b[^>]*src=["\']([^"\']+)["\']',tag)
-              file=resolve(m.group(1),root/'index.html') if m else None
-              if not file or file.suffix!='.js': return tag
-              js=file.read_text(encoding='utf-8').replace('</script>','<\\/script>')
-              return '<script>\n'+js+'\n</script>'
-          html=re.sub(r'<script\b[^>]*src=["\'][^"\']+["\'][^>]*></script>',inline_scripts,html,flags=re.I)
-          # Protect beta intake; calculators remain interactive.
-          guard="""<script>
-          document.addEventListener('submit', function(event) {
-            if (event.target.matches('[data-groundwork-intake]')) {
-              event.preventDefault(); event.stopImmediatePropagation();
-              alert('Preview only: beta applications are disabled.');
-            }
-          }, true);
-          document.addEventListener('click', function(event) {
-            const link=event.target.closest('a[href]');
-            if (!link) return;
-            const url=link.getAttribute('href');
-            if (url && (/^\/(?!#)/.test(url) || /\.html(?:#|$)/.test(url))) {
-              event.preventDefault();
-              alert('This review file previews the homepage only. Other site pages remain unchanged.');
-            }
-          }, true);
-          </script>"""
-          html=html.replace('</head>',guard+'</head>')
-          html=html.replace('<body class="home-relaunch">','<body class="home-relaunch"><div style="background:#D9B45B;color:#07362B;padding:10px;text-align:center;font:600 14px Arial,sans-serif">LOCAL REVIEW COPY — NOT THE LIVE WEBSITE</div>',1)
-          html=html.replace('<title>','<title>[PREVIEW] ',1)
+          import base64
+          root=Path.cwd()
+          text=(root/'index.html').read_text(encoding='utf-8')
+          video=base64.b64encode((root/'media/bloom-orbit.mp4').read_bytes()).decode('ascii')
+          poster=base64.b64encode((root/'media/bloom-poster.jpg').read_bytes()).decode('ascii')
+          text=text.replace('./media/bloom-orbit.mp4','data:video/mp4;base64,'+video)
+          text=text.replace('./media/bloom-poster.jpg','data:image/jpeg;base64,'+poster)
+          text=text.replace('<title>','<title>[OFFLINE PREVIEW] ',1)
+          notice='<div style="position:fixed;z-index:99999;top:0;left:0;right:0;background:#d9b45b;color:#06362b;padding:7px;text-align:center;font:700 12px Arial,sans-serif">OFFLINE PREVIEW — NOT THE LIVE SITE</div>'
+          text=text.replace('<body>', '<body>'+notice,1)
           out=root/'groundwork-one-file-preview'
           out.mkdir(exist_ok=True)
-          (out/'GROUNDWORK-PREVIEW.html').write_text(html,encoding='utf-8')
-          (out/'README.txt').write_text('Double-click GROUNDWORK-PREVIEW.html to open it in Chrome. Everything needed to display the homepage is included in that single HTML file. No need to extract the other assets. Beta applications and links to other pages are disabled in this preview. The live website is unchanged.\n',encoding='utf-8')
-          print('Standalone preview built:', len(html), 'characters. Included CSS:', html.count('<style>'))
-          if html.count('<style>') < 5 or 'data:image/' not in html:
-              raise SystemExit('Standalone preview missing expected CSS or images')
+          (out/'GROUNDWORK-ENTRANCE-PREVIEW.html').write_text(text,encoding='utf-8')
+          (out/'README.txt').write_text(
+              'Open the HTML locally to review the approved entrance and Bloom. Other pages require the complete review copy. This does not activate customer accounts, billing or a live deployment.\n',
+              encoding='utf-8')
+          assert 'data:video/mp4;base64,' in text and 'data:image/jpeg;base64,' in text
+          assert '<style>' in text
           PY
       - uses: actions/upload-artifact@v4
         with:
