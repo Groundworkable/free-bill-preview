@@ -73,6 +73,9 @@ footer{background:#fffdf9;border-top:1px solid #e1dfd2;display:flex;align-items:
 @media(max-width:520px){.interest-grid{grid-template-columns:1fr}.contact-panel{padding:20px}.contact-panel h2{font-size:27px}.interest-chip{min-height:37px}.contact-fields{grid-template-columns:1fr}}
 
 
+/* The illustrated opener is decorative and must not intercept mobile taps. */
+.transition-art{pointer-events:none}
+
 /* Keep slide navigation usable on narrow phones (no overlapping hit areas). */
 @media(max-width:510px){footer{padding:0 12px;gap:6px}.progress{flex:0 0 auto}.progress .dots{display:none}.pager{flex:1;gap:5px;justify-content:flex-end;min-width:0}.pager button{padding:10px 8px;font-size:10px;white-space:nowrap;max-width:52vw;overflow:hidden;text-overflow:ellipsis}}
 
