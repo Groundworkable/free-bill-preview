@@ -23,7 +23,7 @@ def check_page(browser, name, viewport):
     page.goto(PAGE_URL, wait_until="load")
 
     assert "PRE-RELEASE" in page.locator(".edition").inner_text()
-    assert len(page.locator("button.plan")) == 3, "Approved three-card pricing layout changed"
+    assert page.locator("button.plan").count() == 3, "Approved three-card pricing layout changed"
 
     # Continue directly from welcome to the approved pricing experience.
     page.locator(".intro [data-jump='3']").click()
