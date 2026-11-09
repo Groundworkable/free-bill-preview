@@ -65,6 +65,23 @@ for name in PUBLIC:
             f.write(script)
             f.flush()
             subprocess.run(["node", "--check", f.name], check=True)
+# Organizations pre-release commercial regression coverage.
+org = (ROOT/"organizations.html").read_text(encoding="utf-8")
+assert org.count('class="plan" type="button"') == 3, "Preserve three main pricing cards"
+assert 'data-plan="twentyfive"' in org, "25-seat annual continuation must be selectable"
+assert 'value="twentyfive"' in org, "Annual continuation missing from inquiry options"
+for amount in ("$450", "$1,800", "$3,000", "$5,400"):
+    assert amount in org, f"Missing approved organization offer: {amount}"
+assert "price:1800" in org and "price:450" in org
+assert "25 people · Annual continuation · $1,800" in org
+assert "separate decision" in org and "no automatic renewal" in org
+assert "seat reassignment" in org and "post-sponsorship access" in org
+assert "contactCopyAndEmail" in org and "mailto:" in org
+assert "business form" not in org.lower(), "No verified live business form exists"
+assert "FOUNDER REVIEW / NON-LIVE" not in org
+assert "B2B REVIEW · NOT LIVE" not in org
+assert "does not give sponsors access" in org
+assert "not a live offer or contract" in org
 assert "Life doesn't" in (ROOT/"index.html").read_text()
 assert "bloom-orbit.mp4" in (ROOT/"index.html").read_text()
 free_page = Page()
