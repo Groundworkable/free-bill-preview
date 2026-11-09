@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#062d23"><meta name="description" content="Groundwork for Organizations — explore sponsored access for people navigating work, life, and financial change.">
+<title>For Organizations — Groundwork by Able</title>
+<style>
+:root{--forest:#072f25;--night:#031d17;--ink:#143d30;--gold:#d9b66e;--goldbright:#f2d28a;--cream:#f8f4e9;--ivory:#fffdf7;--sage:#91ac9a;--muted:#6c7f70;--line:#dcdacf;--warn:#af724c}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font-family:Inter,'Segoe UI',Arial,sans-serif;background:var(--night);color:var(--ink);-webkit-font-smoothing:antialiased}button,a,input,select{font:inherit}a{text-decoration:none;color:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #caa557;outline-offset:3px}h1,h2,h3,p{margin:0}h1,h2,h3,.serif,.brand{font-family:Georgia,'Times New Roman',serif;font-weight:400}button{color:inherit}
+#app{height:100dvh;min-height:0;width:100%;max-width:1900px;margin:auto;display:grid;grid-template-rows:68px minmax(0,1fr) 72px;overflow:hidden;background:var(--cream)}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4.4vw,70px);background:#03231b;z-index:5;color:#fdf6e9;gap:14px;border-bottom:1px solid #d6b76b48}
+.brandlink{display:flex;align-items:center;gap:11px;flex:none}.brandmark{width:35px;height:35px;stroke:var(--goldbright);stroke-width:1.7;fill:none}.brand{font-size:29px;letter-spacing:-.05em;line-height:.91}.brand small{display:block;margin-top:7px;font:700 9px Inter,'Segoe UI',sans-serif;letter-spacing:.22em;color:var(--goldbright)}.vr{height:29px;width:1px;background:#dfbd794f}
+.topnav{display:flex;align-items:center;gap:clamp(12px,2.3vw,32px)}.topnav a{font-size:12px;color:#d1dfd3;font-weight:600;white-space:nowrap}.topnav a:hover{color:var(--goldbright)}.topnav .button{border:1px solid #d9b86d;color:#06291e;background:var(--goldbright);padding:11px 19px;border-radius:999px;font-size:11px}.edition{font-size:9px;letter-spacing:.1em;text-transform:uppercase;border:1px solid #c9a66463;color:#dbbf85;padding:6px 9px;border-radius:999px;white-space:nowrap}
+main{position:relative;min-height:0;overflow:hidden}.scene{display:none;width:100%;height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#b2b5a2 transparent}.scene.active{display:block;animation:enter .35s ease-out both}@keyframes enter{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+.stage{height:100%;min-height:0;display:grid;grid-template-columns:43% 57%;gap:clamp(14px,2.5vw,38px);padding:clamp(23px,4.3vh,52px) clamp(24px,5vw,78px);align-items:center}
+.eyebrow{display:flex;gap:12px;align-items:center;letter-spacing:.18em;text-transform:uppercase;font-size:10px;font-weight:800;color:#9a7335;margin-bottom:22px}.eyebrow:before{content:"";width:27px;height:1px;background:currentColor}.eyebrow.lighttext{color:#e3bd72}.intro .subtitle{color:#d3e3d6}.intro .stage:before{bottom:2%}
+h1{font-size:clamp(58px,6vw,93px);letter-spacing:-.065em;line-height:1.02;max-width:650px}h2{font-size:clamp(46px,4.5vw,74px);letter-spacing:-.06em;line-height:1.05;max-width:690px}.accent{color:#b48b43;font-style:italic}.dark .accent,.gold-text{color:#ebc779}.subtitle{font-size:clamp(14px,1.32vw,18px);line-height:1.65;color:#5c6f61;margin:23px 0;max-width:530px}.dark .subtitle{color:#c4d9c8}.micro{font-size:11px;color:#758778;line-height:1.55}.dark .micro{color:#9fbdaa}.flowbuttons{display:flex;flex-wrap:wrap;gap:10px;margin:21px 0 0}.cta{border:0;border-radius:999px;background:var(--goldbright);color:#0b3425;font-weight:800;font-size:13px;padding:14px 21px;display:inline-flex;gap:23px;align-items:center;justify-content:space-between;box-shadow:0 9px 23px #0002}.cta:hover{filter:brightness(1.05);transform:translateY(-1px)}.cta.outline{border:1px solid #ad9160;background:transparent;color:inherit;box-shadow:none}.dark .cta.outline{color:#f5f2e7;border-color:#a69b77}.pill{border:1px solid #c5cbbd;padding:9px 13px;background:transparent;border-radius:999px;font-size:11px;font-weight:800;color:#456b54}.pill[aria-pressed=true]{background:#0a4434;border-color:#0a4434;color:#fff}
+/* opener */
+.intro{color:#fffaf0;background:radial-gradient(ellipse 60% 80% at 83% 48%,#13523e 0%,#073d2e 39%,#041f18 100%),linear-gradient(115deg,#041d17,#082f24)}.intro .stage{grid-template-columns:50% 50%;position:relative}.intro .stage:before{position:absolute;content:"";inset:9% 1% 2% 33%;border:1px solid #c7aa5e15;border-radius:50%;transform:rotate(-24deg);pointer-events:none}.intro h1{font-size:clamp(56px,6vw,88px);max-width:680px}.intro .subtitle{max-width:580px}.intro .mini-trust{margin-top:29px;display:flex;gap:18px;flex-wrap:wrap;color:#c8d8ca;font-size:11px}.intro .mini-trust span{border-left:2px solid #c4a769;padding-left:11px}
+.transition-art{height:min(87%,610px);max-height:610px;min-height:300px;position:relative;isolation:isolate;display:grid;place-items:center}.halo{position:absolute;width:min(91%,500px);aspect-ratio:1;border:1px solid #e1c2735d;border-radius:50%;transform:rotate(-28deg) scaleX(.89);box-shadow:0 0 30px #a98f3a1b,inset 0 0 45px #a98f3a14}.halo:before,.halo:after{content:"";position:absolute;inset:12%;border:1px solid #e1c27328;border-radius:50%;transform:rotate(67deg) scaleX(.7)}.halo:after{inset:-15%;transform:rotate(-30deg) scaleY(.75);border-color:#e1c27318}.center-disc{width:clamp(160px,21vw,330px);height:clamp(160px,21vw,330px);border-radius:50%;background:radial-gradient(circle at 38% 28%,#efe0b0 0%,#deb667 15%,#8b703f 38%,#115741 39%,#074332 63%,#072b21 75%);box-shadow:0 12px 90px #d2a94a25,0 4px 0 #d9ac5d inset;display:grid;place-items:center;border:2px solid #f9d78f60;position:relative}.center-disc:after{content:"";position:absolute;inset:17px;border:1px solid #f7d78c51;border-radius:50%}.center-disc strong{font:400 clamp(24px,2.6vw,43px) Georgia,serif;text-align:center;line-height:1.07;color:#fff4ce;text-shadow:0 2px 16px #012418}.floating-chip{position:absolute;border:1px solid #d5bd7d68;background:#062c22e8;border-radius:13px;padding:15px 20px;max-width:180px;box-shadow:0 18px 40px #0003;line-height:1.42}.floating-chip b{font-size:10px;letter-spacing:.16em;color:#efd188;display:block;text-transform:uppercase;margin-bottom:6px}.floating-chip span{font:400 19px Georgia,serif;color:#fffdf2}.floating-chip.first{top:13%;left:7%}.floating-chip.second{bottom:15%;right:3%}.floating-chip.third{bottom:10%;left:10%;max-width:145px}.glowline{position:absolute;inset:15%;border-top:2px solid #dfc4787d;border-bottom:1px solid #d6b36c4d;border-radius:50%;transform:rotate(-25deg);pointer-events:none}
+/* shared panels */
+.dark{color:#faf7ec;background:linear-gradient(130deg,#082f25,#114b39 65%,#063125)}.light{background:#f8f4e9}.light2{background:#edf0e7}.card{background:#fffdf7;border:1px solid #dbddcc;border-radius:18px;padding:22px;box-shadow:0 15px 40px #122f2012}.darkcard{background:#0f4939;border:1px solid #82a18b65;border-radius:18px;color:#fff;padding:20px}.kicker{color:#ac8544;font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:900}.dark .kicker{color:#e2bf79}.two-col-info{display:grid;grid-template-columns:1fr 1fr;gap:13px}.inputbox{display:flex;flex-direction:column;gap:6px;min-width:0}.inputbox label{font-size:11px;color:#6b806e;font-weight:700}.inputbox input,.inputbox select{height:41px;border:1px solid #c8d5c7;border-radius:9px;background:#fff;outline:none;padding:0 11px;color:#0c3326;min-width:0;width:100%}.inputbox input:focus,.inputbox select:focus{outline:2px solid #ddba6b}.inputbox.darklabel label{color:#c2d3c4}.inputbox.darklabel input,.inputbox.darklabel select{border-color:#679080;background:#0e4033;color:#fff}.scene-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choice{padding:14px;border:1px solid #d7dacb;border-radius:12px;background:#fffdf9;text-align:left;color:#264936;font-size:12px;font-weight:750;line-height:1.4}.choice small{font-size:10px;font-weight:400;color:#6c7b6e;display:block;margin-top:4px}.choice[aria-pressed=true]{background:#0e4333;border-color:#0e4333;color:#fff}.choice[aria-pressed=true] small{color:#d3e1d6}.notice{font-size:11px;line-height:1.5;color:#586d5f}.notice a{text-decoration:underline;text-underline-offset:3px}
+.scenario .stage{grid-template-columns:43% 57%}.scenario .stage>.copy{align-self:center}.scenario .subtitle{font-size:15px}.scenario .choose-label{font-size:11px;text-transform:uppercase;color:#9b783b;font-weight:900;letter-spacing:.08em;margin:12px 0}.scenario h2{font-size:clamp(43px,4.1vw,67px)}.scenario .choices-wrap{margin-top:24px;max-width:520px}.scenario .scenario-panel{background:linear-gradient(135deg,#103e30,#092c22);padding:clamp(18px,2.5vw,34px);border-radius:20px;box-shadow:0 28px 50px #0b3a2b25;color:white;display:flex;flex-direction:column;gap:15px;min-height:0;max-height:100%}.scenario .scenario-panel .kicker{color:#e4bd73}.ledger{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ledger>div{padding:13px;background:#ffffff0a;border:1px solid #8eb19a42;border-radius:11px}.ledger span{display:block;color:#b0c7b8;font-size:10px}.ledger strong{display:block;font:400 clamp(22px,2.5vw,39px) Georgia,serif;color:#ffefce;margin-top:6px}.ledger .highlight{border-color:#e0b86c;background:#d0ac6c17}.ledger .highlight strong{color:#f9d18a}.scenario-big{padding:14px;border:1px solid #d5ad6959;border-radius:13px;background:#dcc47f12}.scenario-big strong{display:block;font:400 clamp(36px,4vw,58px) Georgia,serif;color:#f5d18b;margin:4px 0}.scenario-big span{display:block;font-size:11px;color:#deeadb}.sliderrow{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}.story-note{font-size:11px;line-height:1.54;color:#d1e1d2}.scenario-result{display:flex;justify-content:space-between;align-items:center;gap:15px}.scenario-result span{font-size:10px;color:#b9d0bd}.scenario-result strong{font:400 26px Georgia,serif;color:#f2d38f;white-space:nowrap}
+/* use cases */
+.support .stage{grid-template-columns:40% 60%}.support .subtitle{font-size:15px}.case-stack{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.case-card{min-height:172px;background:#fffdf8;border:1px solid #dcdacb;border-radius:15px;padding:22px;display:flex;flex-direction:column;justify-content:space-between}.case-card span.icon{font-size:19px;color:#a87c3b}.case-card strong{font:400 23px Georgia,serif;color:#133e30;margin-top:6px}.case-card p{font-size:12px;color:#627767;line-height:1.5;margin-top:7px}.case-card button{align-self:start;border:0;background:none;padding:0;color:#946b2d;text-align:left;text-decoration:underline;font-size:11px;font-weight:800}.privacybar{grid-column:1/-1;display:flex;align-items:center;gap:15px;border:1px solid #c5d1be;background:#eaf0e7;border-radius:14px;padding:16px 18px}.privacybar svg{flex:none}.privacybar strong{font-size:12px}.privacybar p{font-size:10px;line-height:1.44;color:#5b7361;margin-top:3px}
+/* commercial */
+.prices .stage{grid-template-columns:38% 62%}.prices .subtitle{font-size:15px}.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.plan{border:1px solid #d7d6c8;border-radius:16px;background:#fffdf8;padding:21px 16px;text-align:left;display:flex;flex-direction:column;gap:9px;min-height:260px;box-shadow:0 8px 22px #062c1b0b}.plan[aria-pressed=true]{border:2px solid #b58c47;box-shadow:0 14px 40px #caac6f3a;transform:translateY(-3px)}.plan .toplabel{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:850;color:#9a7438;line-height:1.5;min-height:28px}.plan strong{font:400 clamp(30px,3vw,46px) Georgia,serif;color:#123f2e}.plan .seat{font-size:12px;font-weight:800;color:#315c44}.plan p{font-size:11px;color:#617464;line-height:1.5}.plan .equiv{font-size:12px;color:#9b7133;font-weight:900;margin-top:auto}.quote{border-left:3px solid #d0a65c;background:#efe9d8;padding:14px 18px;margin-top:13px;display:flex;justify-content:space-between;align-items:center;gap:18px;border-radius:0 9px 9px 0}.quote b{font-size:12px;color:#284c38}.quote p{font-size:11px;color:#697c69;line-height:1.4;margin-top:4px}.quote .cta{white-space:nowrap;padding:11px 17px;font-size:11px}.pricing-fine{font-size:10px;line-height:1.5;color:#6c806e;margin-top:12px}
+/* finish */
+.finish{background:linear-gradient(110deg,#06281e,#0a3a2b 65%,#0a4331);color:#f8f6e8}.finish .stage{grid-template-columns:47% 53%}.finish .subtitle{font-size:15px}.finish .brief{padding:28px;border:1px solid #d9b96c75;border-radius:18px;background:#0a3d2fdc;box-shadow:0 24px 60px #0003;max-height:100%;overflow-y:auto}.finish .brief h3{font-size:31px;color:#fff3da;letter-spacing:-.03em;margin:10px 0}.finish .summary-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #aec5b22f;padding:13px 0;color:#a9cab4;font-size:12px}.finish .summary-row b{color:#f5e4bd;text-align:right}.finish .brief .cta{margin-top:19px;width:100%;justify-content:center}.finish .brief .cta.outline{margin-top:0}.brief-secondary-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.finish .brief .brief-secondary-actions .cta{margin-top:0;min-width:0;padding:12px 10px;font-size:11px;gap:4px}.finish .brief .email-link{display:inline-block;font-size:11px;color:#edd193;text-decoration:underline;text-underline-offset:3px;margin-top:10px}.finish .brief .contact-note{font-size:10px;line-height:1.55;color:#b5cdbf;margin-top:9px}.finish .brief .contact-note strong{color:#f5dfad}.brief .cta.primary-inquiry{box-shadow:0 7px 25px #e6bb5c35}.fine{font-size:10px;line-height:1.55;color:#b1c9b7;margin-top:15px}
+/* footer */
+footer{background:#fffdf9;border-top:1px solid #e1dfd2;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(24px,4.4vw,70px);gap:18px;color:#49604e}.progress{display:flex;align-items:center;gap:15px;min-width:0}.progress .count{font:400 19px Georgia,serif;color:#1d4c36;white-space:nowrap}.progress .count small{font-size:12px;color:#8e9c8d}.dots{display:flex;gap:7px}.dots button{border:1px solid #b4c2b4;background:#fff;width:9px;height:9px;padding:0;border-radius:50%}.dots button.active{background:#c7a259;border-color:#c7a259;width:27px;border-radius:20px}.stage-name{font-size:10px;color:#738775;font-weight:650;white-space:nowrap}.pager{display:flex;align-items:center;gap:9px}.pager button{border-radius:999px;border:1px solid #c4c9ba;background:transparent;color:#184c36;padding:11px 20px;font-weight:850;font-size:12px}.pager button.next{background:#073c2d;color:#fff;border-color:#073c2d}.pager button:disabled{opacity:.4;cursor:default}.previewtag{font-size:9px;color:#849584;letter-spacing:.04em;white-space:nowrap}
+@media(max-height:800px) and (min-width:831px){#app{grid-template-rows:58px minmax(0,1fr) 61px}.stage{padding-top:20px;padding-bottom:20px}.eyebrow{margin-bottom:13px}.subtitle{margin:12px 0 13px;line-height:1.5}.flowbuttons{margin-top:14px}h1{font-size:clamp(51px,5.4vw,72px)}h2{font-size:clamp(41px,4vw,60px)}.intro .mini-trust{margin-top:15px}.scene-choices{gap:6px}.choice{padding:10px}.scenario .choices-wrap{margin-top:12px}.scenario .scenario-panel{padding:16px;gap:9px}.ledger>div{padding:10px}.scenario-big{padding:10px}.scenario-big strong{font-size:38px}.case-card{min-height:145px;padding:16px}.case-card strong{font-size:20px}.case-card p{font-size:11px}.privacybar{padding:10px 13px}.plan{min-height:224px;padding:13px 13px}.plan strong{font-size:35px}.prices .quote{margin-top:10px;padding:10px 13px}.pricing-fine{margin-top:7px}.finish .brief{padding:17px}.finish .summary-row{padding:9px 0}.finish .brief .cta{margin-top:10px}.fine{margin-top:8px}}
+@media(max-width:1060px) and (min-width:831px){.stage{gap:17px;padding-left:30px;padding-right:30px}.intro .stage{grid-template-columns:53% 47%}.scenario .stage,.support .stage{grid-template-columns:43% 57%}.prices .stage{grid-template-columns:36% 64%}.intro h1{font-size:clamp(45px,5.5vw,70px)}h2{font-size:clamp(41px,4.5vw,60px)}.case-card{padding:15px}.case-card strong{font-size:19px}.plan{padding:14px 10px}.plan strong{font-size:30px}.topnav{gap:13px}}
+@media(max-width:830px){#app{grid-template-rows:58px minmax(0,1fr) 66px}.topnav a:not(.button),.edition{display:none}.brand{font-size:24px}.brandmark{width:28px;height:28px}.topnav .button{font-size:10px;padding:10px 14px}.stage,.intro .stage,.scenario .stage,.support .stage,.prices .stage,.finish .stage{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;height:auto;min-height:100%;gap:18px;padding:24px 22px 40px}.scene{overflow-y:auto}.intro .transition-art{height:310px;min-height:310px;width:100%}h1,.intro h1{font-size:clamp(45px,9vw,68px)}h2{font-size:clamp(42px,7.5vw,59px)}.subtitle{margin:12px 0;font-size:14px}.eyebrow{margin-bottom:11px}.intro .mini-trust{margin-top:14px}.case-stack{grid-template-columns:1fr 1fr}.case-card{min-height:154px;padding:14px}.plan{min-height:214px}.stage-name,.previewtag{display:none}.floating-chip.first{left:0}.floating-chip.second{right:0}.floating-chip.third{left:3%}.transition-art .center-disc{width:205px;height:205px}.footer{padding:0 12px}.pager button{padding:10px 14px}}
+@media(max-width:510px){#app{grid-template-rows:55px minmax(0,1fr) 62px}.stage,.intro .stage,.scenario .stage,.support .stage,.prices .stage,.finish .stage{padding:18px 18px 30px;gap:13px}.brand{font-size:22px}.brandlink{gap:7px}.vr{height:24px}.eyebrow{font-size:9px;letter-spacing:.13em}.intro h1,h1{font-size:clamp(41px,11vw,54px)}h2{font-size:clamp(37px,10.2vw,52px)}.subtitle{font-size:13px;line-height:1.48}.intro .transition-art{min-height:225px;height:225px}.center-disc{width:170px!important;height:170px!important}.center-disc strong{font-size:25px}.floating-chip{padding:10px 11px;max-width:125px;border-radius:9px}.floating-chip span{font-size:14px}.floating-chip b{font-size:7px}.floating-chip.first{top:3%}.floating-chip.second{bottom:7%}.floating-chip.third{bottom:0}.intro .mini-trust{font-size:9px;gap:9px}.flowbuttons{margin-top:13px}.cta{font-size:11px;padding:12px 15px;gap:9px}.scene-choices{gap:7px}.choice{padding:10px 9px;font-size:11px}.scenario .scenario-panel{padding:14px;gap:9px}.ledger>div{padding:9px}.ledger strong{font-size:24px}.ledger span{font-size:9px}.scenario-big strong{font-size:39px}.sliderrow{gap:8px}.case-stack{gap:8px}.case-card{padding:12px;min-height:162px}.case-card strong{font-size:18px}.case-card p{font-size:10px}.privacybar{gap:10px}.plan-grid{grid-template-columns:1fr;gap:8px}.plan{min-height:0;padding:13px;display:grid;grid-template-columns:1fr 1fr;gap:3px}.plan .toplabel{grid-column:1/-1;min-height:0}.plan strong{font-size:29px}.plan .seat{grid-column:2;grid-row:2;align-self:center;text-align:right}.plan p{grid-column:1/-1}.plan .equiv{grid-column:1/-1;margin-top:2px}.quote{display:block}.quote .cta{margin-top:10px}.finish .brief{padding:17px}.finish .brief h3{font-size:25px}.pager{gap:7px}.pager button{padding:10px 12px;font-size:11px}.progress{gap:8px}.dots{gap:5px}.progress .count{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.scene.active{animation:none}*{scroll-behavior:auto!important}}
+@media(min-width:831px){.intro{overflow:hidden}}
+
+.contact-overlay[hidden]{display:none!important}.contact-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;background:rgba(0,20,15,.84);backdrop-filter:blur(8px)}
+.contact-panel{position:relative;width:min(580px,100%);max-height:calc(100dvh - 30px);overflow:auto;padding:clamp(22px,3.5vw,34px);border:1px solid #bf9e58;border-radius:20px;background:linear-gradient(160deg,#0c4232,#06281f);box-shadow:0 22px 80px #00130fc9;color:#fff8e8}
+.contact-panel h2{font:400 clamp(25px,4vw,37px) Georgia,serif;color:#fff6df;margin:8px 30px 8px 0}.contact-label{font-size:10px;letter-spacing:.15em;color:#ebc678;font-weight:800}.contact-intro,.contact-status{line-height:1.5;font-size:12px;color:#c9ddcd;margin:8px 0 15px}.contact-close{position:absolute;right:17px;top:14px;background:transparent;border:1px solid #bbab847d;border-radius:50%;height:35px;width:35px;color:#fff;font-size:22px;cursor:pointer}
+.contact-summary{padding:13px 15px;border:1px solid #dec88966;border-radius:10px;background:#071f17b0;font-size:13px;line-height:1.5;color:#ffe5b3;white-space:pre-line}.contact-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.contact-fields label{display:flex;flex-direction:column;font-size:11px;color:#e3d3ab;gap:6px}.contact-fields label:last-child{grid-column:1/-1}.contact-fields input{height:40px;padding:9px 12px;background:#164b3b;color:#fff;border:1px solid #9baf9b66;border-radius:7px;font-size:13px;min-width:0}.contact-fields input::placeholder{color:#bfccbb}.contact-choices{display:grid;gap:9px}.contact-choices button,.contact-choices a{border-radius:9px;padding:11px 13px;font-size:13px;text-align:center;cursor:pointer;text-decoration:none;display:block}.contact-main{background:#f3d48a!important;border:1px solid #f4e3b4!important;color:#0e3325!important;font-weight:800}.contact-alternative{background:#0c3c30;border:1px solid #f3d48a7a;color:#ffefd0}.contact-status{margin-bottom:0}.contact-choices button:focus-visible,.contact-choices a:focus-visible,.contact-close:focus-visible{outline:2px solid white;outline-offset:3px}
+@media(max-width:520px){.contact-fields{grid-template-columns:1fr}.contact-fields label:last-child{grid-column:auto}}
+
+/* V1.5 · Multi-interest founder-approved contact refinement */
+.contact-panel{width:min(680px,100%);max-height:calc(100dvh - 24px);padding:clamp(19px,2.6vw,28px);scrollbar-color:#947d52 #0b372a}
+.contact-group{border:0;padding:0;margin:13px 0 0;min-width:0}
+.contact-group legend,.contact-group .group-heading{display:block;font-weight:750;font-size:12px;color:#ffe6af;margin-bottom:8px}
+.optional{font-size:10px;font-weight:450;color:#c7d8cb;margin-left:7px}
+.interest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.interest-chip{display:flex;align-items:center;gap:9px;border:1px solid #b1a4746e;border-radius:9px;background:#092f26;min-height:43px;padding:8px 10px;font-size:12px;line-height:1.25;color:#ecf4e8;cursor:pointer;transition:background .18s,border-color .18s}
+.interest-chip:has(input:checked){background:#205843;border-color:#efd08f;color:#fff5dc}
+.interest-chip input{accent-color:#edc67f;width:16px;height:16px;flex:none;margin:0}
+.interest-chip:focus-within{outline:2px solid #fff1c8;outline-offset:2px}
+.contact-panel select,.contact-panel textarea{width:100%;background:#164b3b;color:#fff9ed;border:1px solid #9baf9b66;border-radius:8px;padding:11px 12px;font:13px Inter,'Segoe UI',sans-serif;line-height:1.4;min-height:42px}
+.contact-panel textarea::placeholder{color:#bdd2c3}
+.expanding-field{display:block;color:#e3d3ab;font-size:11px;margin-top:9px;line-height:1.6}
+.expanding-field[hidden]{display:none}
+.expanding-field textarea{display:block;margin-top:5px}
+.mini-qualifier{font-size:10px;line-height:1.4;color:#c5d9cc;margin:7px 0 0}
+.contact-summary{margin-top:13px;padding:9px 12px;font-size:11px;color:#eed5a2;white-space:pre-wrap}
+.contact-fields{margin:13px 0;gap:9px}
+.contact-fields label{font-size:11px}
+.contact-choices{gap:7px}
+.contact-choices button{font-size:12px;padding:10px 12px}
+.contact-status{font-size:10.5px;margin-top:9px;line-height:1.4}
+@media(max-width:520px){.interest-grid{grid-template-columns:1fr}.contact-panel{padding:20px}.contact-panel h2{font-size:27px}.interest-chip{min-height:37px}.contact-fields{grid-template-columns:1fr}}
+
+
+/* Keep slide navigation usable on narrow phones (no overlapping hit areas). */
+@media(max-width:510px){footer{padding:0 12px;gap:6px}.progress{flex:0 0 auto}.progress .dots{display:none}.pager{flex:1;gap:5px;justify-content:flex-end;min-width:0}.pager button{padding:10px 8px;font-size:10px;white-space:nowrap;max-width:52vw;overflow:hidden;text-overflow:ellipsis}}
+
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+ <a class="brandlink" href="./index.html" aria-label="Groundwork main entrance"><svg class="brandmark" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 34 C12 27 11 15 20 5 C29 15 28 27 20 34Z"/><path d="M20 34 C4 30 3 19 5 13 C12 16 19 23 20 34Z"/><path d="M20 34 C36 30 37 19 35 13 C28 16 21 23 20 34Z"/></svg><span class="vr"></span><span class="brand">Groundwork<small>BY ABLE</small></span></a>
+ <div class="topnav"><a href="./index.html">Main entrance</a><a href="./tour.html">Personal experience</a><a href="./free-tools.html">Free tools</a><span class="edition">B2B REVIEW · NOT LIVE</span><a class="button" href="./tour.html">Take the tour ↗</a></div>
+</header>
+<main id="main">
+<section class="scene intro active" data-scene="0" aria-label="For Organizations — Introduction">
+ <div class="stage">
+  <div class="copy"><div class="eyebrow lighttext">Groundwork for organizations</div><h1>Support people through <span class="accent">what comes next.</span></h1><p class="subtitle">A paycheck changes. A school year begins. Life takes an unexpected turn. Groundwork helps people see how their money, time, and responsibilities connect—so support can become something they actually use.</p><div class="flowbuttons"><button class="cta" data-jump="1">See the experience <span>↗</span></button><button class="cta outline" data-jump="3">Explore partner offers <span>↗</span></button></div><div class="mini-trust"><span>Employer-sponsored access</span><span>Workforce transition</span><span>Education discovery</span></div></div>
+  <div class="transition-art" aria-label="An illustrated view of connected personal circumstances"><div class="halo"></div><div class="glowline"></div><div class="center-disc"><strong>One life.<br>Many<br>connections.</strong></div><div class="floating-chip first"><b>01 / Change</b><span>Income shifts</span></div><div class="floating-chip second"><b>03 / Clarity</b><span>Understand what remains</span></div><div class="floating-chip third"><b>02 / Reality</b><span>Bills continue</span></div></div>
+ </div>
+</section>
+<section class="scene scenario light" data-scene="1" aria-label="The connected experience">
+ <div class="stage">
+  <div class="copy"><div class="eyebrow">01 / Make it real</div><h2>When one thing changes, <span class="accent">everything connects.</span></h2><p class="subtitle" id="caseExplainer">An employee receives a final paycheck. The money has to cover commitments, a surprise, and an uncertain next income date. What does the picture actually say?</p><div class="choices-wrap"><div class="choose-label">Choose a real-life use case</div><div class="scene-choices"><button type="button" class="choice" data-case="transition" aria-pressed="true">Layoff or severance <small>The next paycheck may be uncertain</small></button><button type="button" class="choice" data-case="leave" aria-pressed="false">Leave or reduced hours <small>Less pay, familiar responsibilities</small></button><button type="button" class="choice" data-case="education" aria-pressed="false">Classroom economics <small>A fictional budget to explore</small></button><button type="button" class="choice" data-case="wellness" aria-pressed="false">Everyday financial wellness <small>Make the ordinary visible</small></button></div></div><div class="flowbuttons"><button class="cta" data-jump="2">See how Groundwork could help ↗</button></div></div>
+  <div class="scenario-panel"><div class="kicker" id="scenarioLabel">Fictional example · Workforce transition</div><div class="ledger"><div><span id="incomingLabel">Last confirmed take-home pay</span><strong id="incoming">$1,940</strong></div><div><span>Known commitments</span><strong id="committed">$1,595</strong></div></div><div class="sliderrow"><div class="inputbox darklabel"><label for="surprise">Unexpected expense</label><select id="surprise"><option value="0">$0 · None</option><option value="75">$75 · Night out / sale</option><option value="150">$150 · Groceries / repair</option><option value="225" selected>$225 · Car trouble</option><option value="400">$400 · Tow / vet bill</option></select></div><div class="inputbox darklabel"><label for="horizon">Planning horizon</label><select id="horizon"><option value="7">7 days</option><option value="14" selected>14 days</option><option value="21">21 days</option><option value="30">30 days</option></select></div></div><div class="scenario-big"><span id="resultLabel">Cash left after commitments and surprise</span><strong id="cashResult">$120</strong><span id="resultDescription">In this example, the next income date is not confirmed.</span></div><div class="scenario-result"><div><span>Average over the planning horizon</span><br><strong id="perDay">$8.57 per day</strong></div><div><span id="timeLabel">Working-time equivalent · at $24.25/hr</span><br><strong id="workTime">4h 57m</strong></div></div><p class="story-note" id="scenarioFoot">A 14-day planning horizon is not a promised payday or a spending allowance. This fictional illustration demonstrates context, not financial advice or a finished organizational module.</p></div>
+ </div>
+</section>
+<section class="scene support light2" data-scene="2" aria-label="Organizational use cases">
+ <div class="stage"><div class="copy"><div class="eyebrow">02 / Why sponsor Groundwork?</div><h2>Support that <span class="accent">stays useful.</span></h2><p class="subtitle">A resource people can return to when circumstances change. The organization provides a possible doorway; the individual keeps ownership of their own understanding.</p><p class="micro">These are partnership directions, not claims that enterprise administration, classroom accounts, or institutional reporting are live today.</p><div class="flowbuttons"><button class="cta" data-jump="3">Explore the offers ↗</button></div></div>
+  <div class="case-stack"><div class="case-card"><span class="icon">↗</span><div><strong>Workforce transitions</strong><p>Proposed sponsored access for people navigating layoffs, severance, or the end of a contract.</p></div><button data-case-jump="transition">Explore scenario ↗</button></div><div class="case-card"><span class="icon">◷</span><div><strong>Leave and reduced hours</strong><p>Help people revisit their picture when pay or availability changes.</p></div><button data-case-jump="leave">Explore scenario ↗</button></div><div class="case-card"><span class="icon">✳</span><div><strong>Classroom economics</strong><p>Explore budgets, tradeoffs, averages, and working-time math with fictional numbers.</p></div><button data-case-jump="education">Explore scenario ↗</button></div><div class="case-card"><span class="icon">◇</span><div><strong>Member or employee access</strong><p>A potential ongoing resource for organizations supporting a broader community.</p></div><button data-case-jump="wellness">Explore scenario ↗</button></div><div class="privacybar"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#987440" stroke-width="1.7" aria-hidden="true"><path d="M12 22s7-4 7-10V5l-7-3-7 3v7c0 6 7 10 7 10Z"/><path d="M9 12l2 2 4-4"/></svg><div><strong>Sponsored does not mean surveillance.</strong><p>Our proposed model keeps personal finances under the individual's control. Any organizational access and data-handling terms require technical, privacy, and contractual review before launch.</p></div></div></div>
+ </div>
+</section>
+<section class="scene prices light" data-scene="3" aria-label="Proposed partnerships and pricing">
+ <div class="stage"><div class="copy"><div class="eyebrow">03 / Commercial exploration</div><h2>Start with a group. <span class="accent">Learn what matters.</span></h2><p class="subtitle">Clear initial pricing concepts for sponsor-funded access—not an expensive commitment before the value has been tested.</p><p class="micro">These are founder-approved strategic prices, not currently available for online purchase. Provisioning, support, payment collection, and organizational terms require validation.</p><div class="flowbuttons"><button class="cta outline" data-jump="4">Prepare a partnership brief ↗</button></div></div><div><div class="plan-grid"><button class="plan" type="button" data-plan="pilot" aria-pressed="true"><span class="toplabel">90 days · Start here</span><strong>$450</strong><span class="seat">25 sponsored places</span><p>Three months of exploratory access, subject to agreed capabilities and scope.</p><span class="equiv">$6 per place / month</span></button><button class="plan" type="button" data-plan="fifty" aria-pressed="false"><span class="toplabel">12 months · Small program</span><strong>$3,000</strong><span class="seat">50 sponsored places</span><p>An annual option for an ongoing employee, member, or participant program.</p><span class="equiv">$5 per place / month</span></button><button class="plan" type="button" data-plan="hundred" aria-pressed="false"><span class="toplabel">12 months · Growing program</span><strong>$5,400</strong><span class="seat">100 sponsored places</span><p>An annual option for larger groups, subject to an agreed support model.</p><span class="equiv">$4.50 per place / month</span></button></div><div class="quote"><div><b id="selectedPlanName">90-day pilot · 25 places</b><p id="selectedPlanCaption">Indicative total $450 · A defined pilot rather than an automatic renewal.</p></div><button class="cta" data-jump="4">Build my brief ↗</button></div><p class="pricing-fine">For schools: start with a scoped discovery conversation. Classroom and student-data functionality would require separate development and privacy review; no unapproved school price is shown.</p></div>
+ </div>
+</section>
+<section class="scene finish dark" data-scene="4" aria-label="Partnership brief and next steps">
+ <div class="stage"><div class="copy"><div class="eyebrow lighttext">04 / Next conversation</div><h2>Let's make support <span class="accent">practical.</span></h2><p class="subtitle">Not a vague promise of better employee outcomes. A focused conversation about who needs help, what Groundwork could provide, and how we would know it was useful.</p><div class="flowbuttons"><button class="pill" data-audience="transition" aria-pressed="true">Workforce transition</button><button class="pill" data-audience="leave" aria-pressed="false">Leave / reduced hours</button><button class="pill" data-audience="wellness" aria-pressed="false">Ongoing access</button><button class="pill" data-audience="education" aria-pressed="false">Education</button></div><p class="fine">The offers shown are proposals. Choose the business inquiry form or prepare an email. This page does not send a message automatically. Use the email option to send your inquiry.</p></div><div class="brief"><div class="kicker">GROUNDWORK / PARTNERSHIP DISCUSSION</div><h3>Your discussion brief</h3><div class="summary-row"><span>Who you want to support</span><b id="briefAudience">People navigating layoffs or severance</b></div><div class="summary-row"><span>Starting structure</span><b id="briefPlan">90-day pilot / 25 places</b></div><div class="summary-row"><span>Planned price</span><b id="briefPrice">$450</b></div><div class="summary-row"><span>First conversation</span><b>Privacy, capability, scope and terms</b></div><button class="cta primary-inquiry" id="startInquiry" type="button">Start a partnership conversation <span aria-hidden="true">↗</span></button>
+<div class="brief-secondary-actions"><button class="cta outline" id="copyBrief" type="button">Copy brief</button><button class="cta outline" id="downloadBrief" type="button">Download brief</button></div>
+<a class="email-link" id="emailBrief" href="mailto:hello@groundworkbyable.com">Prefer email? Open an email draft ↗</a>
+<p class="contact-note" id="copyFeedback" role="status" aria-live="polite">Select <strong>Start a partnership conversation</strong> to choose how to reach Able Systems. Nothing is sent automatically from this page.</p></div></div>
+</section>
+</main>
+
+<div id="contactModal" class="contact-overlay" hidden>
+  <section class="contact-panel" role="dialog" aria-modal="true" aria-labelledby="contactTitle" aria-describedby="contactIntro">
+    <button id="closeContact" class="contact-close" type="button" aria-label="Close partnership inquiry">×</button>
+    <div class="contact-label">GROUNDWORK · BUSINESS & PARTNERSHIPS</div>
+    <h2 id="contactTitle">Let's start the conversation.</h2>
+    <p class="contact-intro" id="contactIntro">Tell us what you'd like to explore. Your selected journey is prefilled, but you can change anything.</p>
+
+    <fieldset class="contact-group">
+      <legend>Who or what would you like to support? <span class="optional">Select all that apply</span></legend>
+      <div class="interest-grid" id="interestGrid">
+        <label class="interest-chip"><input type="checkbox" value="transition" data-interest><span>Workforce transitions</span></label>
+        <label class="interest-chip"><input type="checkbox" value="leave" data-interest><span>Leave or reduced hours</span></label>
+        <label class="interest-chip"><input type="checkbox" value="wellness" data-interest><span>Ongoing employee support</span></label>
+        <label class="interest-chip"><input type="checkbox" value="education" data-interest><span>Education and training</span></label>
+        <label class="interest-chip"><input type="checkbox" value="community" data-interest><span>Community programs</span></label>
+        <label class="interest-chip"><input type="checkbox" value="other" data-interest><span>Something else</span></label>
+      </div>
+      <label id="otherInterestWrap" class="expanding-field" hidden>Tell us about the other opportunity
+        <textarea id="contactOther" rows="2" placeholder="What do you have in mind?"></textarea>
+      </label>
+    </fieldset>
+
+    <div class="contact-group">
+      <label class="group-heading" for="contactPlan">A possible starting arrangement</label>
+      <select id="contactPlan" aria-describedby="contactPlanNote">
+        <option value="pilot">25 people · 90-day pilot · $450</option>
+        <option value="fifty">50 people · Annual · $3,000</option>
+        <option value="hundred">100 people · Annual · $5,400</option>
+        <option value="custom">I'd like to discuss a custom arrangement</option>
+        <option value="exploring">I'm exploring options</option>
+      </select>
+      <p class="mini-qualifier" id="contactPlanNote">Illustrative proposals only; no commitment or payment is made here. Education arrangements would require separate scoping.</p>
+    </div>
+
+    <div class="contact-group">
+      <label class="group-heading" for="contactNotes">Anything else you'd like us to know? <span class="optional">Optional</span></label>
+      <textarea id="contactNotes" rows="2" placeholder="Your goals, timeline, number of people, or an idea we haven't considered."></textarea>
+    </div>
+
+    <div class="contact-fields">
+      <label>Your name <input id="contactName" type="text" autocomplete="name" placeholder="Your name"></label>
+      <label>Organization <input id="contactOrganization" type="text" autocomplete="organization" placeholder="Organization (optional)"></label>
+      <label>Your email <input id="contactEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
+    </div>
+
+    <div class="contact-summary" id="contactSummary" aria-live="polite"></div>
+    <div class="contact-choices">
+      <button type="button" id="contactLiveForm" class="contact-main">Copy details &amp; continue to Groundwork's business form ↗</button>
+      <button type="button" id="contactEmailDraft" class="contact-alternative">Prepare email inquiry ↗</button>
+      <button type="button" id="contactCopy" class="contact-alternative">Copy inquiry text</button>
+    </div>
+    <p class="contact-status" id="contactStatus" role="status" aria-live="polite">This preview does not send inquiries. Continuing opens an addressed email draft, where you can paste your details and submit them.</p>
+  </section>
+</div>
+<footer><div class="progress"><span class="count" id="count">01 <small>/ 05</small></span><div class="dots" aria-label="Journey pages"><button aria-label="Welcome" data-jump="0" class="active"></button><button aria-label="Explore a scenario" data-jump="1"></button><button aria-label="How it helps" data-jump="2"></button><button aria-label="Partner offers" data-jump="3"></button><button aria-label="Discussion brief" data-jump="4"></button></div><span class="stage-name" id="stageName">Welcome</span></div><span class="previewtag">ABLE SYSTEMS LLC · FOUNDER REVIEW / NON-LIVE</span><div class="pager"><button id="prev" disabled>← Previous</button><button class="next" id="next">Next: The scenario →</button></div></footer>
+</div>
+<script>
+(()=>{'use strict';
+const $=(s)=>document.querySelector(s);const $$=(s)=>[...document.querySelectorAll(s)];const sections=$$('.scene');const names=['Welcome','Real-life scenario','Ways to support','Partner offers','Discussion brief'];let index=0,currentCase='transition',currentPlan='pilot',currentAudience='transition';
+const cases={
+ transition:{rate:24.25,title:'Fictional example · Workforce transition',description:'An employee receives a final paycheck. It has to cover commitments, a surprise, and an uncertain next income date. What does the picture actually say?',income:1940,committed:1595,incomeLabel:'Last confirmed take-home pay',result:'In this example, the next income date is not confirmed.',note:'This planning horizon is not a promised payday or spending allowance. The example is illustrative and does not represent a live organizational module.'},
+ leave:{rate:18,title:'Fictional example · Reduced hours',description:'Someone’s hours have been cut. Their take-home income is smaller, while many responsibilities remain the same.',income:900,committed:850,incomeLabel:'Reduced take-home pay',result:'The next income amount and date could still vary.',note:'The financial picture is only as complete as the available information. Actual leave and wage arrangements vary.'},
+ education:{rate:15,title:'Fictional classroom exercise',description:'A group of students explores how a budget changes when the cost of something unexpected appears. No actual student accounts or data are used.',income:600,committed:375,incomeLabel:'Fictional budget',result:'An exercise about averages, tradeoffs, and remaining resources.',note:'This is a concept for a teacher-guided activity using fictional numbers, not an available school product.'},
+ wellness:{rate:24.25,title:'Fictional example · Everyday wellness',description:'An employee is working and earning. The day-to-day challenge is understanding which dollars are already committed and what remains.',income:1940,committed:1595,incomeLabel:'Take-home paycheck',result:'This is one snapshot; the picture may change with the next expense.',note:'This is an illustrative financial scenario, not individualized financial advice.'}
+};
+const plans={pilot:{name:'90-day pilot / 25 places',label:'90-day pilot · 25 places',price:450,caption:'Indicative total $450 · A defined pilot rather than an automatic renewal.'},fifty:{name:'12 months / 50 places',label:'Annual access · 50 places',price:3000,caption:'Indicative total $3,000 billed annually · 50 sponsored places.'},hundred:{name:'12 months / 100 places',label:'Annual access · 100 places',price:5400,caption:'Indicative total $5,400 billed annually · 100 sponsored places.'}};
+const audienceNames={transition:'People navigating layoffs or severance',leave:'Employees on leave or reduced hours',wellness:'Employees, members or program participants',education:'Students and educators (fictional classroom pilot)'};
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:2,minimumFractionDigits:Number.isInteger(n)?0:2}).format(n);
+const exact=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+function changeScene(n){index=Math.max(0,Math.min(sections.length-1,n));sections.forEach((e,i)=>{e.classList.toggle('active',i===index);e.setAttribute('aria-hidden',String(i!==index));if(i===index)e.scrollTop=0});$('#count').innerHTML=String(index+1).padStart(2,'0')+' <small>/ 05</small>';$('#stageName').textContent=names[index];$$('.dots button').forEach((b,i)=>b.classList.toggle('active',i===index));$('#prev').disabled=index===0;$('#next').textContent=index===sections.length-1?'Return to welcome ↺':'Next: '+names[index+1]+' →'}
+$$('[data-jump]').forEach(b=>b.addEventListener('click',()=>changeScene(Number(b.dataset.jump))));$('#prev').addEventListener('click',()=>changeScene(index-1));$('#next').addEventListener('click',()=>changeScene(index===4?0:index+1));
+function workTime(val,rate){let m=Math.round(Math.abs(val)/rate*60);return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'}
+function calc(){const c=cases[currentCase],exp=Number($('#surprise').value)||0,days=Number($('#horizon').value)||14,left=c.income-c.committed-exp,gap=left<0;$('#scenarioLabel').textContent=c.title;$('#incomingLabel').textContent=c.incomeLabel;$('#incoming').textContent=money(c.income);$('#committed').textContent=money(c.committed);$('#cashResult').textContent=(gap?'−':'')+money(Math.abs(left));$('#resultLabel').textContent=gap?'Gap to cover after commitments and surprise':'Cash left after commitments and surprise';$('#resultDescription').textContent=c.result;$('#perDay').textContent=(gap?'−':'')+exact(Math.abs(left)/days)+' per day';$('#workTime').textContent=workTime(left,c.rate);$('#timeLabel').textContent=(currentCase==='education'?'Fictional working-time equivalent':'Take-home working-time equivalent')+' · at '+exact(c.rate)+'/hr';$('#scenarioFoot').textContent=c.note;$('#caseExplainer').textContent=c.description;}
+function setCase(k){currentCase=k;$$('[data-case]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.case===k)));calc()}$$('[data-case]').forEach(b=>b.addEventListener('click',()=>setCase(b.dataset.case)));$$('[data-case-jump]').forEach(b=>b.addEventListener('click',()=>{setCase(b.dataset.caseJump);changeScene(1)}));$('#surprise').addEventListener('change',calc);$('#horizon').addEventListener('change',calc);calc();
+function setPlan(k){currentPlan=k;const p=plans[k];$$('[data-plan]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.plan===k)));$('#selectedPlanName').textContent=p.label;$('#selectedPlanCaption').textContent=p.caption;updateBrief();refreshEmailLink()};$$('[data-plan]').forEach(b=>b.addEventListener('click',()=>setPlan(b.dataset.plan)));
+function setAudience(k){currentAudience=k;$$('[data-audience]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.audience===k)));updateBrief();refreshEmailLink()};$$('[data-audience]').forEach(b=>b.addEventListener('click',()=>setAudience(b.dataset.audience)));
+function summary(){const school=currentAudience==='education',p=plans[currentPlan];return 'GROUNDWORK BY ABLE — PARTNERSHIP DISCUSSION BRIEF\n\nAudience: '+audienceNames[currentAudience]+'\nSuggested starting approach: '+(school?'Education discovery (scope and safeguards first)':p.label)+'\nProposed reference price: '+(school?'To be scoped; no school pricing approved':money(p.price))+'\n\nPotential value: A personal Groundwork experience connecting money, time, responsibilities, and decisions.\n\nBefore any launch: verify product capabilities, provisioning, individual privacy, applicable school-data requirements, support, term length, commercial agreement and payment setup.\n\nStatus: Illustrative founder-review proposal. Not a live offer or contract. A submitted inquiry is not a purchase.\n';}
+function updateBrief(){const school=currentAudience==='education',p=plans[currentPlan];$('#briefAudience').textContent=audienceNames[currentAudience];$('#briefPlan').textContent=school?'Education discovery / scope first':p.name;$('#briefPrice').textContent=school?'To be scoped':money(p.price)}
+const BUSINESS_FORM_URL=null;
+const BUSINESS_EMAIL='hello@groundworkbyable.com';
+function subjectLine(){return 'Groundwork partnership inquiry — '+(currentAudience==='education'?'Education discovery':plans[currentPlan].label)}
+function inquiryBody(){return 'Hello Groundwork team,\n\nI would like to discuss a potential organizational partnership.\n\n'+summary()+'\nPlease contact me to discuss fit, scope, availability, and next steps.\n\nName:\nOrganization:\nContact email:\n'}
+function refreshEmailLink(){$('#emailBrief').href='mailto:'+BUSINESS_EMAIL+'?subject='+encodeURIComponent(subjectLine())+'&body='+encodeURIComponent(inquiryBody())}
+async function copyInquiryBrief(){try{await navigator.clipboard.writeText(summary());return true}catch(e){try{const t=document.createElement('textarea');t.value=summary();t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();return ok}catch(e){return false}}}
+const modal=$('#contactModal');
+const interestNames={transition:'Workforce transitions',leave:'Leave or reduced hours',wellness:'Ongoing employee support',education:'Education and training',community:'Community programs',other:'Something else'};
+const planNames={pilot:'25 people · 90-day pilot · $450',fifty:'50 people · Annual · $3,000',hundred:'100 people · Annual · $5,400',custom:'Custom arrangement — to be discussed',exploring:'Exploring options — no selected package'};
+let returnFocus=null,modalInitialized=false,interestsModified=false;
+function selectedInterests(){return $$('[data-interest]:checked').map(e=>e.value)}
+function syncInterestChips(){
+  $$('[data-interest]').forEach(e=>e.closest('label').classList.toggle('selected',e.checked));
+  const other=selectedInterests().includes('other');$('#otherInterestWrap').hidden=!other;
+  updateContactSummary();
+}
+function syncFromJourney(){
+  if(!modalInitialized){
+    $$('[data-interest]').forEach(e=>e.checked=e.value===currentAudience);
+    $('#contactPlan').value=currentAudience==='education'?'exploring':currentPlan;
+    modalInitialized=true;
+  } else if(!interestsModified){
+    $$('[data-interest]').forEach(e=>e.checked=e.value===currentAudience);
+    $('#contactPlan').value=currentAudience==='education'?'exploring':currentPlan;
+  }
+  syncInterestChips();
+}
+function modalSummary(){
+  const interests=selectedInterests();
+  const selected=interests.map(v=>interestNames[v]);
+  const choice=$('#contactPlan').value;
+  const lines=['Interests: '+(selected.length?selected.join(', '):'To be discussed'),
+    'Starting approach: '+planNames[choice]];
+  if(interests.includes('education'))lines.push('Education must be scoped separately; no school package is approved.');
+  return lines.join('\n');
+}
+function updateContactSummary(){$('#contactSummary').textContent=modalSummary()}
+function openContact(){
+  returnFocus=document.activeElement;
+  modal.hidden=false;
+  syncFromJourney();
+  $('#contactStatus').textContent='This preview does not send inquiries. Continuing opens Groundwork’s existing business form. Your prepared details can be pasted there.';
+  $('#contactName').focus();
+}
+function closeContact(){modal.hidden=true;if(returnFocus&&typeof returnFocus.focus==='function')returnFocus.focus()}
+$('#startInquiry').addEventListener('click',openContact);
+$('#closeContact').addEventListener('click',closeContact);
+modal.addEventListener('click',e=>{if(e.target===modal)closeContact()});
+document.addEventListener('keydown',e=>{
+  if(modal.hidden)return;
+  if(e.key==='Escape'){e.preventDefault();closeContact();return}
+  if(e.key==='Tab'){
+    const focusable=[...modal.querySelectorAll('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),a[href]')].filter(x=>x.getClientRects().length);
+    if(!focusable.length)return;
+    const first=focusable[0],last=focusable[focusable.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+$$('[data-interest]').forEach(e=>e.addEventListener('change',()=>{interestsModified=true;syncInterestChips()}));
+$('#contactPlan').addEventListener('change',updateContactSummary);
+function readyInquiry(){
+  const interests=selectedInterests(),other=$('#contactOther').value.trim(),notes=$('#contactNotes').value.trim();
+  const name=$('#contactName').value.trim(),org=$('#contactOrganization').value.trim(),email=$('#contactEmail').value.trim();
+  const lines=['Hello Groundwork team,','','I would like to discuss a potential organizational partnership.','',
+  'Interests: '+(interests.length?interests.map(k=>interestNames[k]).join(', '):'Open to discussion')];
+  if(interests.includes('other')&&other)lines.push('Other opportunity: '+other);
+  lines.push('Starting approach: '+planNames[$('#contactPlan').value]);
+  if(interests.includes('education'))lines.push('Education: discovery and scope required; no school pricing presumed.');
+  if(notes)lines.push('Additional details: '+notes);
+  lines.push('','Name: '+(name||'(not provided)'), 'Organization: '+(org||'(not provided)'), 'Reply email: '+(email||'(not provided)'), '',
+  'Please contact me to discuss fit, support, privacy, capabilities, and next steps.','','This is a discussion request, not a purchase or binding agreement.');
+  return lines.join('\n');
+}
+function contactSubject(){return 'Groundwork partnership discussion — '+(selectedInterests().length===1?interestNames[selectedInterests()[0]]:'Organizational partnership')}
+async function copyPrepared(){
+  const val=readyInquiry();
+  try{await navigator.clipboard.writeText(val);return true}catch(e){
+    const t=document.createElement('textarea');t.value=val;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();
+    let ok=false;try{ok=document.execCommand('copy')}catch(_){ok=false}t.remove();return ok;
+  }
+}
+$('#contactLiveForm').addEventListener('click',async()=>{
+  const copied=await copyPrepared();
+  if(!copied){
+    $('#contactStatus').textContent='Your browser blocked copying. Select “Copy inquiry text” or prepare an email first, so your choices are not lost.';
+    return;
+  }
+  $('#contactStatus').textContent='Details copied. Opening your email app with the prepared inquiry. Review it and select Send; nothing has been sent automatically.';
+  window.location.href='mailto:'+BUSINESS_EMAIL+'?subject='+encodeURIComponent(contactSubject())+'&body='+encodeURIComponent(readyInquiry());
+});
+$('#contactEmailDraft').addEventListener('click',()=>{
+  const url='mailto:'+BUSINESS_EMAIL+'?subject='+encodeURIComponent(contactSubject())+'&body='+encodeURIComponent(readyInquiry());
+  $('#contactStatus').textContent='Opening your email application. Review the recipient and inquiry before sending; if nothing opens, use Copy inquiry text.';
+  window.location.href=url;
+});
+$('#contactCopy').addEventListener('click',async()=>{
+  $('#contactStatus').textContent=(await copyPrepared())?'Inquiry copied. You can paste it into Groundwork’s business form or an email.':'Clipboard unavailable. Use the email option or copy your choices manually.';
+});
+$('#copyBrief').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(summary());$('#copyFeedback').textContent='Brief copied. You can paste it into Groundwork’s business inquiry form or a message.'}catch(e){const t=document.createElement('textarea');t.value=summary();document.body.appendChild(t);t.select();let ok=document.execCommand('copy');t.remove();$('#copyFeedback').textContent=ok?'Copied.':'Clipboard unavailable; use Download brief.'}});
+$('#downloadBrief').addEventListener('click',()=>{const blob=new Blob([summary()],{type:'text/plain;charset=utf-8'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='Groundwork_Partnership_Discussion_Brief.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);$('#copyFeedback').textContent='Discussion brief prepared as a local text file. Nothing has been sent.'});
+setPlan('pilot');setAudience('transition');refreshEmailLink();changeScene(0);
+document.addEventListener('keydown',e=>{if(e.target.closest('input,select,textarea,button'))return;if(e.key==='ArrowRight')changeScene(index+1);else if(e.key==='ArrowLeft')changeScene(index-1)});
+})();
+</script>
+</body>
+</html>
