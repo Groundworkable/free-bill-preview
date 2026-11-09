@@ -25,6 +25,6 @@ jobs:
       - name: Install headless browser test dependencies
         run: |
           python3 -m pip install playwright
-          python3 -m playwright install --with-deps chromium
+          python3 -m playwright install chromium
       - name: Verify Organizations desktop and mobile interaction
         run: python3 scripts/organizations_browser_qa.py
