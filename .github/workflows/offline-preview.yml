@@ -29,14 +29,15 @@ jobs:
                  'privacy.html','beta-terms.html']
           for name in pages:
               shutil.copy2(name,root/name)
-          for folder in ['media','assets']:
+          for folder in ['media','assets','tour','free-tools','organizations',
+                         'about','faqs','contact','careers','legal']:
               shutil.copytree(folder,root/folder,dirs_exist_ok=True)
           for name in ['favicon.ico','apple-touch-icon.png','robots.txt','sitemap.xml']:
               if Path(name).exists():
                   shutil.copy2(name,root/name)
           (root/'START_HERE.txt').write_text(
               'GROUNDWORK WEBSITE REVIEW COPY — NOT LIVE\n\n'
-              'Start with index.html, or run a local static server if your browser blocks file:// pages.\n'
+              'Run python3 -m http.server 8000 inside this folder and open http://localhost:8000/.\nClean page links need a local web server; opening index.html as a file will not resolve them.\n'
               'Explore the approved entrance, Bloom, tour, free tools, organizations, company and legal pages.\n'
               'No customer registration, checkout, or subscription activation is connected.\n'
               'Email drafts need to be reviewed and sent by the visitor.\n'

@@ -82,6 +82,30 @@ assert "FOUNDER REVIEW / NON-LIVE" not in org
 assert "B2B REVIEW · NOT LIVE" not in org
 assert "does not give sponsors access" in org
 assert "not a live offer or contract" in org
+# Extension-free website routes: folder entrypoints, canonical addresses, and legacy files.
+from urllib.parse import urlparse
+SLUGS = ["tour", "free-tools", "organizations", "about", "faqs", "contact", "careers", "legal"]
+for slug in SLUGS:
+    path = ROOT / slug / "index.html"
+    assert path.exists(), f"Missing clean route: /{slug}/"
+    assert (ROOT / (slug + ".html")).exists(), f"Legacy .html link removed: {slug}"
+    content = path.read_text(encoding="utf-8")
+    assert 'rel="canonical" href="https://groundworkbyable.online/' + slug + '/"' in content
+    page = Page()
+    page.feed(content)
+    for link in page.links + page.media:
+        check_url(link, str(path))
+    for script in page.script_body:
+        if script.strip():
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".js", encoding="utf-8") as f:
+                f.write(script)
+                f.flush()
+                subprocess.run(["node", "--check", f.name], check=True)
+assert 'rel="canonical" href="https://groundworkbyable.online/"' in (ROOT/"index.html").read_text()
+sitemap_text = (ROOT/"sitemap.xml").read_text(encoding="utf-8")
+assert "https://groundworkbyable.online/index.html" not in sitemap_text
+for slug in SLUGS:
+    assert "https://groundworkbyable.online/" + slug + "/" in sitemap_text
 assert "Life doesn't" in (ROOT/"index.html").read_text()
 assert "bloom-orbit.mp4" in (ROOT/"index.html").read_text()
 free_page = Page()

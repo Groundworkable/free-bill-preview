@@ -10,6 +10,7 @@ on:
       - "robots.txt"
       - "scripts/public_site_qa.py"
       - "scripts/organizations_browser_qa.py"
+      - "scripts/clean_url_browser_qa.py"
       - ".github/workflows/public-site-qa.yml"
 jobs:
   validate:
@@ -27,4 +28,6 @@ jobs:
           python3 -m pip install playwright
           python3 -m playwright install chromium
       - name: Verify Organizations desktop and mobile interaction
-        run: python3 scripts/organizations_browser_qa.py
+        run: |
+          python3 scripts/organizations_browser_qa.py
+          python3 scripts/clean_url_browser_qa.py
