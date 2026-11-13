@@ -30,7 +30,7 @@ const server=createTestHarness({
    },
    vars:{
      __TEST_SCHEMA:schema,
-     PAYMENTS_MODE:"sandbox",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",
+     PAYMENTS_MODE:"sandbox",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",LOCAL_TEST_DIAGNOSTICS:"true",
      MONTH_LINK_ID:"plink_TEST_Month",
      MONTH_PRICE_ID:"price_TEST_Month",
      ANNUAL_LINK_ID:"plink_TEST_Annual",
