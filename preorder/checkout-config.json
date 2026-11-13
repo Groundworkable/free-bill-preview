@@ -9,14 +9,18 @@
       "amountUsd": 9.99,
       "currency": "usd",
       "paymentMode": "one_time",
-      "paymentLink": null
+      "paymentLink": null,
+      "taxBehavior": "exclusive",
+      "taxCode": "txcd_10103000"
     },
     "annual": {
       "label": "Groundwork — twelve prepaid months",
       "amountUsd": 96,
       "currency": "usd",
       "paymentMode": "one_time",
-      "paymentLink": null
+      "paymentLink": null,
+      "taxBehavior": "exclusive",
+      "taxCode": "txcd_10103000"
     }
   }
 }
