@@ -14,6 +14,8 @@ assert cfg["main"] == "./worker.mjs"
 assert cfg["workers_dev"] is False
 assert cfg["routes"] == []
 assert cfg["vars"]["PAYMENTS_MODE"] == "disabled"
+assert cfg["vars"]["TERMS_APPROVED"] == "false"
+assert cfg["vars"]["TERMS_VERSION"] == "UNAPPROVED"
 assert cfg["d1_databases"][0]["database_name"] == "groundwork-payment-sandbox-isolated"
 assert cfg["d1_databases"][0]["database_id"] == "REPLACE_WITH_NEW_ISOLATED_D1_UUID"
 assert not (service / "wrangler.toml").exists()
