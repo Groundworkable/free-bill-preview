@@ -7,7 +7,11 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname === "/__test/seed" && request.method === "POST") {
-      await env.DB.exec(env.__TEST_SCHEMA);
+      const statements = env.__TEST_SCHEMA
+        .split(";")
+        .map(segment => segment.split("\n").filter(line => !line.trimStart().startsWith("--")).join("\n").trim())
+        .filter(Boolean);
+      for (const statement of statements) await env.DB.prepare(statement).run();
       return new Response("OK");
     }
     if (url.pathname === "/__test/counts" && request.method === "GET") {
