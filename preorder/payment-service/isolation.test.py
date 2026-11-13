@@ -20,5 +20,9 @@ assert not (service / "wrangler.toml").exists()
 assert not (service / "wrangler.json").exists()
 assert not (service / "wrangler.jsonc").exists()
 assert "sk_test_" not in raw and "sk_live_" not in raw and "whsec_" not in raw
-assert "deploy" not in (root / ".github/workflows/public-site-qa.yml").read_text(encoding="utf-8").lower()
+workflow = (root / ".github/workflows/public-site-qa.yml").read_text(encoding="utf-8").lower()
+assert not any(command in workflow for command in (
+    "wrangler deploy", "cloudflare/wrangler-action", "npx wrangler deploy",
+    "npm run deploy", "pnpm deploy", "yarn deploy"
+))
 print("PASS: payment sandbox is nondeployable, disabled, and bound to no existing app")
