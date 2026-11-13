@@ -13,6 +13,7 @@ on:
       - "scripts/clean_url_browser_qa.py"
       - "scripts/preorder_browser_qa.py"
       - "preorder/checkout-config.json"
+      - "preorder/payment-service/**"
       - ".github/workflows/public-site-qa.yml"
 jobs:
   validate:
@@ -21,6 +22,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run public HTML link, existing tool, and sitemap checks
         run: python3 scripts/public_site_qa.py
+  webhook-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify sandbox Stripe webhook signatures, prices and no activation
+        run: node --test preorder/payment-service/worker.test.mjs
   browser-validate:
     runs-on: ubuntu-latest
     steps:
