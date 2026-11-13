@@ -117,7 +117,8 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
         Object.keys(offers).every(key=>{
           const offer=cfg.offers && cfg.offers[key];
           return offer && offer.amountUsd===offers[key] && offer.currency==="usd" &&
-            offer.paymentMode==="one_time" && validStripeLink(offer.paymentLink);
+            offer.paymentMode==="one_time" && offer.taxBehavior==="exclusive" &&
+            offer.taxCode==="txcd_10103000" && validStripeLink(offer.paymentLink);
         });
       if(!valid){disable();return;}
       document.querySelector("#termsLink").href=cfg.termsUrl;
