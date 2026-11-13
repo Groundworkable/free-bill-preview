@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07362b">
+<meta name="description" content="Groundwork by Able — pre-purchase information and secure payment availability.">
+<link rel="canonical" href="https://groundworkbyable.online/preorder/">
+<title>Groundwork by Able — Pre-purchase</title>
+<style>
+:root{--forest:#07362b;--dark:#03251d;--ivory:#faf6eb;--gold:#d7ad60;--muted:#527164;--border:#d9ded3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--forest);font:15px/1.65 Inter,"Segoe UI",Arial,sans-serif}
+a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.header{background:var(--forest);color:var(--ivory);display:flex;align-items:center;justify-content:space-between;padding:18px clamp(18px,5vw,70px);gap:20px}
+.brand{text-decoration:none;font:700 22px/1.1 Georgia,serif}.brand small{display:block;font:600 9px/1.5 Arial,sans-serif;letter-spacing:.22em;color:#e2c187}
+.toplink{font-size:13px;color:#f4ddad;text-underline-offset:4px}
+main{max-width:1040px;margin:auto;padding:clamp(24px,4vw,52px) clamp(18px,4vw,36px) 72px}
+.eyebrow{font:700 11px/1.4 Inter,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8e6930}
+h1,h2{font-family:Georgia,serif;font-weight:400;line-height:1.14;letter-spacing:-.025em}h1{font-size:clamp(38px,5vw,62px);margin:12px 0 18px}h2{font-size:clamp(25px,3vw,35px);margin:0 0 10px}
+.lead{font-size:clamp(15px,2vw,19px);line-height:1.6;max-width:750px;color:#365e4b;margin-bottom:20px}
+.notice{border-left:4px solid var(--gold);background:#fffdf7;padding:16px 19px;margin:24px 0 30px;box-shadow:0 3px 18px #0b36250b}
+.notice strong{display:block}.notice p{margin:4px 0 0;color:#435c4d}
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.plan{background:white;border:1px solid var(--border);padding:27px;border-radius:16px;display:flex;flex-direction:column;box-shadow:0 10px 35px #07362b0a;min-width:0}
+.plan h2{margin:12px 0}.amount{font:400 clamp(37px,5vw,54px)/1.2 Georgia,serif;margin:8px 0;color:var(--dark)}
+.period{font-size:13px;color:var(--muted)}.details{color:#365e4b;margin:15px 0 25px;min-height:72px}
+.button{display:block;border:0;border-radius:8px;background:var(--forest);color:white;text-align:center;text-decoration:none;padding:13px 14px;font-weight:750;font-size:14px;line-height:1.4;margin-top:auto}
+.button[aria-disabled=true]{background:#dee5dc;color:#576d61;cursor:not-allowed}
+.help{font-size:12px;color:#607a6b;margin:10px 0 0}
+.section{margin-top:32px;background:#f5f2e8;border-radius:14px;padding:25px;border:1px solid #e2ddd0}
+.section p{margin:8px 0}.section a{text-underline-offset:3px}
+.terms{display:flex;gap:9px;align-items:start;margin:18px 0 0;font-size:13px}
+.terms input{margin:5px 0 0;flex:none;accent-color:var(--forest)}
+#status{margin-top:18px;color:#4c6957;font-size:13px}
+footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;font-size:12px}
+@media(max-width:670px){.plans{grid-template-columns:1fr}.header{align-items:start}.details{min-height:0}.plan{padding:22px}}
+</style>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="/">Groundwork <small>BY ABLE</small></a>
+  <a class="toplink" href="/tour/">← Back to the experience</a>
+</header>
+<main>
+  <div class="eyebrow">Groundwork / Membership pre-purchase</div>
+  <h1>Choose what comes next.</h1>
+  <p class="lead">Groundwork's application is still being prepared for public membership. A pre-purchase is a payment for future access—not an account activation today.</p>
+  <div class="notice" role="status" id="gateNotice">
+    <strong>Pre-purchases are not open yet.</strong>
+    <p>Actual payment links and purchase terms must be verified before any charge can be accepted. No payment is collected on this page.</p>
+  </div>
+  <div class="plans" aria-label="Current individual membership reference prices">
+    <article class="plan" data-offer="monthly">
+      <div class="eyebrow">One-time pre-purchase</div>
+      <h2>One month</h2>
+      <div class="amount">$9.99</div>
+      <div class="period">USD · one prepaid month of Groundwork</div>
+      <p class="details">Current reference rate for the standard monthly membership. No recurring payment is authorized by this pre-purchase.</p>
+      <a class="button" id="checkoutMonthly" aria-disabled="true" tabindex="-1">Payment not available</a>
+      <p class="help">Access starts only under the separately published activation terms.</p>
+    </article>
+    <article class="plan" data-offer="annual">
+      <div class="eyebrow">One-time pre-purchase</div>
+      <h2>Twelve months</h2>
+      <div class="amount">$96</div>
+      <div class="period">USD · one prepaid year of Groundwork</div>
+      <p class="details">Current reference rate for a standard annual membership. This is not an automatic subscription or a claim that the application is live.</p>
+      <a class="button" id="checkoutAnnual" aria-disabled="true" tabindex="-1">Payment not available</a>
+      <p class="help">The purchased term's start and fulfillment must be defined in the published terms.</p>
+    </article>
+  </div>
+  <section class="section" aria-label="Purchasing conditions">
+    <h2>Before anyone is charged</h2>
+    <p>The payment page must explain when prepaid access starts, how activation is delivered, what happens if launch is delayed, how refunds work, and how customers receive help.</p>
+    <p><strong>Founding Access remains separate:</strong> the previously approved founding invitation is a free reservation, with 30 days free after actual activation and a planned $7.99 monthly rate for the first 12 paid months. This page does not sell or silently convert that reservation.</p>
+    <p>Groundwork Lite remains free. Organizational sponsorships require a separately agreed scope and are not sold through this individual pre-purchase page. Future renewal prices and any grandfathering are not promised here.</p>
+    <div id="publishedTerms" hidden>
+      <p><a id="termsLink" rel="noopener" target="_blank">Read the pre-purchase terms</a> · <a id="refundLink" rel="noopener" target="_blank">Refund and delay policy</a></p>
+      <label class="terms"><input type="checkbox" id="acceptTerms"> I have read the pre-purchase and refund terms, and understand that access is not available immediately.</label>
+    </div>
+    <p id="status" aria-live="polite">No payment is available until terms and payment processing are approved.</p>
+  </section>
+</main>
+<footer>© 2026 Able Systems LLC · Grounded. Growing. Enduring. · <a href="/privacy.html">Privacy</a> · <a href="/contact/">Contact</a></footer>
+<script>
+(() => {
+  "use strict";
+  const ids = {monthly:document.querySelector("#checkoutMonthly"),annual:document.querySelector("#checkoutAnnual")};
+  const offers = {monthly:9.99,annual:96};
+  const params = new URLSearchParams(location.search);
+  const selected = params.get("plan")==="monthly"?"monthly":"annual";
+  const block = document.querySelector('[data-offer="'+selected+'"]');
+  if(block) block.style.borderColor="#b9954e";
+  const consent = document.querySelector("#acceptTerms");
+  const status = document.querySelector("#status");
+  const notice = document.querySelector("#gateNotice");
+  const validStripeLink = value => {
+    if(typeof value!=="string") return false;
+    try {const url=new URL(value);return url.protocol==="https:" && url.hostname==="buy.stripe.com" && /^\/[A-Za-z0-9]+$/.test(url.pathname) && !url.search && !url.hash;}
+    catch(_error){return false;}
+  };
+  const validPolicyLink = value => {
+    if(typeof value!=="string")return false;
+    try {const url=new URL(value,location.origin);return url.protocol==="https:" && url.hostname==="groundworkbyable.online" && url.pathname!=="/" && !url.hash;}
+    catch(_error){return false;}
+  };
+  const disable = () => {
+    Object.values(ids).forEach(a=>{a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Payment not available";});
+  };
+  disable();
+  fetch("/preorder/checkout-config.json",{cache:"no-store"})
+    .then(res=>{if(!res.ok)throw new Error("Configuration unavailable");return res.json();})
+    .then(cfg=>{
+      const valid=cfg && cfg.enabled===true && cfg.termsApproved===true &&
+        validPolicyLink(cfg.termsUrl) && validPolicyLink(cfg.refundPolicyUrl) &&
+        Object.keys(offers).every(key=>{
+          const offer=cfg.offers && cfg.offers[key];
+          return offer && offer.amountUsd===offers[key] && offer.currency==="usd" &&
+            offer.paymentMode==="one_time" && validStripeLink(offer.paymentLink);
+        });
+      if(!valid){disable();return;}
+      document.querySelector("#termsLink").href=cfg.termsUrl;
+      document.querySelector("#refundLink").href=cfg.refundPolicyUrl;
+      document.querySelector("#publishedTerms").hidden=false;
+      notice.querySelector("strong").textContent="Secure pre-purchase checkout is available.";
+      notice.querySelector("p").textContent="Review the offer and terms before continuing to Stripe. Groundwork does not collect your card details.";
+      const update=()=>{
+        for(const key of Object.keys(offers)){
+          const a=ids[key];
+          const allowed=consent.checked;
+          if(allowed){a.href=cfg.offers[key].paymentLink;a.removeAttribute("aria-disabled");a.removeAttribute("tabindex");a.textContent="Pay securely with Stripe — $"+offers[key].toFixed(2);}
+          else {a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Read and accept terms to continue";}
+        }
+        status.textContent=allowed?"You will continue to Stripe. This page cannot confirm a payment or activate an account.":"Accept the pre-purchase and refund terms to continue.";
+      };
+      consent.addEventListener("change",update);
+      update();
+    }).catch(()=>{disable();});
+  for(const a of Object.values(ids)){
+    a.addEventListener("click",event=>{if(a.getAttribute("aria-disabled")==="true")event.preventDefault();});
+  }
+})();
+</script>
+</body>
+</html>
