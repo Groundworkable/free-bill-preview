@@ -14,9 +14,9 @@ def add(session, intent, amount, tax, total, status="paid_unfulfilled"):
     connection.execute(
         """INSERT INTO prepurchase_orders(
            checkout_session_id,payment_intent_id,stripe_customer_id,payment_link_id,
-           stripe_price_id,term,subtotal_cents,tax_cents,total_cents,currency,status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        (session,intent,None,"plink_test","price_test","monthly",amount,tax,total,"usd",status)
+           stripe_price_id,term,terms_version,subtotal_cents,tax_cents,total_cents,currency,status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (session,intent,None,"plink_test","price_test","monthly","prepurchase-v2026-11-13",amount,tax,total,"usd",status)
     )
 
 with connection:
