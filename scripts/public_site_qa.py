@@ -117,6 +117,7 @@ for key, expected in (("monthly", 9.99), ("annual", 96)):
     offer = gate["offers"][key]
     assert offer["amountUsd"] == expected and offer["currency"] == "usd"
     assert offer["paymentMode"] == "one_time" and offer["paymentLink"] is None
+    assert offer["taxBehavior"] == "exclusive" and offer["taxCode"] == "txcd_10103000"
 assert 'aria-disabled="true"' in preorder
 assert 'fetch("/preorder/checkout-config.json"' in preorder
 assert "No payment is collected on this page." in preorder
