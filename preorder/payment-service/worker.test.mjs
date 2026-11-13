@@ -10,14 +10,14 @@ function sign(body, when=now){
   return `t=${when},v1=${value}`;
 }
 const offers=[
-  {link:"plink_test_month",price:"price_test_month",term:"monthly",amount:999},
-  {link:"plink_test_annual",price:"price_test_annual",term:"annual",amount:9600}
+  {link:"plink_test_month",price:"price_test_month",term:"monthly",amount:999,termsVersion:"prepurchase-v2026-11-13"},
+  {link:"plink_test_annual",price:"price_test_annual",term:"annual",amount:9600,termsVersion:"prepurchase-v2026-11-13"}
 ];
 function fixture(total=999,tax=0){
   return {
     object:"checkout.session",id:"cs_test_Abc123",livemode:false,
     mode:"payment",payment_status:"paid",payment_link:"plink_test_month",
-    payment_intent:"pi_Abc123",currency:"usd",amount_subtotal:999,
+    payment_intent:"pi_Abc123",consent:{terms_of_service:"accepted"},currency:"usd",amount_subtotal:999,
     amount_total:total,total_details:{amount_tax:tax,amount_shipping:0,amount_discount:0}
   };
 }
@@ -70,7 +70,7 @@ const originalFetch=globalThis.fetch;
 async function call(event,options={}){
   const {db,writes}=fakeDb();
   const env={PAYMENTS_MODE:"sandbox",DB:db,
-    STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",
+    STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",
     MONTH_LINK_ID:"plink_test_month",MONTH_PRICE_ID:"price_test_month",
     ANNUAL_LINK_ID:"plink_test_annual",ANNUAL_PRICE_ID:"price_test_annual"
   };
@@ -107,7 +107,7 @@ test("unknown routes and unsigned requests are rejected",async()=>{
  const res=await worker.fetch(new Request("https://test.example/nope"),{});
  assert.equal(res.status,404);
  const bad=await worker.fetch(new Request("https://test.example/webhooks/stripe",{method:"POST",body:"{}"}),{
-  PAYMENTS_MODE:"sandbox",DB:{},STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",
+  PAYMENTS_MODE:"sandbox",DB:{},STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",
   MONTH_LINK_ID:"plink_a",MONTH_PRICE_ID:"price_a",ANNUAL_LINK_ID:"plink_b",ANNUAL_PRICE_ID:"price_b"
  });
  assert.equal(bad.status,400);
@@ -120,7 +120,7 @@ test("duplicate paid sessions are acknowledged without creating a second order",
    stripe_customer_id:null,
    payment_link_id:"plink_test_month",
    stripe_price_id:"price_test_month",
-   term:"monthly",subtotal_cents:999,tax_cents:0,total_cents:999,
+   term:"monthly",terms_version:"prepurchase-v2026-11-13",subtotal_cents:999,tax_cents:0,total_cents:999,
    currency:"usd",status:"paid_unfulfilled"
  };
  const statements=[];
@@ -129,7 +129,7 @@ test("duplicate paid sessions are acknowledged without creating a second order",
    run:async()=>{statements.push({query,values});return {success:true}}
  }}}}};
  const env={PAYMENTS_MODE:"sandbox",DB:db,
-   STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",
+   STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",
    MONTH_LINK_ID:"plink_test_month",MONTH_PRICE_ID:"price_test_month",
    ANNUAL_LINK_ID:"plink_test_annual",ANNUAL_PRICE_ID:"price_test_annual"};
  const event={id:"evt_SecondAbc",livemode:false,type:"checkout.session.async_payment_succeeded",data:{object:fixture()}};
@@ -157,7 +157,7 @@ test("conflicting duplicate sessions return 503 and record nothing",async()=>{
   run:async()=>{throw Error("Conflict must not write")}
  }}}}};
  const env={PAYMENTS_MODE:"sandbox",DB:db,STRIPE_WEBHOOK_SECRET:key,
-   STRIPE_TEST_SECRET_KEY:"sk_test_fake",MONTH_LINK_ID:"plink_test_month",
+   STRIPE_TEST_SECRET_KEY:"sk_test_fake",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",MONTH_LINK_ID:"plink_test_month",
    MONTH_PRICE_ID:"price_test_month",ANNUAL_LINK_ID:"plink_test_annual",
    ANNUAL_PRICE_ID:"price_test_annual"};
  const event={id:"evt_Conflict",livemode:false,type:"checkout.session.completed",data:{object:fixture()}};
@@ -170,4 +170,8 @@ test("conflicting duplicate sessions return 503 and record nothing",async()=>{
    assert.equal(resp.status,503);
    assert.match(await resp.text(),/verification failed/);
  }finally{globalThis.fetch=original;}
+});
+
+test("rejects signed payment with unaccepted Stripe terms",()=>{
+ assert.throws(()=>verifyPaidPurchase({...fixture(),consent:{terms_of_service:"not_accepted"}},items,offers),/terms-of-service/);
 });
