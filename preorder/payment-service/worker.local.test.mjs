@@ -30,7 +30,7 @@ const server=createTestHarness({
    },
    vars:{
      __TEST_SCHEMA:schema,
-     PAYMENTS_MODE:"sandbox",
+     PAYMENTS_MODE:"sandbox",TERMS_APPROVED:"true",TERMS_VERSION:"prepurchase-v2026-11-13",
      MONTH_LINK_ID:"plink_TEST_Month",
      MONTH_PRICE_ID:"price_TEST_Month",
      ANNUAL_LINK_ID:"plink_TEST_Annual",
@@ -56,7 +56,7 @@ function mockStripe(items=lineItems) {
 }
 function makeSession(){
  return {object:"checkout.session",id:sessionId,livemode:false,mode:"payment",
-   payment_status:"paid",payment_link:"plink_TEST_Month",payment_intent:paymentId,
+   payment_status:"paid",payment_link:"plink_TEST_Month",payment_intent:paymentId,consent:{terms_of_service:"accepted"},
    currency:"usd",amount_subtotal:999,amount_total:1059,
    total_details:{amount_tax:60,amount_shipping:0,amount_discount:0}};
 }
