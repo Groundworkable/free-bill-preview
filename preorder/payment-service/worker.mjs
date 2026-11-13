@@ -189,10 +189,7 @@ export default {
           order.term, order.termsVersion, order.subtotal, order.tax, order.total, order.currency, order.status)
       ]);
       return new Response("Order recorded; access remains inactive", { status: 200 });
-    } catch (error) {
-      if (env.LOCAL_TEST_DIAGNOSTICS === "true" && env.STRIPE_TEST_SECRET_KEY === "sk_test_FAKE_LOCAL_ONLY") {
-        return new Response("LOCAL_TEST_ONLY: " + String(error?.message || "unknown").slice(0,160), { status: 503 });
-      }
+    } catch {
       // Never acknowledge failed validation/storage as success. Stripe retries 5xx.
       // No PII, raw bodies, tokens, or secrets are logged.
       return new Response("Payment verification failed", { status: 503 });
