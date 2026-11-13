@@ -25,6 +25,23 @@ This is a deliberately incomplete setup checklist, **not an executable deploymen
 6. Only after tax settings are complete, briefly activate a **test link** to perform a real sandbox checkout; verify the Stripe session, signed webhook delivery and exactly one `paid_unfulfilled` database row. Verify that no membership activates.
 7. Test canceled/failed/delayed payments, duplicate deliveries, and mismatched price/tax scenarios. Disable the test links afterward and keep customer-facing site gates disabled.
 
+## Local integration test (completed in pull-request CI)
+
+The test harness uses Cloudflare's local `workerd` and an isolated local D1 database. It injects **fake** Stripe credentials, intercepts outbound Stripe line-item requests using MSW, and exercises a signed synthetic payment, duplicate delivery, invalid signatures, invalid prices, and storage behavior. It requires no Cloudflare account and makes no real Stripe charges.
+
+To reproduce from `preorder/payment-service/` with a compatible Node.js version:
+
+```sh
+npm install --no-save --no-package-lock --ignore-scripts wrangler@4 msw@2
+node --test worker.test.mjs worker.local.test.mjs
+python3 schema.test.py
+python3 isolation.test.py
+```
+
+The local test-only entrypoint `worker.local.entry.mjs` exposes D1 inspection endpoints **only to the local test harness**. The deployment example points to `worker.mjs` instead; never deploy `worker.local.entry.mjs` or copy its inspection routes into a remotely accessible Worker.
+
+A **real** Stripe-to-Cloudflare delivery test is still blocked on authorized creation of new isolated cloud resources, webhook secrets, and Stripe Tax setup.
+
 ## Current test-mode resource IDs (non-secret)
 
 | Term | Stripe price ID | Stripe link ID |
