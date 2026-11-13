@@ -25,6 +25,20 @@ This is a deliberately incomplete setup checklist, **not an executable deploymen
 6. Only after tax settings are complete, briefly activate a **test link** to perform a real sandbox checkout; verify the Stripe session, signed webhook delivery and exactly one `paid_unfulfilled` database row. Verify that no membership activates.
 7. Test canceled/failed/delayed payments, duplicate deliveries, and mismatched price/tax scenarios. Disable the test links afterward and keep customer-facing site gates disabled.
 
+## Test-mode Stripe webhook destination — registered, disabled
+
+- **Stripe test account:** Able Systems LLC (`acct_1TwotnJK9stEim4w`; `livemode=false`).
+- **Webhook endpoint ID:** `we_1UbShUJK9stEim4wVJZvDGVz`.
+- **Destination:** `https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/webhooks/stripe`.
+- **Subscribed events:** `checkout.session.completed`, `checkout.session.async_payment_succeeded`.
+- **Current Stripe endpoint status:** `disabled` as verified immediately after registration. This is deliberate until the signing secret is configured and a safe test is authorized.
+- Stripe issued a `whsec_` signing secret at creation, but it has **not** been installed in Cloudflare and must never be committed to GitHub or pasted into this document.
+- The receiver also requires a `sk_test_` key and approved terms gate; the production key, existing Groundwork application secrets, and Supabase credentials must never be used.
+- Two existing test Payment Links remain **inactive**, so there is no active payment flow. They currently have `consent_collection:null` and are **not eligible** for activation until approved terms and Stripe-hosted consent are configured.
+- This endpoint creation did **not** prove successful webhook delivery or write a real order to D1.
+
+**Safe next steps:** Configure restricted test-only API permissions for reading Checkout Session line items, put both test secrets in the new Cloudflare Worker's secret settings privately, verify that the exact Worker version and new D1 schema are deployed, approve terms and refund/delay policy, then enable the test endpoint temporarily for a real sandbox event. Keep all live customer payment links disabled. Do not proceed solely because the root Worker URL responds `Not found`.
+
 ## Stripe-hosted terms acceptance — added safety gate
 
 The test receiver now checks `session.consent.terms_of_service === "accepted"` **and** requires `TERMS_APPROVED=true` and an immutable `TERMS_VERSION` (format `prepurchase-vYYYY-MM-DD`). The database retains that exact approved terms version with every paid-unfulfilled order. Without those values, the receiver returns 503 and cannot record a purchase.
@@ -48,7 +62,7 @@ python3 isolation.test.py
 
 The local test-only entrypoint `worker.local.entry.mjs` exposes D1 inspection endpoints **only to the local test harness**. The deployment example points to `worker.mjs` instead; never deploy `worker.local.entry.mjs` or copy its inspection routes into a remotely accessible Worker.
 
-A **real** Stripe-to-Cloudflare delivery test is still blocked on configuring a real test-mode Stripe webhook destination and its signing secret, securely storing test-only Stripe API credentials in the isolated Worker, approving and publishing customer terms, and completing Stripe Tax settings. The cloud resources exist, but remote end-to-end delivery remains unverified.
+A **real** Stripe-to-Cloudflare delivery test is still blocked on securely installing the signing secret and test-only Stripe API credentials in the isolated Worker, completing approved customer terms and Stripe Tax settings, and explicitly enabling a verified test delivery. The cloud resources exist and a test-only webhook destination has been registered, but remote end-to-end delivery remains unverified.
 
 ## Current test-mode resource IDs (non-secret)
 
