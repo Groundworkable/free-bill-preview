@@ -57,6 +57,7 @@ function fakeDb(){
    prepare(query){return {
      bind(...values){return {
        first:async()=>null,
+       run:async()=>({success:true}),
        query,
        values
      }}
@@ -110,4 +111,63 @@ test("unknown routes and unsigned requests are rejected",async()=>{
   MONTH_LINK_ID:"plink_a",MONTH_PRICE_ID:"price_a",ANNUAL_LINK_ID:"plink_b",ANNUAL_PRICE_ID:"price_b"
  });
  assert.equal(bad.status,400);
+});
+
+test("duplicate paid sessions are acknowledged without creating a second order",async()=>{
+ const row={
+   checkout_session_id:"cs_test_Abc123",
+   payment_intent_id:"pi_Abc123",
+   stripe_customer_id:null,
+   payment_link_id:"plink_test_month",
+   stripe_price_id:"price_test_month",
+   term:"monthly",subtotal_cents:999,tax_cents:0,total_cents:999,
+   currency:"usd",status:"paid_unfulfilled"
+ };
+ const statements=[];
+ const db={prepare(query){return {bind(...values){return {
+   first:async()=>query.includes("FROM prepurchase_orders")?row:null,
+   run:async()=>{statements.push({query,values});return {success:true}}
+ }}}}};
+ const env={PAYMENTS_MODE:"sandbox",DB:db,
+   STRIPE_WEBHOOK_SECRET:key,STRIPE_TEST_SECRET_KEY:"sk_test_fake",
+   MONTH_LINK_ID:"plink_test_month",MONTH_PRICE_ID:"price_test_month",
+   ANNUAL_LINK_ID:"plink_test_annual",ANNUAL_PRICE_ID:"price_test_annual"};
+ const event={id:"evt_SecondAbc",livemode:false,type:"checkout.session.async_payment_succeeded",data:{object:fixture()}};
+ const body=JSON.stringify(event);
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>new Response(JSON.stringify({data:items,has_more:false}),{status:200});
+ try{
+   const req=new Request("https://test.example/webhooks/stripe",{method:"POST",headers:{"stripe-signature":sign(body)},body});
+   const resp=await worker.fetch(req,env);
+   assert.equal(resp.status,200);
+   assert.match(await resp.text(),/Existing verified order/);
+   assert.equal(statements.length,1);
+   assert.ok(statements[0].query.includes("stripe_processed_events"));
+ }finally{globalThis.fetch=original;}
+});
+
+test("conflicting duplicate sessions return 503 and record nothing",async()=>{
+ const db={prepare(query){return {bind(){return {
+  first:async()=>query.includes("FROM prepurchase_orders")?{
+   checkout_session_id:"cs_test_Abc123", payment_intent_id:"pi_WRONG",
+   stripe_customer_id:null, payment_link_id:"plink_test_month",stripe_price_id:"price_test_month",
+   term:"monthly",subtotal_cents:999,tax_cents:0,total_cents:999,
+   currency:"usd",status:"paid_unfulfilled"
+  }:null,
+  run:async()=>{throw Error("Conflict must not write")}
+ }}}}};
+ const env={PAYMENTS_MODE:"sandbox",DB:db,STRIPE_WEBHOOK_SECRET:key,
+   STRIPE_TEST_SECRET_KEY:"sk_test_fake",MONTH_LINK_ID:"plink_test_month",
+   MONTH_PRICE_ID:"price_test_month",ANNUAL_LINK_ID:"plink_test_annual",
+   ANNUAL_PRICE_ID:"price_test_annual"};
+ const event={id:"evt_Conflict",livemode:false,type:"checkout.session.completed",data:{object:fixture()}};
+ const body=JSON.stringify(event);
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>new Response(JSON.stringify({data:items,has_more:false}),{status:200});
+ try{
+   const req=new Request("https://test.example/webhooks/stripe",{method:"POST",headers:{"stripe-signature":sign(body)},body});
+   const resp=await worker.fetch(req,env);
+   assert.equal(resp.status,503);
+   assert.match(await resp.text(),/verification failed/);
+ }finally{globalThis.fetch=original;}
 });
