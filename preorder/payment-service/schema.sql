@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS prepurchase_orders (
   payment_link_id TEXT NOT NULL,
   stripe_price_id TEXT NOT NULL,
   term TEXT NOT NULL CHECK (term IN ('monthly','annual')),
-  terms_version TEXT NOT NULL CHECK (terms_version GLOB 'prepurchase-v[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+  terms_version TEXT NOT NULL CHECK (length(terms_version) = 23 AND substr(terms_version,1,13) = 'prepurchase-v'),
   subtotal_cents INTEGER NOT NULL CHECK (subtotal_cents > 0),
   tax_cents INTEGER NOT NULL CHECK (tax_cents >= 0),
   total_cents INTEGER NOT NULL CHECK (total_cents = subtotal_cents + tax_cents),
