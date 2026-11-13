@@ -34,8 +34,8 @@ export async function verifyStripeSignature(body, signatureHeader, secret, curre
 
 function expectedOffers(env) {
   return [
-    { link: env.MONTH_LINK_ID, price: env.MONTH_PRICE_ID, term: "monthly", amount: 999 },
-    { link: env.ANNUAL_LINK_ID, price: env.ANNUAL_PRICE_ID, term: "annual", amount: 9600 }
+    { link: env.MONTH_LINK_ID, price: env.MONTH_PRICE_ID, term: "monthly", amount: 999, termsVersion: env.TERMS_VERSION },
+    { link: env.ANNUAL_LINK_ID, price: env.ANNUAL_PRICE_ID, term: "annual", amount: 9600, termsVersion: env.TERMS_VERSION }
   ];
 }
 
@@ -49,6 +49,12 @@ export function verifyPaidPurchase(session, items, offers) {
   }
   const offer = offers.find(o => o.link === session.payment_link && o.price && o.link && o.amount > 0);
   if (!offer) throw new Error("Unrecognized Stripe payment link");
+  if (session.consent?.terms_of_service !== "accepted") {
+    throw new Error("Stripe Checkout did not confirm terms-of-service acceptance");
+  }
+  if (!/^prepurchase-v\d{4}-\d{2}-\d{2}$/.test(offer.termsVersion || "")) {
+    throw new Error("Approved terms version not configured");
+  }
   if (session.currency !== "usd" || session.amount_subtotal !== offer.amount) {
     throw new Error("Unexpected currency or subtotal");
   }
@@ -74,6 +80,7 @@ export function verifyPaidPurchase(session, items, offers) {
     link: offer.link,
     price: offer.price,
     term: offer.term,
+    termsVersion: offer.termsVersion,
     subtotal: offer.amount,
     tax: details.amount_tax,
     total: session.amount_total,
@@ -96,7 +103,8 @@ async function fetchStripeLineItems(env, sessionId) {
 
 function ready(env) {
   const offers = expectedOffers(env);
-  return env.PAYMENTS_MODE === "sandbox" && env.DB &&
+  return env.PAYMENTS_MODE === "sandbox" && env.TERMS_APPROVED === "true" &&
+    /^prepurchase-v\d{4}-\d{2}-\d{2}$/.test(env.TERMS_VERSION || "") && env.DB &&
     env.STRIPE_WEBHOOK_SECRET?.startsWith("whsec_") &&
     env.STRIPE_TEST_SECRET_KEY?.startsWith("sk_test_") &&
     offers.every(o => typeof o.link === "string" && /^plink_/.test(o.link) &&
@@ -143,7 +151,7 @@ export default {
       // the original immutable order; never hide conflicting records with INSERT OR IGNORE.
       const previous = await env.DB.prepare(
         `SELECT checkout_session_id, payment_intent_id, stripe_customer_id,
-          payment_link_id, stripe_price_id, term, subtotal_cents, tax_cents,
+          payment_link_id, stripe_price_id, term, terms_version, subtotal_cents, tax_cents,
           total_cents, currency, status FROM prepurchase_orders
           WHERE checkout_session_id = ? OR payment_intent_id = ? LIMIT 1`
       ).bind(order.id, order.paymentIntent).first();
@@ -154,6 +162,7 @@ export default {
           previous.payment_link_id === order.link &&
           previous.stripe_price_id === order.price &&
           previous.term === order.term &&
+          previous.terms_version === order.termsVersion &&
           previous.subtotal_cents === order.subtotal &&
           previous.tax_cents === order.tax &&
           previous.total_cents === order.total &&
@@ -174,10 +183,10 @@ export default {
         env.DB.prepare(
           `INSERT INTO prepurchase_orders(
             checkout_session_id, payment_intent_id, stripe_customer_id, payment_link_id,
-            stripe_price_id, term, subtotal_cents, tax_cents, total_cents, currency, status
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            stripe_price_id, term, terms_version, subtotal_cents, tax_cents, total_cents, currency, status
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         ).bind(order.id, order.paymentIntent, order.customer, order.link, order.price,
-          order.term, order.subtotal, order.tax, order.total, order.currency, order.status)
+          order.term, order.termsVersion, order.subtotal, order.tax, order.total, order.currency, order.status)
       ]);
       return new Response("Order recorded; access remains inactive", { status: 200 });
     } catch {
