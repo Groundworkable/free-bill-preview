@@ -9,6 +9,8 @@
   "vars": {
     // Intentionally blocked. An independent owner review is needed to enable.
     "PAYMENTS_MODE": "disabled",
+    "TERMS_APPROVED": "false",
+    "TERMS_VERSION": "UNAPPROVED",
     "MONTH_LINK_ID": "plink_1UbK33JK9stEim4w7BvY2CnM",
     "ANNUAL_LINK_ID": "plink_1UbK3MJK9stEim4w2nS3loNW",
     "MONTH_PRICE_ID": "price_1UbK2YJK9stEim4wCsZ0tyao",
