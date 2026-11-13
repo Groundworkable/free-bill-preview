@@ -20,10 +20,18 @@ This is a deliberately incomplete setup checklist, **not an executable deploymen
 1. Create a **new test D1 database** dedicated to these payment tests; do not bind to an existing Groundwork database.
 2. Apply `schema.sql` to that test database. Run `python3 schema.test.py` and `node --test worker.test.mjs` locally/in CI.
 3. Bind the new database as `DB` in a **new sandbox-only Worker**. Deploy `worker.mjs` only after code review and ensure `PAYMENTS_MODE=sandbox`.
-4. Configure these test-only values privately: `STRIPE_WEBHOOK_SECRET`, `STRIPE_TEST_SECRET_KEY`, `MONTH_LINK_ID`, `ANNUAL_LINK_ID`, `MONTH_PRICE_ID`, and `ANNUAL_PRICE_ID`. Use the IDs of the verified test-mode offers. Set secrets with the secure Cloudflare secrets interface, never in public git.
+4. Configure these test-only values privately: `STRIPE_WEBHOOK_SECRET`, `STRIPE_TEST_SECRET_KEY`, `MONTH_LINK_ID`, `ANNUAL_LINK_ID`, `MONTH_PRICE_ID`, and `ANNUAL_PRICE_ID`. Use the IDs of the verified test-mode offers. Set secrets with the secure Cloudflare secrets interface, never in public git. The Worker will also require a separately approved `TERMS_VERSION` and `TERMS_APPROVED=true` in its isolated sandbox environment once the merchant terms exist.
 5. Register a **test-mode** Stripe webhook endpoint to the new Worker's `/webhooks/stripe` path for `checkout.session.completed` and `checkout.session.async_payment_succeeded`. No production events and no application routing changes.
 6. Only after tax settings are complete, briefly activate a **test link** to perform a real sandbox checkout; verify the Stripe session, signed webhook delivery and exactly one `paid_unfulfilled` database row. Verify that no membership activates.
 7. Test canceled/failed/delayed payments, duplicate deliveries, and mismatched price/tax scenarios. Disable the test links afterward and keep customer-facing site gates disabled.
+
+## Stripe-hosted terms acceptance — added safety gate
+
+The test receiver now checks `session.consent.terms_of_service === "accepted"` **and** requires `TERMS_APPROVED=true` and an immutable `TERMS_VERSION` (format `prepurchase-vYYYY-MM-DD`). The database retains that exact approved terms version with every paid-unfulfilled order. Without those values, the receiver returns 503 and cannot record a purchase.
+
+Before activating **any** Payment Link, set a real, founder-approved terms URL in Stripe Public Details and require Stripe Checkout terms acceptance (`consent_collection.terms_of_service=required`). The current existing test links have `consent_collection:null` and remain inactive; they do **not** meet the new consent gate. The website's checkbox alone does not replace Stripe-hosted consent.
+
+Do not invent the terms version, claim legal approval, or insert a fabricated terms URL to bypass this gate. The version should identify the actually published purchase/refund terms and be finalized before real customer charges.
 
 ## Local integration test (completed in pull-request CI)
 
