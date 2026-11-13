@@ -1,0 +1,22 @@
+{
+  "enabled": false,
+  "termsApproved": false,
+  "termsUrl": null,
+  "refundPolicyUrl": null,
+  "offers": {
+    "monthly": {
+      "label": "Groundwork — one prepaid month",
+      "amountUsd": 9.99,
+      "currency": "usd",
+      "paymentMode": "one_time",
+      "paymentLink": null
+    },
+    "annual": {
+      "label": "Groundwork — twelve prepaid months",
+      "amountUsd": 96,
+      "currency": "usd",
+      "paymentMode": "one_time",
+      "paymentLink": null
+    }
+  }
+}
