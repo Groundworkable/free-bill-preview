@@ -30,6 +30,8 @@ jobs:
         run: node --test preorder/payment-service/worker.test.mjs
       - name: Verify isolated database schema, replay constraints and atomic rollback
         run: python3 preorder/payment-service/schema.test.py
+      - name: Confirm payment sandbox cannot deploy or route to existing app
+        run: python3 preorder/payment-service/isolation.test.py
   browser-validate:
     runs-on: ubuntu-latest
     steps:
