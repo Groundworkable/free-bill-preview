@@ -139,14 +139,40 @@ export default {
       ).bind(event.id).first();
       if (oldEvent) return new Response("Event already recorded", { status: 200 });
 
-      // D1 batch executes atomically; failed writes roll back both statements.
-      // The primary keys make duplicate events and completed sessions idempotent.
+      // A second Stripe event can refer to the same paid session. Confirm it matches
+      // the original immutable order; never hide conflicting records with INSERT OR IGNORE.
+      const previous = await env.DB.prepare(
+        `SELECT checkout_session_id, payment_intent_id, stripe_customer_id,
+          payment_link_id, stripe_price_id, term, subtotal_cents, tax_cents,
+          total_cents, currency, status FROM prepurchase_orders
+          WHERE checkout_session_id = ? OR payment_intent_id = ? LIMIT 1`
+      ).bind(order.id, order.paymentIntent).first();
+      if (previous) {
+        const same = previous.checkout_session_id === order.id &&
+          previous.payment_intent_id === order.paymentIntent &&
+          previous.stripe_customer_id === order.customer &&
+          previous.payment_link_id === order.link &&
+          previous.stripe_price_id === order.price &&
+          previous.term === order.term &&
+          previous.subtotal_cents === order.subtotal &&
+          previous.tax_cents === order.tax &&
+          previous.total_cents === order.total &&
+          previous.currency === order.currency &&
+          previous.status === "paid_unfulfilled";
+        if (!same) throw new Error("Stripe purchase conflicts with stored order");
+        await env.DB.prepare(
+          "INSERT OR IGNORE INTO stripe_processed_events(event_id, event_type, checkout_session_id) VALUES (?, ?, ?)"
+        ).bind(event.id, event.type, order.id).run();
+        return new Response("Existing verified order; access remains inactive", { status: 200 });
+      }
+      // D1 batch is atomic. Duplicate races fail uniqueness and are retried by Stripe.
+      // Retry sees the matching existing order; conflicting purchase data always fails.
       await env.DB.batch([
         env.DB.prepare(
-          "INSERT OR IGNORE INTO stripe_processed_events(event_id, event_type, checkout_session_id) VALUES (?, ?, ?)"
+          "INSERT INTO stripe_processed_events(event_id, event_type, checkout_session_id) VALUES (?, ?, ?)"
         ).bind(event.id, event.type, order.id),
         env.DB.prepare(
-          `INSERT OR IGNORE INTO prepurchase_orders(
+          `INSERT INTO prepurchase_orders(
             checkout_session_id, payment_intent_id, stripe_customer_id, payment_link_id,
             stripe_price_id, term, subtotal_cents, tax_cents, total_cents, currency, status
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
