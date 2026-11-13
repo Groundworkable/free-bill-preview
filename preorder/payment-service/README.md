@@ -1,11 +1,11 @@
 # Groundwork isolated sandbox payment receiver
 
-**Status:** Code review and automated tests only. No Cloudflare Worker, D1 database, Stripe webhook endpoint, or live checkout is deployed by this PR.
+**Status (November 13, 2026):** The founder created a separate Cloudflare Worker named `groundwork-payment-sandbox-isolated`, bound a new isolated D1 database as `DB`, ran the schema SQL in the D1 Console (Cloudflare reported success), and uploaded the reviewed `worker.mjs` to that isolated Worker. The root request displayed the expected `Not found`. These observations come from founder-provided screenshots; **remote webhook delivery and the live deployed code/version have not been independently verified**. This PR remains **draft**, public checkout is **disabled**, and the Stripe test links are **inactive**.
 
 ## Safeguards
 
 - This is intentionally separate from the `groundworkable-groundwork-life` production Worker and all existing Groundwork Supabase projects.
-- A Cloudflare account operator must provision a dedicated test Worker and a new, isolated D1 database before any networked integration tests.
+- The founder has separately provisioned an isolated test Worker and D1 database. No deployment from this PR is wired to Cloudflare, and no existing Groundwork app worker/database was modified in this workstream.
 - The receiver processes verified **Stripe test-mode** Checkout events only.
 - It checks the approved $9.99 and $96 one-time Stripe prices and exact additional tax amounts.
 - The only purchase status written is `paid_unfulfilled`. This project has **no** app entitlement or activation integration.
@@ -17,9 +17,9 @@
 
 This is a deliberately incomplete setup checklist, **not an executable deployment script**. It must be reviewed by the founder before creating cloud resources.
 
-1. Create a **new test D1 database** dedicated to these payment tests; do not bind to an existing Groundwork database.
-2. Apply `schema.sql` to that test database. Run `python3 schema.test.py` and `node --test worker.test.mjs` locally/in CI.
-3. Bind the new database as `DB` in a **new sandbox-only Worker**. Deploy `worker.mjs` only after code review and ensure `PAYMENTS_MODE=sandbox`.
+1. **Reported complete:** A **new test D1 database** was created and bound to the dedicated Worker; do not change its binding to an existing Groundwork database.
+2. **Reported complete:** Cloudflare D1 Console returned successful SQL execution of `schema.sql`. The schema and webhook tests also run in pull-request CI. The screenshot alone does not prove table contents; verify with `/tables` or read-only queries if needed.
+3. **Reported complete:** Bound the new database as `DB`; the founder uploaded `worker.mjs` to the isolated Worker and its root displayed the expected `Not found` response. Payment mode remains disabled/unconfigured; do not enable until secrets, consent, and approved terms are available.
 4. Configure these test-only values privately: `STRIPE_WEBHOOK_SECRET`, `STRIPE_TEST_SECRET_KEY`, `MONTH_LINK_ID`, `ANNUAL_LINK_ID`, `MONTH_PRICE_ID`, and `ANNUAL_PRICE_ID`. Use the IDs of the verified test-mode offers. Set secrets with the secure Cloudflare secrets interface, never in public git. The Worker will also require a separately approved `TERMS_VERSION` and `TERMS_APPROVED=true` in its isolated sandbox environment once the merchant terms exist.
 5. Register a **test-mode** Stripe webhook endpoint to the new Worker's `/webhooks/stripe` path for `checkout.session.completed` and `checkout.session.async_payment_succeeded`. No production events and no application routing changes.
 6. Only after tax settings are complete, briefly activate a **test link** to perform a real sandbox checkout; verify the Stripe session, signed webhook delivery and exactly one `paid_unfulfilled` database row. Verify that no membership activates.
@@ -48,7 +48,7 @@ python3 isolation.test.py
 
 The local test-only entrypoint `worker.local.entry.mjs` exposes D1 inspection endpoints **only to the local test harness**. The deployment example points to `worker.mjs` instead; never deploy `worker.local.entry.mjs` or copy its inspection routes into a remotely accessible Worker.
 
-A **real** Stripe-to-Cloudflare delivery test is still blocked on authorized creation of new isolated cloud resources, webhook secrets, and Stripe Tax setup.
+A **real** Stripe-to-Cloudflare delivery test is still blocked on configuring a real test-mode Stripe webhook destination and its signing secret, securely storing test-only Stripe API credentials in the isolated Worker, approving and publishing customer terms, and completing Stripe Tax settings. The cloud resources exist, but remote end-to-end delivery remains unverified.
 
 ## Current test-mode resource IDs (non-secret)
 
@@ -63,7 +63,7 @@ These IDs are **test-only**. Both Stripe links were observed inactive.
 
 The automated tests mock Stripe network responses and exercise webhook logic with synthetic signed events. The SQLite schema tests verify unique payment identifiers, non-activation constraints and transaction rollback in an in-memory database.
 
-**These tests are not proof of actual Stripe-to-Cloudflare connectivity.** The end-to-end sandbox test is blocked until a new isolated Worker and D1 database exist, a test-only webhook destination is configured, and Stripe Tax settings are completed. The founder has not authorized deployment or activation.
+**These tests are not proof of actual Stripe-to-Cloudflare connectivity.** The founder created an isolated Worker and D1 database, but no confirmed Stripe webhook destination, signing secret, or complete cloud transaction exists. The founder authorized only the isolated Worker upload; no authorization to activate payment links, merge the website PR, change existing app infrastructure, or accept live payments was given.
 
 ## Next release gates
 
