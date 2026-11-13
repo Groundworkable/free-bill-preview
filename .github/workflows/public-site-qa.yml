@@ -32,6 +32,12 @@ jobs:
         run: python3 preorder/payment-service/schema.test.py
       - name: Confirm payment sandbox cannot deploy or route to existing app
         run: python3 preorder/payment-service/isolation.test.py
+      - name: Install isolated local Worker test dependencies
+        working-directory: preorder/payment-service
+        run: npm install --no-save --no-package-lock --ignore-scripts wrangler@4 msw@2
+      - name: Verify Stripe webhook on local Cloudflare Workerd and D1
+        working-directory: preorder/payment-service
+        run: node --test worker.local.test.mjs
   browser-validate:
     runs-on: ubuntu-latest
     steps:
