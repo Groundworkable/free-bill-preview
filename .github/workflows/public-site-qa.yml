@@ -30,6 +30,8 @@ jobs:
         run: node --test preorder/payment-service/worker.test.mjs preorder/payment-service/payment-changes.test.mjs
       - name: Verify isolated database schema, replay constraints and atomic rollback
         run: python3 preorder/payment-service/schema.test.py
+      - name: Rehearse read-only Stripe refund and dispute reconciliation with synthetic snapshots
+        run: python3 preorder/payment-service/refund_reconciliation.test.py
       - name: Validate founder-approved offer calendar and no unauthorised renewals
         run: python3 preorder/payment-service/offer-calendar.contract.test.py
       - name: Confirm payment sandbox cannot deploy or route to existing app
