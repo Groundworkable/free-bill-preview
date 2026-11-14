@@ -12,6 +12,8 @@ on:
       - "scripts/organizations_browser_qa.py"
       - "scripts/clean_url_browser_qa.py"
       - "scripts/preorder_browser_qa.py"
+      - "scripts/preorder_legal_release_gate.py"
+      - "preorder/**/*.md"
       - "preorder/checkout-config.json"
       - "preorder/payment-service/**"
       - ".github/workflows/public-site-qa.yml"
@@ -26,6 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify legal review drafts cannot silently activate or replace public policies
+        run: python3 scripts/preorder_legal_release_gate.py
       - name: Verify sandbox Stripe webhook signatures, prices and no activation
         run: node --test preorder/payment-service/worker.test.mjs preorder/payment-service/payment-changes.test.mjs
       - name: Verify isolated database schema, replay constraints and atomic rollback
