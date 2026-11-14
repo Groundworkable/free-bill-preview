@@ -7,8 +7,24 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (url.pathname === "/__test/seed" && request.method === "POST") {
-      // D1 exec supports full SQL scripts; semicolon splitting corrupts CREATE TRIGGER bodies.
-      await env.DB.exec(env.__TEST_SCHEMA);
+      // Seed only the local in-memory D1. D1.exec treats newlines as SQL
+      // boundaries, so passing a formatted script with comments/trigger
+      // bodies fails; naive semicolon splitting also corrupts triggers.
+      // Assemble complete statements and run them through D1.prepare.
+      let pending = [];
+      let trigger = false;
+      for (const raw of env.__TEST_SCHEMA.split(/\r?\n/)) {
+        const line = raw.trim();
+        if (!line || line.startsWith("--")) continue;
+        if (/^CREATE\s+TRIGGER\b/i.test(line)) trigger = true;
+        pending.push(line);
+        const complete = line.endsWith(";") && (!trigger || /^END\s*;$/i.test(line));
+        if (!complete) continue;
+        await env.DB.prepare(pending.join(" ")).run();
+        pending = [];
+        trigger = false;
+      }
+      if (pending.length) throw new Error("Incomplete local D1 schema");
       return new Response("OK");
     }
     if (url.pathname === "/__test/counts" && request.method === "GET") {
