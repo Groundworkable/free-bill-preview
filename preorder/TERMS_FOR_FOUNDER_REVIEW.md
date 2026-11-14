@@ -58,9 +58,9 @@ If the expected activation timeframe changes, Able Systems will notify affected 
 
 **Proposed pre-activation policy:** Customers may request a full refund of their pre-purchase before paid access is activated, using the support contact identified on the checkout page. Refunds return to the original payment method where possible, subject to the payment provider's processing time. Taxes are refunded or adjusted as legally appropriate.
 
-**Suggested post-activation option for review, not approved:** 7 days after confirmed usable activation to request a full voluntary refund; after that, consider prorated refunds of entirely unused future annual months, with statutory and non-delivery remedies always preserved. Do not promise this policy or advertise nonrefundable access until the founder confirms an administrable rule and applicable legal requirements are reviewed.
+**Founder-approved post-activation refund structure (November 14, 2026; still requires legal/operational review before publication):** A customer may request a full voluntary refund within **seven calendar days after their purchased paid term actually begins**. Complimentary early access does not start that seven-day clock. After the seven-day period, an annual pre-purchaser may cancel and receive a prorated refund for each **entirely unused future purchased month**, at **$8 per month** of the $96 annual base payment before applicable tax adjustments; February's complimentary month is not counted as purchased time. A partly used paid annual month is not part of this voluntary unused-full-month refund calculation. For a prepaid $9.99 month, ordinarily no partial refund is owed for used time after the seven-day period under the voluntary policy. Non-delivery, service problems, applicable law, and other non-waivable consumer rights may require additional refunds or remedies regardless of these windows. A refund never authorizes a new automatic recurring charge.
 
-**[REQUIRED: Define post-activation refund and cancellation rules, treatment of partial terms, and any applicable legal requirements. Do not advertise a no-refund policy until reviewed.]**
+**[REQUIRED: Finalize operational timing, treatment of delayed or unclaimed activation, tax adjustments and fulfillment, plus legal review before publishing these terms. This paragraph is NOT yet an effective customer offer.]**
 
 Because these pre-purchases do not auto-renew, there is no recurring subscription to cancel under this offer.
 
@@ -109,7 +109,8 @@ Nothing in these terms limits non-waivable consumer rights. **[REQUIRED: Legal r
 - [ ] Eligibility for the new-January-customer one-month free trial and exact first billing date approved; do not infer recurring consent.
 - [x] Founder launch distinction clarified: marketing website ASAP; official application launch target January 1, 2027; pre-launch buyers' early use free through December 31; new early buyers' terms start on actual access.
 - [ ] Legally valid latest delivery date, cutoff/delay notice, and delivery method finalized.
-- [ ] Pre- and post-activation refund policy finalized; reviewed for applicable law.
+- [x] Founder approved the seven-day full post-paid-start refund structure and prorated refunds for entirely unused annual paid months (planning approval only).
+- [ ] Refund operations, timing, tax adjustments, pre-activation rights and statutory compliance reviewed and finalized before publication.
 - [ ] Operational payment-to-customer fulfillment and refund support established.
 - [ ] Updated Privacy Policy and public support details reviewed.
 - [ ] South Carolina Retail License issued and effective; correct Stripe Tax configuration and registrations confirmed.
