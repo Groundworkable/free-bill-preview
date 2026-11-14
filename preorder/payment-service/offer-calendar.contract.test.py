@@ -32,7 +32,13 @@ assert cfg["new_january_customers"]["first_full_month_free"]
 assert cfg["new_january_customers"]["trial_begins_on_usable_activation"]
 assert not cfg["new_january_customers"]["automatic_recurring_charge_authorized_by_trial_alone"]
 assert cfg["late_launch"]["exact_adjusted_start_dates"] == "UNAPPROVED"
-assert cfg["late_launch"]["final_delivery_cutoff"] == "UNAPPROVED"
+assert cfg["late_launch"]["final_unresolved_order_resolution_date"] == "2027-01-15"
+assert cfg["late_launch"]["cutoff_approval"] == "founder_approved_planning_only"
+assert cfg["late_launch"]["contract_legal_review_status"] == "PENDING"
+assert set(cfg["late_launch"]["resolution_choices"]) == {"usable_access_delivered", "affirmative_agreement_to_specific_extended_date", "full_refund_initiated"}
+assert cfg["late_launch"]["silence_counts_as_extension_consent"] is False
+assert cfg["late_launch"]["unresolved_without_extension_refund_initiation_business_days"] == 5
+assert cfg["launch"]["application_target"] == "2027-01-01"
 assert cfg["full_refund_reserve"]["covers_prepaid_and_new_customer_receipts"]
 assert not cfg["full_refund_reserve"]["automatic_stripe_payout_means_spendable"]
 assert not cfg["full_refund_reserve"]["revenue_released_to_discretionary_spend_on_purchase"]
