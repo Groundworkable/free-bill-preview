@@ -145,3 +145,15 @@ test("local D1 journal immutability triggers reject UPDATE and DELETE", async()=
   });
   assert.deepEqual(await counts(),{orders:1,events:2});
 });
+
+
+test("local D1 original purchase evidence rejects UPDATE and DELETE", async()=>{
+  const response=await server.fetch("https://example.invalid/__test/order-immutability");
+  const body=await response.text();
+  assert.equal(response.status,200,body);
+  assert.deepEqual(JSON.parse(body),{
+    updateBlocked:true,deleteBlocked:true,orderUnchanged:true
+  });
+  const order=await (await server.fetch("https://example.invalid/__test/order")).json();
+  assert.deepEqual(order,{status:"paid_unfulfilled",subtotal_cents:999,tax_cents:60,total_cents:1059});
+});
