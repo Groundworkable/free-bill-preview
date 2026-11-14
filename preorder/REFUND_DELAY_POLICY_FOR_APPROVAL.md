@@ -1,6 +1,6 @@
 # Groundwork pre-purchase — refund, delay, and reserve policy for founder review
 
-**STATUS: FOUNDER APPROVED POST-ACTIVATION REFUND STRUCTURE — November 14, 2026. OTHER TERMS STILL DRAFT, NOT PUBLISHED OR LEGALLY CLEARED.**
+**STATUS: FOUNDER-APPROVED POST-ACTIVATION REFUND STRUCTURE AND JANUARY 15, 2027 DELAY-RESOLUTION CUTOFF — November 14, 2026. REMAINING TERMS STILL DRAFT, NOT PUBLISHED OR LEGALLY CLEARED.**
 **Scope:** Individual $9.99 one-time monthly pre-purchase and $96 one-time annual pre-purchase. Public landing site is targeted ASAP. Groundwork paid application target is January 1, 2027. No payment activation or application modification is authorized by this draft.
 
 ## Rules established by the founder (not new commercial offers)
@@ -34,11 +34,11 @@
 - Preserve the full purchased term and one free February-equivalent bonus period; the bonus must **shift with delayed delivery** instead of disappearing because February passes while the product is unavailable.
 - **Still requires owner/legal sign-off:** a finite latest date by which an undelivered order must be fulfilled or proactively refunded; treatment of buyers who do not respond to a proposed delay; any mandatory refund rules for sales into each supported region.
 
-### Proposed finite non-delivery resolution deadline — AWAITING FOUNDER APPROVAL
+### Founder-approved finite non-delivery resolution deadline — awaiting legal/operational review
 
-**Recommendation: January 15, 2027 as the latest date for a pre-purchase to remain unresolved without the purchaser's express agreement to a later, specific delivery date.** This is a **refund/consent resolution date**, NOT a postponement of the official January 1, 2027 application launch. If legal review establishes a stricter rule, follow it.
+**Founder approved January 15, 2027 as the final unresolved-prepurchase resolution date unless the purchaser expressly agrees to a later, specific delivery date.** This is a **refund/consent resolution date**, NOT a postponement of the official January 1, 2027 application launch. If legal review establishes a stricter rule, follow it.
 
-**Proposed exact sequence:**
+**Founder-approved resolution schedule for planning; implementation, customer communications, and legally binding terms are not yet approved:**
 
 | Date / condition | Customer treatment |
 |---|---|
@@ -54,7 +54,7 @@ The dates **January 8 and January 15 are not launch targets** and must not be ad
 
 **Bonus-month preservation:** For a late launch, shift the **entire paid term plus the entire one-month complimentary period** to the verified date usable access actually starts. The final billing dates and annual entitlement end date must be recomputed **per customer**, not simply left at the original January/February/March calendar labels. Exact calendar-anniversary handling and any December preview benefit require separate engineering verification. *Illustrative and not yet approved*: if a prepaid monthly user's usable access starts January 10, their purchased month could run January 10–February 9, and their complimentary full month February 10–March 9, with no authorized renewal before March 10.
 
-**Unresponsive buyers:** Never presume their silence means they agreed to postpone fulfillment indefinitely. If the proposed January 15 cutoff arrives without access or recorded affirmative extension, refund proactively. If a buyer later signs up, start a separate, clearly consented purchase.
+**Unresponsive buyers:** Never presume their silence means they agreed to postpone fulfillment indefinitely. If the founder-approved January 15 cutoff arrives without access or recorded affirmative extension, refund proactively. If a buyer later signs up, start a separate, clearly consented purchase.
 
 **Regulatory scope:** The FTC Mail, Internet, or Telephone Order **Merchandise** Rule's automatic 30-day fulfillment clock does **not** cover services; the recommendation above is a proposed *customer contract and internal business policy*, not an asserted statutory 14-day rule. South Carolina Unfair Trade Practices Act, §39-5-20, prohibits unfair/deceptive acts or practices, and other state, payment-network and consumer requirements may apply. Obtain appropriate legal review before advertising contractual promises.
 
@@ -102,7 +102,7 @@ Before publishing this text, separately disclose the exact monthly/annual period
 
 ## Release blockers not lifted by this document
 
-- [ ] Founder approves or revises the **proposed January 15, 2027 unresolved-order/refund decision cutoff**, including treatment of silent buyers and explicit-consent extensions; legal review still required.
+- [x] Founder approved **January 15, 2027** as the unresolved-order cutoff: deliver access, obtain affirmative agreement to a specific later delivery date, or proactively cancel and initiate full refund within **five business days**. Silence is not consent; legal/operational review still required.
 - [x] Founder approved **full voluntary refund in first seven calendar days of the paid term**, thereafter **unused full annual paid months prorated at $8 each** before applicable tax adjustment, with no voluntary partial monthly refund after seven days (statutory/non-delivery rights preserved).
 - [ ] Five-business-day refund initiation target and exact operational cutoffs/tax adjustments confirmed (not included in the founder's explicit approval).
 - [ ] Functioning support/refund workflow and factual messaging reviewed.
