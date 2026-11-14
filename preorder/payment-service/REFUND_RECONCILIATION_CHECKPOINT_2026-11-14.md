@@ -68,3 +68,16 @@ These items supersede earlier in-document observations about the **sandbox** hea
 - Stripe Tax settings `active` with the saved head-office address; this does **not** demonstrate that a tax registration exists or tax must be collected in every region.
 - The existing isolated **test** webhook has refund/dispute and checkout events subscribed but remains disabled. No sandbox Checkout Sessions were returned in the available list.
 - PR #17 public-site QA and offline preview **both passed** at the previous commit `64c68df`. The new charge-correlation changes require fresh CI verification.
+
+
+## Founder-run remote isolated D1 migration — confirmed by console output (November 14, 2026)
+
+The founder executed `remote_d1_additive_migration_2026-11-14.sql` in the Cloudflare D1 Console for the isolated payment database and supplied the subsequent `sqlite_master` result. **All seven expected object names were PRESENT:**
+
+- Tables: `stripe_processed_events`, `prepurchase_orders`, `prepurchase_payment_changes`
+- Journal triggers: `prepurchase_changes_block_update`, `prepurchase_changes_block_delete`
+- Purchase triggers: `prepurchase_orders_block_update`, `prepurchase_orders_block_delete`
+
+The pre-migration screenshot had shown the first two tables present and the other five objects missing. The follow-up screenshot returned all seven entries. This constitutes **founder-supplied evidence of remote schema-object presence**, not independently authenticated database access or proof that the trigger definitions are correct, the deployed Worker contains the draft journal handler, or that a real webhook/refund was processed. The migration should **not be rerun by default**; it is complete at the object-presence checkpoint. The Cloudflare Worker is still expected to be disabled. No production database was touched as part of the documented isolated migration.
+
+**Next release gate:** inspect isolated deployed Worker version against the reviewed `worker.mjs` (including `refund.*` and `charge.dispute.*` handling), verify actual D1 binding, and complete hosted customer terms acceptance and a separately authorized isolated test transaction. Never enable payment links or webhook based on schema-object presence alone.
