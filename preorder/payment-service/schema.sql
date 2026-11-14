@@ -63,3 +63,20 @@ BEFORE DELETE ON prepurchase_payment_changes
 BEGIN
   SELECT RAISE(ABORT, 'payment-change journal is append-only');
 END;
+
+
+-- Keep purchase records immutable in the isolated draft receiver. Fulfillment,
+-- cancellations and refunds must eventually live in independently reviewed
+-- append-only records, never by overwriting evidence of the original payment.
+-- These are local/draft guards only; no remote D1 migration is authorized.
+CREATE TRIGGER IF NOT EXISTS prepurchase_orders_block_update
+BEFORE UPDATE ON prepurchase_orders
+BEGIN
+  SELECT RAISE(ABORT, 'prepurchase orders are append-only');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prepurchase_orders_block_delete
+BEFORE DELETE ON prepurchase_orders
+BEGIN
+  SELECT RAISE(ABORT, 'prepurchase orders are append-only');
+END;
