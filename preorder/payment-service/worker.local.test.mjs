@@ -138,8 +138,9 @@ test("financial notifications use real D1 uniqueness without modifying paid orde
 test("local D1 journal immutability triggers reject UPDATE and DELETE", async()=>{
   // This local-only probe is never exposed by the deployable Worker.
   const response=await server.fetch("https://example.invalid/__test/journal-immutability");
-  assert.equal(response.status,200,await response.text());
-  assert.deepEqual(await response.json(),{
+  const body=await response.text();
+  assert.equal(response.status,200,body);
+  assert.deepEqual(JSON.parse(body),{
     updateBlocked:true,deleteBlocked:true,rowUnchanged:true
   });
   assert.deepEqual(await counts(),{orders:1,events:2});
