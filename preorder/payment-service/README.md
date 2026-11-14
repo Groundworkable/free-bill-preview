@@ -39,6 +39,18 @@ This is a deliberately incomplete setup checklist, **not an executable deploymen
 
 **Safe next steps:** Configure restricted test-only API permissions for reading Checkout Session line items, put both test secrets in the new Cloudflare Worker's secret settings privately, verify that the exact Worker version and new D1 schema are deployed, approve terms and refund/delay policy, then enable the test endpoint temporarily for a real sandbox event. Keep all live customer payment links disabled. Do not proceed solely because the root Worker URL responds `Not found`.
 
+## Cloudflare secret and variable configuration — founder-confirmed November 14, 2026
+
+The founder confirmed, via the Cloudflare dashboard workflow, that the following were saved in the **isolated payment Worker**, not the existing Groundwork application:
+
+- `STRIPE_WEBHOOK_SECRET` — Cloudflare **Secret** (value never shared here).
+- `STRIPE_TEST_SECRET_KEY` — Cloudflare **Secret**, currently a `sk_test_` test credential (value never shared here).
+- Seven non-secret configuration values: `PAYMENTS_MODE=disabled`, `TERMS_APPROVED=false`, `TERMS_VERSION=UNAPPROVED`, and the approved test-mode monthly/annual Payment Link and Price IDs specified below.
+
+**Verification boundary:** these settings are *reported saved by the founder*, not remotely inspected by this integration. Do not infer that deployed Cloudflare versions or values were independently checked. Stripe API rechecks confirmed the webhook endpoint remained `disabled`, both test Payment Links remained `active=false`, and GitHub PR #17 checks passed before this checkpoint. Webhook delivery, actual D1 writing, and Stripe Tax collection remain unverified.
+
+**Next gating work:** Founder-approved pre-purchase/refund/delay terms, verified public legal and support information, Stripe Tax head-office and legitimate tax registration, Stripe-hosted consent on the checkout link, and a time-limited Stripe test event. Keep both environment switches in their disabled states until those gates are satisfied.
+
 ## Stripe-hosted terms acceptance — added safety gate
 
 The test receiver now checks `session.consent.terms_of_service === "accepted"` **and** requires `TERMS_APPROVED=true` and an immutable `TERMS_VERSION` (format `prepurchase-vYYYY-MM-DD`). The database retains that exact approved terms version with every paid-unfulfilled order. Without those values, the receiver returns 503 and cannot record a purchase.
