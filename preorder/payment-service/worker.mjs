@@ -89,6 +89,50 @@ export function verifyPaidPurchase(session, items, offers) {
   };
 }
 
+const changeTypes = new Set([
+  "refund.created", "refund.updated", "refund.failed",
+  "charge.dispute.created", "charge.dispute.updated", "charge.dispute.closed"
+]);
+
+export function verifyPaymentChange(event) {
+  const object = event.data?.object;
+  const refund = event.type.startsWith("refund.");
+  const statuses = refund
+    ? ["pending", "requires_action", "succeeded", "failed", "canceled"]
+    : ["warning_needs_response", "warning_under_review", "warning_closed", "needs_response", "under_review", "won", "lost", "prevented"];
+  const idPattern = refund ? /^re_[a-zA-Z0-9]+$/ : /^dp_[a-zA-Z0-9]+$/;
+  if (!changeTypes.has(event.type) || !object ||
+      object.object !== (refund ? "refund" : "dispute") || !idPattern.test(object.id || "") ||
+      !Number.isSafeInteger(object.amount) || object.amount <= 0 || object.currency !== "usd" ||
+      !statuses.includes(object.status) ||
+      (event.type === "refund.failed" && object.status !== "failed") ||
+      (object.livemode != null && object.livemode !== false)) {
+    throw new Error("Invalid financial notification");
+  }
+  // Retain an unmatched charge/intent reference; do not discard an early event.
+  const reference = (value, pattern) => {
+    if (value == null) return null;
+    if (typeof value !== "string" || !pattern.test(value)) throw new Error("Invalid payment reference");
+    return value;
+  };
+  const charge = reference(object.charge, /^ch_[a-zA-Z0-9]+$/);
+  const intent = reference(object.payment_intent, /^pi_[a-zA-Z0-9]+$/);
+  if (!charge && !intent) throw new Error("Missing payment correlation");
+  return [event.id, event.type, object.id, charge, intent, object.amount, object.currency, object.status];
+}
+
+async function recordPaymentChange(event, env) {
+  const values = verifyPaymentChange(event);
+  await env.DB.prepare(`INSERT INTO prepurchase_payment_changes(
+    event_id,event_type,object_id,charge_id,payment_intent_id,amount_cents,currency,financial_status
+  ) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(event_id) DO NOTHING`).bind(...values).run();
+  const row = await env.DB.prepare(`SELECT event_id,event_type,object_id,charge_id,
+    payment_intent_id,amount_cents,currency,financial_status
+    FROM prepurchase_payment_changes WHERE event_id = ?`).bind(event.id).first();
+  const fields = ["event_id","event_type","object_id","charge_id","payment_intent_id","amount_cents","currency","financial_status"];
+  if (!row || fields.some((field, i) => row[field] !== values[i])) throw new Error("Conflicting notification");
+}
+
 async function fetchStripeLineItems(env, sessionId) {
   const url = "https://api.stripe.com/v1/checkout/sessions/" +
     encodeURIComponent(sessionId) + "/line_items?limit=2";
@@ -129,6 +173,14 @@ export default {
     try { event = JSON.parse(body); } catch { return new Response("Invalid event", { status: 400 }); }
     if (event.livemode !== false || typeof event.id !== "string" || !/^evt_[a-zA-Z0-9]+$/.test(event.id)) {
       return new Response("Unexpected Stripe environment", { status: 400 });
+    }
+    if (changeTypes.has(event.type)) {
+      try {
+        await recordPaymentChange(event, env);
+        return new Response("Financial notification recorded; access unchanged", { status: 200 });
+      } catch {
+        return new Response("Financial notification verification failed", { status: 503 });
+      }
     }
     const types = new Set(["checkout.session.completed", "checkout.session.async_payment_succeeded"]);
     if (!types.has(event.type)) return new Response("Event acknowledged", { status: 200 });
@@ -196,3 +248,4 @@ export default {
     }
   }
 };
+
