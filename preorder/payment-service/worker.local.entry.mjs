@@ -36,6 +36,33 @@ export default {
       const row = await env.DB.prepare("SELECT status,subtotal_cents,tax_cents,total_cents FROM prepurchase_orders LIMIT 1").first();
       return Response.json(row);
     }
+    if (url.pathname === "/__test/order-immutability" && request.method === "GET") {
+      // Test-only local D1 mutation probe. Never deploy this entrypoint.
+      const id = "cs_test_ABC123local";
+      const original = await env.DB.prepare(
+        "SELECT status,total_cents FROM prepurchase_orders WHERE checkout_session_id=?"
+      ).bind(id).first();
+      if (!original) return Response.json({error:"Fixture missing"}, {status:409});
+      let updateBlocked=false;
+      let deleteBlocked=false;
+      try {
+        await env.DB.prepare(
+          "UPDATE prepurchase_orders SET total_cents=999 WHERE checkout_session_id=?"
+        ).bind(id).run();
+      } catch { updateBlocked=true; }
+      try {
+        await env.DB.prepare(
+          "DELETE FROM prepurchase_orders WHERE checkout_session_id=?"
+        ).bind(id).run();
+      } catch { deleteBlocked=true; }
+      const after = await env.DB.prepare(
+        "SELECT status,total_cents FROM prepurchase_orders WHERE checkout_session_id=?"
+      ).bind(id).first();
+      return Response.json({
+        updateBlocked, deleteBlocked,
+        orderUnchanged: Boolean(after && after.status===original.status && after.total_cents===original.total_cents)
+      });
+    }
     if (url.pathname === "/__test/journal-immutability" && request.method === "GET") {
       // Deliberate local-only mutation attempts to test the D1 triggers.
       // This route MUST NEVER appear in the deployable payment Worker.
