@@ -55,3 +55,7 @@ The founder showed the mailbox alias administration page for `hello@groundworkby
 - Before making these operational/customer-facing promises, verify inbound delivery, reply-from-alias identity, who monitors the shared inbox, response tracking and a complete test of the refund intake and follow-up process.
 
 This is founder-provided account configuration evidence, **not proof of sent/received email**, a live support SLA or approval to publish legal terms. Public checkout, remote webhook and refund operations remain disabled/unverified.
+
+### Billing contact test — founder-reported November 14, 2026
+
+The founder confirmed that the test of `billing@groundworkbyable.com` worked following instructions to check inbound delivery and reply using the billing alias. This is **founder-reported verification**, not an independently inspected mail-delivery log or an operational support SLA. The shared `hello@groundworkbyable.com` inbox still requires routine monitoring, case tracking, and support-process testing before checkout goes live.
