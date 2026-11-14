@@ -1,16 +1,3 @@
--- Groundwork isolated D1 payment sandbox: additive migration only.
--- Based on founder-run read-only audit, November 14 2026:
--- PRESENT: prepurchase_orders, stripe_processed_events.
--- MISSING: prepurchase_payment_changes and four append-only triggers.
---
--- Run ONLY against D1 database groundwork-payment-sandbox-isolated.
--- Never run against the production Groundwork database.
--- Do not enable checkout, payment links, or Stripe webhooks from this migration.
---
--- This does not alter, delete, or recreate the two existing purchase/event tables.
--- IF NOT EXISTS allows a safe rerun after a partial execution.
--- Remote execution must be followed by remote_d1_readonly_audit.sql.
-
 CREATE TABLE IF NOT EXISTS prepurchase_payment_changes (
   event_id TEXT PRIMARY KEY,
   event_type TEXT NOT NULL CHECK (event_type IN (
