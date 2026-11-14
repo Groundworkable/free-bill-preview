@@ -23,6 +23,11 @@ export default {
       const row = await env.DB.prepare("SELECT status,subtotal_cents,tax_cents,total_cents FROM prepurchase_orders LIMIT 1").first();
       return Response.json(row);
     }
+    if (url.pathname === "/__test/changes" && request.method === "GET") {
+      const rows = await env.DB.prepare("SELECT * FROM prepurchase_payment_changes ORDER BY event_id").all();
+      return Response.json(rows.results);
+    }
     return paymentWorker.fetch(request,env,ctx);
   }
 };
+
