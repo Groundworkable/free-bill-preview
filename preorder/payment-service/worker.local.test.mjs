@@ -109,3 +109,28 @@ test("incorrect Stripe line-item price rejects event without writing",async()=>{
  assert.equal(response.status,503);
  assert.deepEqual(await counts(),{orders:1,events:2});
 });
+
+
+
+test("financial notifications use real D1 uniqueness without modifying paid orders",async()=>{
+ const change=(id,type,status,amount=300)=>makeEvent(id,type,{
+   object:type.startsWith("refund.")?"refund":"dispute",
+   id:type.startsWith("refund.")?"re_LocalRefund":"dp_LocalDispute",
+   charge:"ch_LocalCharge",payment_intent:paymentId,amount,currency:"usd",status
+ });
+ const success=change("evt_RefundDone","refund.updated","succeeded");
+ assert.equal((await send(success)).status,200);
+ assert.equal((await send(success)).status,200);
+ assert.equal((await send(change("evt_RefundPending","refund.created","pending"))).status,200);
+ assert.equal((await send(change("evt_RefundFailed","refund.failed","failed"))).status,200);
+ assert.equal((await send(change("evt_Dispute","charge.dispute.created","needs_response"))).status,200);
+ // A conflicting replay must not overwrite the original journal entry.
+ assert.equal((await send(change("evt_RefundDone","refund.updated","succeeded",500))).status,503);
+ const rows=await (await server.fetch("https://example.invalid/__test/changes")).json();
+ assert.equal(rows.length,4);
+ assert.equal(rows.find(r=>r.event_id==="evt_RefundDone").amount_cents,300);
+ assert.equal(rows.find(r=>r.event_id==="evt_RefundPending").financial_status,"pending");
+ const order=await (await server.fetch("https://example.invalid/__test/order")).json();
+ assert.deepEqual(order,{status:"paid_unfulfilled",subtotal_cents:999,tax_cents:60,total_cents:1059});
+ assert.deepEqual(await counts(),{orders:1,events:2});
+});
