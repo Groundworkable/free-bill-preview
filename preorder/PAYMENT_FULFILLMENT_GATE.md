@@ -11,6 +11,16 @@ This document extends Draft PR #17 for the public marketing website, without cha
 - No Stripe Tax jurisdiction registrations currently configured; sandbox tax settings report missing `head_office`. A link having automatic tax enabled does **not** mean correct tax is being collected.
 - The live site checkout config remains disabled. Production account, customer billing and access entitlements were not modified.
 
+## Founder-confirmed two-launch and cohort policy — planning only
+
+- **Public landing/marketing website:** target **ASAP**. This is the acquisition and prospective pre-purchase entry point, subject to separate terms, tax, and payment approval.
+- **Groundwork paid application:** official **January 1, 2027** launch target, or an early opening if technically ready.
+- **Pre-launch paid reservation cohort:** when verified paid app access opens early, give these pre-paid customers complimentary use up to December 31; their purchased one-month/twelve-month paid terms begin January 1 if app access is then usable.
+- **New customers buying after an early app opening:** begin paid terms on the date their usable access is actually activated (e.g. December 14), with no Jan 1 restart.
+- **App delayed past January 1:** communicate timely, provide full refunds on request before paid activation, and preserve the full purchased term until usable activation. A legally sufficient final delivery/cancellation deadline remains to be approved, not invented.
+- **Do not merge cohorts with Founding Access**, which remains a distinct free reservation/30-day-free arrangement.
+- **Implementation remains pending:** identity linkage, early-access courtesy period, paid start/end tracking, distinct prepay vs early live-purchase offers, receipt and tax accounting, messaging and cancellation. Current webhook records `paid_unfulfilled` only; no app entitlements are authorized.
+
 ## Event-to-order contract (pending implementation)
 Do not implement this from browser redirects or URL query strings. The only payment-success source is verified Stripe server-side evidence.
 
@@ -32,7 +42,7 @@ Do not implement this from browser redirects or URL query strings. The only paym
 - Do not launch payment links until South Carolina Retail License issuance/effective date, Stripe Tax registration/setup, published terms/delay/refund policy, support contact, and entitlement/fulfillment process are verified.
 
 ## Important commercial boundary
-Founding Access remains a **free reservation** (30-day free period after activation, planned $7.99/month for first 12 paid months), not a prepaid customer payment. Organization pilot/sponsorships are separate from consumer checkout. The intended public launch date is not itself a guaranteed paid activation date.
+Founding Access remains a **free reservation** (30-day free period after activation, planned $7.99/month for first 12 paid months), not a prepaid customer payment. Organization pilot/sponsorships are separate from consumer checkout. The marketing site's relaunch is ASAP; the official app launch target is January 1, 2027. Founder planning intent does not alone finalize a legally binding customer delivery promise.
 
 ## Next implementation work (requires deliberate integration decision)
 - Choose where verified webhook processing and purchase records will live (Cloudflare Worker or a separate secured backend), reconciling actual app infrastructure first.
