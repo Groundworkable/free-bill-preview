@@ -1,70 +1,83 @@
-# Groundwork individual purchase policy — founder decision gate
+# Groundwork individual pre-purchase policy — A2 selected, conditions still under review
 
-**STATUS: REVIEW DRAFT, NOT APPROVED OR PUBLISHED. November 14, 2026.**
-This document narrows the remaining commercial decisions. It does not change any public pages, customer terms, Stripe settings, or the isolated Cloudflare Worker. All payment and tax safeguards remain disabled.
+**STATUS: A2 STRATEGY SELECTED by founder November 14, 2026. TERMS, DEADLINES, PRICE-PROTECTION DURATION, AND PUBLICATION NOT YET APPROVED.**
 
-## Verified offer structure, not an offer to the public
+This draft is a planning decision record, not customer-facing terms and not authorization to switch on test or live payments. No payment setup, website deployment, app renovation, or database access is changed by this document.
 
-| Item | Currently configured in isolated Stripe sandbox | Meaning |
-|---|---|---|
-| Monthly | $9.99 USD base, one-time, tax exclusive | One future month of standard Groundwork access, **not** an automatically renewing monthly subscription |
-| Annual | $96 USD base, one-time, tax exclusive | Twelve future months of standard Groundwork access, **not** an automatically renewing annual subscription |
-| Founding Access | No payment requested here | Separate free reservation, 30 days free after activation, then $7.99 per paid month for twelve months only under a separately approved recurring contract |
-| Advanced / Assets & Inventory / Marketplace | Not included | No promise of availability or launch dates |
+## Why A2 was selected — founder intent
 
-The one-time Stripe products currently in the sandbox must not be described as continuing memberships; the pre-purchase terms must explicitly distinguish future duration from recurring charges.
+The founder chose **A2: allow future-access pre-purchases**. The goal is to test *willingness to pay and wait*, reduce the need for an interested buyer to remember to return later, understand the size of a committed launch audience, and assess whether the resulting demand justifies founder-funded investment. **The founder does not intend to spend customers' prepaid funds before fulfillment**; they want the money kept available for full refunds if release is delayed or canceled.
 
-## Founder choices required before any pre-sale
+A hypothetical milestone of **100 people** is a scenario for evaluating demand, **not an approved launch condition or a public limited-quantity offer**. A larger share of monthly versus annual purchases changes gross committed sales but not cash safely available to spend.
 
-### Decision A — Should customers pay before application access exists?
+The founder also intends to consider an early-buyer/price-protection benefit if standard pricing rises on release or 1–3 months afterward. **That benefit has not been defined or technically implemented.** It must state exact price, eligible term, protection duration, future purchase mechanics, cancellation and whether the benefit is transferable before any customer is charged. No automatic renewal is authorized.
 
-- **A1 — No paid pre-orders yet (least risk).** Keep Founding Access reservations free. Offer standard membership checkout only after real access and delivery flow are verified. This would require replacing the current *future-access* policy with a delivered-access policy before turning on checkout.
-- **A2 — Permit prepaid future access.** Retain the current one-time $9.99 / $96 sandbox offers, but disclose a credible written estimated delivery/activation window, explicit customer cancellation/refund rights and who sends activation notices.
+Customer email updates and optional text onboarding reminders are intended. Delivery systems, consent records, costs, cadence, opt-out and account-linking are not yet built/verified. Do not promise active SMS delivery before infrastructure and consent controls exist.
 
-**No choice presumed.** The public website target of January 1, 2027 is *not* a commitment for the paid application's release.
+## Verified Stripe sandbox offers; not active public promises
 
-### Decision B — If A2, specify a transparent delivery promise
+| Offer | One-time base amount | Bought now / supplied later | Taxes |
+|---|---:|---|---|
+| Standard Groundwork prepaid month | $9.99 | 1 month of paid access starting only after verified activation | Applicable tax shown separately |
+| Standard Groundwork prepaid annual term | $96.00 | 12 months of paid access starting only after verified activation | Applicable tax shown separately |
 
-Confirm all of these before sending customers to Stripe:
-- The **earliest** paid-access activation date and latest **promised** activation date, based on verified application readiness, not the marketing site launch.
-- The customer delivery method, including what constitutes confirmed access, how customers receive instructions, and who reconciles orders.
-- The date at which a customer is notified of delays, the revised estimate communicated, and the response/refund process.
-- How the seller handles unfulfilled orders if no activation is possible by the deadline.
+**These are not recurring subscription products.** Neither charges again automatically. The normal post-launch `$9.99/month` or `$96/year` pricing strategy and the separate Founding Access reservation offer must not be conflated with these one-time Stripe sandbox Payment Links.
 
-**Conservative draft default for review:** allow customer-initiated full refund at any time before paid term actually begins; if the seller cannot honor the promised activation date, notify immediately, provide cancellation/refund options, and refund without delay where law or agreed policy requires. Exact deadline and automatic-refund triggers remain **UNAPPROVED**.
+Founding Access remains a **free reservation**, with 30 free days after activation and a separately negotiated/consented $7.99 monthly for first 12 paid months; it is not automatically a prepaid purchaser perk.
 
-### Decision C — Post-activation refunds
+Advanced, Assets & Inventory, and Marketplace remain unreleased and excluded.
 
-Specify whether the 1-month or 12-month nonrenewing prepaid term can be canceled for a refund after activation; if yes, how unused time is calculated; always preserve statutory rights. **Unapproved.** No invented no-refunds clause.
+## Demand measurement and no-spend reserve
 
-### Decision D — Support and privacy
+- **Committed demand:** count unique verified paid, unrefunded buyers; also report unique transactions, chosen term, conversion, refunds, chargebacks, and customers who actually activate. Exclude free reservations and incomplete/unpaid/refunded purchases from paid-conversion counts.
+- **Gross exposure:** report total tax-inclusive customer payments and the corresponding full remaining refundable obligation; account for Stripe fees, refunds, and disputes separately.
+- **Founder-funded investment:** evaluate how much additional expenditure is justified from *outside* prepay proceeds (existing business savings, owner funding, grants, etc.). Keep the full refund obligation covered with liquid reserves; Stripe may automatically pay funds to a bank account, and a payout is **not** a release of the obligation.
+- **No escrow claim:** a segregated merchant reserve is an internal policy, not a third-party escrow, customer trust, or deposit insurance. Do not advertise it as independently held or guaranteed.
+- Stripe processing fees may not be returned after refunds and disputes can add costs; the founder must fund those shortfalls separately. Stripe can hold refunds as pending for insufficient balance (https://support.stripe.com/questions/fix-your-pending-refund).
+- Obtain bookkeeping/tax advice for advance payment recognition, indirect tax liability and appropriate reserve controls before going live.
 
-- `privacy.html` is currently `privacy-v1`, effective October 3, 2026, and focuses on the public site and invitation-only beta. It names existing infrastructure providers but does **not yet explicitly describe** Stripe-paid checkout, payment confirmations, order reconciliation, refund/dispute records, retention, or the seller's support responsibilities for paid pre-purchases.
-- That existing page publishes `hello@groundworkbyable.com` for privacy requests; functioning delivery and the customer-support workflow have **not** been verified.
-- A revised privacy-policy draft must be reviewed and published before charging customers. No personal address should be copied into public legal/checkout fields without understanding which fields Stripe actually exposes.
+**Illustrative demand only:** 100 monthly purchases show $999 base gross; 100 annual purchases show $9,600 base gross. Mixed subscriptions lie between these amounts. **Spendable pre-purchase capital before delivery: $0 under the founder's policy.** These figures are not forecasts or guaranteed net proceeds.
 
-### Decision E — Taxes and license
+## Proposed customer protections — review, not approval
 
-**Observed in Stripe sandbox on Nov 14, 2026:** Tax settings status `pending`; `head_office` missing; zero registrations; both test links have `automatic_tax.enabled=true` and `tax_behavior=exclusive`. Stripe's automatic tax cannot be relied on until completed and legally applicable tax registration is verified.
+1. **Before activation:** customer can cancel at any time for a full refund of the payment (including associated tax as applicable), no reason required. Proposed merchant deadline: initiate refund within **5 business days** of verified request. Stripe typically takes **5–10 business days** after initiation to display the credit, and it can take longer (https://support.stripe.com/questions/how-long-refunds-take-to-process).
+2. **Activation estimate:** publish a concrete, evidence-supported earliest or expected date and **latest guaranteed delivery deadline** *before accepting a prepayment*. Current January 1, 2027 target is for the public website; it is **not** a committed paid-service activation date.
+3. **Delay:** notify buyers immediately when a miss becomes likely, including a revised date and the right to cancel for a full refund. Proposed advance checkpoint: **14 calendar days before the published latest delivery deadline**. The founder must approve the precise notice schedule and operational ability to send it.
+4. **Missed latest deadline:** proposed default is **automatically initiate full refunds within 5 business days of the missed deadline** unless a buyer has affirmatively agreed to a separate, clearly documented alternative. No silent extension or presumed consent.
+5. **After activation:** founder must choose an operational, lawful rule. **Proposed for review:** 7 calendar days after actual activation for a voluntary full refund; after that, annual prepayments may get a prorated refund for entirely unused future months, and monthly prepayments are nonrefundable for used service except where statutory rights, service non-delivery, or defects require otherwise. Do not present this as approved.
+6. **Unredeemed but ready:** propose a post-ready reminder sequence and a founder-approved *refund rather than forfeiture* of prepayments after an objectively defined unclaimed-access deadline. Do not treat email delivery alone as consumption of paid membership.
 
-**South Carolina source context (not personalized tax advice):**
-- SCDOR's Retail License guidance says taxable retail sales require the appropriate license before making such sales; a $50 application fee alone is not proof of issuance.
-  - https://www.dor.sc.gov/businesses/apply-business-tax-account/licensing-retail-license
-  - https://www.dor.sc.gov/businesses/apply-business-tax-account
-- SCDOR's 2025 Sales & Use Tax Manual, Chapter 17, and a fact-specific 2020 private letter ruling address potentially taxable online software-as-a-service (ASP) subscriptions. The private ruling is not a determination about Groundwork itself.
-  - https://dor.sc.gov/sites/dor/files/Documents/Policy%20Manuals/Chapter%2017%20-%20Communications.pdf
-  - https://dor.sc.gov/sites/dor/files/policies/PLR20-1.pdf
-- Confirm taxable classification of **these specific sales**, SC registration and any other nexus/registrations with SCDOR or a qualified tax adviser. Stripe Tax is calculation software, not tax registration.
+## Price protection recommendation for founder review
 
-Stripe Tax's head-office address must be accurate and entered privately. Verify account business/public support settings separately to avoid publishing the founder's residential address.
+One-time payment already locks the **purchased** period at its checkout price. A real grandfather benefit beyond that requires a **separate renewal-price promise**, with no automatic card charge.
 
-## Ordered readiness gates — no implied authorization
+**Proposal:** early buyers may manually buy eligible standard individual Groundwork terms at their original per-term base rate (`$9.99 for a month` or `$96 for a year`, as applicable) for **12 months following the end of the initial prepaid access period**. A new payment is always a separate, consented checkout; customers are not automatically renewed. This is a discussion proposal, not an accepted commercial obligation. Verify engineering support for tagging the original buyer and enforcing the term and rate before offering the benefit.
 
-1. Resolve **Decision A**, then B/C if selling future access.
-2. Review final terms, privacy/payment disclosure, support method, and consumer cancellation/refund process; obtain appropriate professional review.
-3. Confirm retail-license approval/effective date and tax obligations, add accurate head office and any verified registrations in Stripe.
-4. Set approved public Stripe terms URL and enforce checkout consent on both **test** Payment Links. Confirm disabled-state safety first.
-5. Explicitly authorize a temporary isolated **sandbox-only** purchase test. Verify Stripe-signed events, D1 order, duplicate/idempotent handling, no user activation, and refund/dispute behavior as applicable.
-6. Re-disable test checkout and document results. Live charges, site PR merge, public terms publication, and app activation require **separate** release approval.
+Alternatives needing explicit founder choice: protect only the initially purchased period; protect for 12 months **from** activation; another fixed duration; or lifetime (not recommended without a durable financial model). Also decide whether refunding the first purchase revokes the price benefit, whether it can be transferred, and how overlapping Founding Access offers are handled.
 
-**Current required response from founder:** A1 or A2. No policy approval follows from the phrase "onward."
+Do not advertise a possible future price increase or a scarcity limit as certain unless approved and true.
+
+## Operational messaging proposal — not yet implemented
+
+- **Immediately after paid test-mode checkout when eventually approved:** clear receipt, term, tax, nonrenewal status, conditional date/window, refund route and order reference. Do not say access is active.
+- **Seven days after purchase and each 30 days until ready:** factual progress, current estimate, remaining refund option.
+- **14 days before published latest deadline:** readiness/delay check, without suggesting an unverified launch will occur.
+- **When verified access is ready:** verified account-claim instructions, no guaranteed SMS unless independently opted in.
+- **If readiness slips or an automatic refund is triggered:** direct email with exact choices, order reference and refund status.
+- **If access remains unclaimed:** follow-up at 7, 30, and 60 days (proposal), with a fair final refund rule if unclaimed at the agreed period.
+
+Service/transactional emails must be distinguished from marketing consent. SMS needs separate express consent, records, and an opt-out mechanism; no SMS connection is authorized or built.
+
+## Outstanding owner sign-offs (A2 intent does not equal these approvals)
+
+- [x] A2 future-access approach selected. **Planning authority only.**
+- [ ] Exact earliest/expected and latest delivery date **based on verified paid-feature readiness**, not marketing launch.
+- [ ] Refund request response time; automatic refund trigger; post-activation refund calculation; unclaimed-access deadline.
+- [ ] Initial price protection eligibility, duration, exclusion/overlap rules and future one-time consent.
+- [ ] Email support identity and verified delivery/cancellation workflows; optional SMS consent and compliance.
+- [ ] Privacy policy update to accurately describe Stripe, preorders, service and refund records.
+- [ ] Issued/effective SC license, service tax classification and valid Stripe Tax head-office/registrations.
+- [ ] Tested Stripe terms acceptance, signed webhook, D1 reconciliation, refunds and **zero** automatic memberships.
+- [ ] Explicit separate authorization to publish terms, enable sandbox test delivery or any live charge.
+
+**Release state:** `PAYMENTS_MODE=disabled`, `TERMS_APPROVED=false`, test webhook disabled, both Stripe Payment Links inactive, checkout config disabled, website PR draft and unmerged. Do not modify current Groundwork app, its Worker, its databases, or its ongoing renovation.
