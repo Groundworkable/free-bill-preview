@@ -63,6 +63,12 @@ python3 preorder/payment-service/remote_fail_closed_smoke.py
 
 **Not yet run against Cloudflare:** this environment cannot resolve the Worker's external hostname. The script is intentionally **not** auto-run by CI (which lacks Cloudflare access and must not depend on a remote service). A `404` or `400` is not confirmation the intended disabled configuration is active: investigate deployed code/version and settings, with the Stripe destination and links kept disabled. Do not enable checkout based on this smoke check alone.
 
+## Refund and dispute audit schema — draft only
+
+The latest `schema.sql` also defines a **separate append-only journal** of refund and dispute status notifications, with event-ID uniqueness, positive amounts, and order correlation by Stripe PaymentIntent. CI tests assert that invalid and duplicate journal records fail and that the original purchase remains `paid_unfulfilled`.
+
+**Not operational:** the deployed isolated Cloudflare D1 database has **not** had this new schema applied; the live test Worker has not been updated to process financial-change events; the Stripe webhook remains subscribed only to the two Checkout Session completion event types and remains disabled. Recording a later refund or dispute, resolving delayed event order, issuing a refund, and activating membership all need separate verified implementation and authorization. No changes to the existing Groundwork renovation.
+
 ## Stripe-hosted terms acceptance — added safety gate
 
 The test receiver now checks `session.consent.terms_of_service === "accepted"` **and** requires `TERMS_APPROVED=true` and an immutable `TERMS_VERSION` (format `prepurchase-vYYYY-MM-DD`). The database retains that exact approved terms version with every paid-unfulfilled order. Without those values, the receiver returns 503 and cannot record a purchase.
