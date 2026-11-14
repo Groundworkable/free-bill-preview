@@ -4,7 +4,7 @@
 
 **Owner:** Able Systems LLC  
 **Version:** UNAPPROVED — do not generate or record a final terms version yet  
-**Prepared:** November 13, 2026  
+**Prepared:** November 13, 2026; A2 founder intent incorporated November 14, 2026  
 **Publication:** Not authorized. Keep the website's `checkout-config.json` disabled and do not set Stripe's terms URL to this draft.
 
 ## Plain-language purchase summary (proposed)
@@ -18,7 +18,7 @@ Groundwork by Able is still being prepared for public memberships. A pre-purchas
 
 Applicable sales tax is calculated and shown separately before payment. The customer must see a final total and agree to the terms before completing Stripe-hosted checkout. These are one-time charges; neither option authorizes automatic renewal or a subsequent card charge.
 
-**Founder approval needed before publishing:** State a specific, credible expected activation date or clearly defined fulfillment window; set the latest acceptable delay and written notification schedule. **January 1, 2027 is a target for the public marketing website relaunch, not a guaranteed membership activation date.**
+**A2 future-access strategy selected for planning on November 14, 2026. This is NOT approval of the text below.** State a specific, credible expected activation date or clearly defined fulfillment window; set the latest acceptable delay and written notification schedule. **January 1, 2027 is a target for the public marketing website relaunch, not a guaranteed membership activation date.**
 
 ## Proposed contractual terms (review draft)
 
@@ -36,15 +36,27 @@ You will receive a payment confirmation and instructions for receiving access wh
 
 Your purchased term begins only when the standard paid application access covered by this offer has actually been made available to you and activation is confirmed. If you already have restricted beta access, that does not automatically begin or consume the separately purchased membership term. The purchased term is for standard Groundwork access as described in the final offer; it is not a commitment to launch future Advanced, Assets & Inventory, marketplace, automatic bank connections, or other unreleased functionality.
 
+### 3A. Confirmed pre-purchase intent; proposed early-buyer benefit
+
+The purpose of the pre-purchase is to confirm willingness to pay and wait before Groundwork's paid access becomes available. A purchase is **not** a crowdfunding contribution, investment, donation, or authorization for the company to spend funds that might need to be refunded. Able Systems intends to maintain sufficient liquid funds to honor outstanding full refund obligations until delivery, but **does not claim** an escrow, trust account, bank guarantee, or third-party ring-fenced reserve. This business policy does not reduce consumer protections.
+
+**Existing price protection:** Your purchased one-month or twelve-month period will be provided at the price shown when you pay, regardless of subsequent changes to public pricing. There will be no additional charge merely because prices increase before you activate.
+
+**Additional grandfather benefit under founder review—not yet promised:** The founder is considering allowing prepaid purchasers to **separately choose** eligible additional time at the same base rate, even if public rates increase. The exact eligible period, length of price protection, account requirements, refund consequences, and purchase mechanism must be decided and implemented before advertising this extra benefit. **No automatic renewal or subsequent card charge** is authorized.
+
 ### 4. Delayed or unavailable activation
 
 If the expected activation timeframe changes, Able Systems will notify affected customers using their purchase contact information and provide a revised estimate and their options. **Proposed customer-protective policy: a full refund is available on request at any time before the purchased period starts.**
+
+**A2 draft timing proposal — NOT APPROVED:** Allow a full pre-activation refund on request at any time, with Able Systems initiating it within 5 business days of a verified request. Publish a credible latest paid-access delivery date before accepting money. Notify purchasers as soon as a likely delay is known; review their status at least 14 calendar days before the latest published deadline. If that deadline passes without access, propose initiating automatic full refunds within 5 business days unless the buyer has expressly agreed to a different delivery date. Stripe/provider processing time may delay the credit after initiation. Do not silently extend deadlines.
 
 **[REQUIRED: Founder to approve a maximum postponement window and whether refunds are automatic if the original expected date is not met or if the product is not delivered.]** Any legally required refund rights apply regardless of this policy.
 
 ### 5. Refund requests and cancellations
 
 **Proposed pre-activation policy:** Customers may request a full refund of their pre-purchase before paid access is activated, using the support contact identified on the checkout page. Refunds return to the original payment method where possible, subject to the payment provider's processing time. Taxes are refunded or adjusted as legally appropriate.
+
+**Suggested post-activation option for review, not approved:** 7 days after confirmed usable activation to request a full voluntary refund; after that, consider prorated refunds of entirely unused future annual months, with statutory and non-delivery remedies always preserved. Do not promise this policy or advertise nonrefundable access until the founder confirms an administrable rule and applicable legal requirements are reviewed.
 
 **[REQUIRED: Define post-activation refund and cancellation rules, treatment of partial terms, and any applicable legal requirements. Do not advertise a no-refund policy until reviewed.]**
 
@@ -64,6 +76,12 @@ Stripe handles the payment details submitted to Stripe-hosted checkout. Able Sys
 
 Customers can contact Able Systems through the official website contact page, **https://groundworkbyable.online/contact/**. **[REQUIRED: Verify a working support channel and response expectations before public checkout.]** Keep the legally required notices and business identity visible without publicly exposing a personal residential address unnecessarily.
 
+### 8A. Customer updates, reminders, and optional texts
+
+**Proposed, not operational:** Provide a dated confirmation email and purchase reference, periodic factual updates (for review: after seven days and monthly thereafter), prompt notices of delays or refund decisions, and a verified onboarding email once paid access is genuinely available. Email delivery does not itself start the purchased term; confirmation of usable paid access does.
+
+Optional SMS onboarding notices require separate affirmative permission, a reliable provider, opt-out handling, and any applicable legal requirements. No SMS consent is implied by making a payment, and no SMS delivery is currently promised.
+
 ### 9. No investment or guaranteed product features
 
 A pre-purchase is not an investment, loan, deposit account, or promise of returns. The Groundwork platform is an informational and planning tool and does not provide personalized financial, legal, tax, or investment advice. Do not interpret the marketing site launch date, tour scenarios, or future roadmap as a promise that unfinished features will be included in this purchase.
@@ -80,7 +98,9 @@ Nothing in these terms limits non-waivable consumer rights. **[REQUIRED: Legal r
 
 ## Required release approvals — NOT YET GIVEN
 
+- [x] Founder selected A2 future-access pre-purchases as a planning direction (not release approval).
 - [ ] Founder explicitly approves the final copy and terms version.
+- [ ] Additional renewal-price grandfather benefit duration, eligibility, and separate future-purchase consent approved (if offered).
 - [ ] Launch/activation estimate, cutoff/delay notice, and delivery method finalized.
 - [ ] Pre- and post-activation refund policy finalized; reviewed for applicable law.
 - [ ] Operational payment-to-customer fulfillment and refund support established.
