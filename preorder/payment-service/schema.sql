@@ -48,3 +48,18 @@ CREATE INDEX IF NOT EXISTS idx_payment_change_intent
   ON prepurchase_payment_changes(payment_intent_id);
 CREATE INDEX IF NOT EXISTS idx_payment_change_object
   ON prepurchase_payment_changes(object_id);
+
+-- Draft-only ordinary-SQL immutability guards. These prevent accidental
+-- UPDATE/DELETE by the application connection; they do not defeat a privileged
+-- schema administrator who can drop triggers. Not applied to remote D1.
+CREATE TRIGGER IF NOT EXISTS prepurchase_changes_block_update
+BEFORE UPDATE ON prepurchase_payment_changes
+BEGIN
+  SELECT RAISE(ABORT, 'payment-change journal is append-only');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prepurchase_changes_block_delete
+BEFORE DELETE ON prepurchase_payment_changes
+BEGIN
+  SELECT RAISE(ABORT, 'payment-change journal is append-only');
+END;
