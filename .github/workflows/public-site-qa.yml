@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify sandbox Stripe webhook signatures, prices and no activation
-        run: node --test preorder/payment-service/worker.test.mjs
+        run: node --test preorder/payment-service/worker.test.mjs preorder/payment-service/payment-changes.test.mjs
       - name: Verify isolated database schema, replay constraints and atomic rollback
         run: python3 preorder/payment-service/schema.test.py
       - name: Validate founder-approved offer calendar and no unauthorised renewals
@@ -61,3 +61,4 @@ jobs:
           python3 scripts/organizations_browser_qa.py
           python3 scripts/clean_url_browser_qa.py
           python3 scripts/preorder_browser_qa.py
+
