@@ -132,3 +132,84 @@ assert connection.execute(
     "FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'"
 ).fetchone() == original_order
 print("PASS: paid purchase rows cannot be updated or deleted")
+
+
+# Founder-audited remote D1 originally contained two tables but not the journal
+# or any append-only triggers. Simulate upgrading that state without data loss.
+migration_path = Path(__file__).with_name("remote_d1_additive_migration_2026-11-14.sql")
+migration_sql = migration_path.read_text(encoding="utf-8")
+assert "DROP TABLE" not in migration_sql.upper()
+assert "ALTER TABLE" not in migration_sql.upper()
+assert "DELETE FROM" not in migration_sql.upper()
+assert "UPDATE PREPURCHASE_ORDERS SET" not in migration_sql.upper()
+assert "CREATE TABLE IF NOT EXISTS PREPURCHASE_ORDERS" not in migration_sql.upper()
+assert "CREATE TABLE IF NOT EXISTS STRIPE_PROCESSED_EVENTS" not in migration_sql.upper()
+legacy_sql = path.read_text(encoding="utf-8").split(
+    "-- Append-only journal of sandbox refund/dispute notifications."
+)[0]
+legacy = sqlite3.connect(":memory:")
+legacy.executescript(legacy_sql)
+legacy.execute(
+    "INSERT INTO stripe_processed_events(event_id,event_type,checkout_session_id) VALUES (?,?,?)",
+    ("evt_legacy", "checkout.session.completed", "cs_test_legacy")
+)
+legacy.execute(
+    """INSERT INTO prepurchase_orders(
+        checkout_session_id,payment_intent_id,stripe_customer_id,payment_link_id,
+        stripe_price_id,term,terms_version,subtotal_cents,tax_cents,total_cents,currency,status
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+    ("cs_test_legacy", "pi_legacy", None, "plink_legacy", "price_legacy",
+     "monthly", "prepurchase-v2026-11-13", 999, 60, 1059, "usd", "paid_unfulfilled")
+)
+legacy.commit()
+order_before = legacy.execute("SELECT * FROM prepurchase_orders").fetchall()
+event_before = legacy.execute("SELECT * FROM stripe_processed_events").fetchall()
+for _ in range(2):  # idempotency: rerunning must not change prior data
+    legacy.executescript(migration_sql)
+    assert legacy.execute("SELECT * FROM prepurchase_orders").fetchall() == order_before
+    assert legacy.execute("SELECT * FROM stripe_processed_events").fetchall() == event_before
+expected = {
+    ("table", "stripe_processed_events"),
+    ("table", "prepurchase_orders"),
+    ("table", "prepurchase_payment_changes"),
+    ("trigger", "prepurchase_changes_block_update"),
+    ("trigger", "prepurchase_changes_block_delete"),
+    ("trigger", "prepurchase_orders_block_update"),
+    ("trigger", "prepurchase_orders_block_delete"),
+}
+actual = set(legacy.execute(
+    "SELECT type,name FROM sqlite_master WHERE type IN ('table','trigger')"
+).fetchall())
+assert expected <= actual
+for change in (
+    "UPDATE prepurchase_orders SET total_cents=999 WHERE checkout_session_id='cs_test_legacy'",
+    "DELETE FROM prepurchase_orders WHERE checkout_session_id='cs_test_legacy'",
+):
+    try:
+        with legacy:
+            legacy.execute(change)
+        raise AssertionError("Existing order was mutable after migration")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+legacy.execute(
+    """INSERT INTO prepurchase_payment_changes(
+       event_id,event_type,object_id,charge_id,payment_intent_id,
+       amount_cents,currency,financial_status
+    ) VALUES (?,?,?,?,?,?,?,?)""",
+    ("evt_refund_legacy", "refund.created", "re_legacy", "ch_legacy",
+     "pi_legacy", 999, "usd", "pending")
+)
+legacy.commit()
+for change in (
+    "UPDATE prepurchase_payment_changes SET amount_cents=5 WHERE event_id='evt_refund_legacy'",
+    "DELETE FROM prepurchase_payment_changes WHERE event_id='evt_refund_legacy'",
+):
+    try:
+        with legacy:
+            legacy.execute(change)
+        raise AssertionError("Refund journal was mutable after migration")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+assert legacy.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 1
+assert legacy.execute("SELECT COUNT(*) FROM prepurchase_orders").fetchone()[0] == 1
+print("PASS: audited two-table D1 upgrades additively; existing rows preserved; reruns safe")
