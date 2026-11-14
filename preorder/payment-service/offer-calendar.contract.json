@@ -1,0 +1,51 @@
+{
+  "_notice": "FOUNDER-APPROVED OFFER CALENDAR ONLY. Not a deployed entitlement engine, published contract, or authorization to accept payments.",
+  "status": "founder_approved_schedule",
+  "launch": {
+    "marketing_site": "ASAP",
+    "application_target": "2027-01-01",
+    "conditional_founders_preview_start": "2026-12-14",
+    "prelaunch_prepay_window_start": "2026-11-14",
+    "prelaunch_prepay_window_end": "2026-12-13"
+  },
+  "monthly_prepay": {
+    "initial_one_time_price_cents": 999,
+    "currency": "usd",
+    "covered_months": ["2027-01"],
+    "bonus_free_months": ["2027-02"],
+    "conditional_complimentary_preview": ["2026-12-14", "2026-12-31"],
+    "first_possible_new_paid_period": "2027-03",
+    "renewal_authorized_by_one_time_prepayment": false
+  },
+  "annual_prepay": {
+    "initial_one_time_price_cents": 9600,
+    "currency": "usd",
+    "covered_months": ["2027-01", "2027-03", "2027-04", "2027-05", "2027-06", "2027-07", "2027-08", "2027-09", "2027-10", "2027-11", "2027-12", "2028-01"],
+    "bonus_free_months": ["2027-02"],
+    "conditional_complimentary_preview": ["2026-12-14", "2026-12-31"],
+    "last_covered_date": "2028-01-31",
+    "first_possible_new_paid_period": "2028-02",
+    "renewal_authorized_by_one_time_prepayment": false
+  },
+  "new_january_customers": {
+    "first_full_month_free": true,
+    "trial_begins_on_usable_activation": true,
+    "trial_ends_on_each_customers_own_anniversary": true,
+    "automatic_recurring_charge_authorized_by_trial_alone": false
+  },
+  "late_launch": {
+    "never_consume_undelivered_paid_or_bonus_time": true,
+    "notify_customers_and_offer_pre_activation_refunds": true,
+    "exact_adjusted_start_dates": "UNAPPROVED",
+    "final_delivery_cutoff": "UNAPPROVED"
+  },
+  "full_refund_reserve": {
+    "covers_prepaid_and_new_customer_receipts": true,
+    "automatic_stripe_payout_means_spendable": false,
+    "revenue_released_to_discretionary_spend_on_purchase": false,
+    "refund_dispute_and_statutory_liabilities_remain": true
+  },
+  "public_checkout_authorized": false,
+  "membership_activation_implemented": false,
+  "future_renewal_implemented": false
+}
