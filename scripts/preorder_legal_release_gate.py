@@ -18,7 +18,7 @@ assert "Stripe" not in published, "The public policy was modified without a revi
 assert "NOT PUBLISHED" in privacy_review and "NOT PUBLISHED" in terms_review
 assert "billing@groundworkbyable.com" in privacy_review and "billing@groundworkbyable.com" in terms_review
 assert "refund" in terms_review.lower() and "January 15, 2027" in terms_review
-assert "twelve purchased months" in terms_review.lower() or "twelve paid months" in terms_review.lower()
+assert "purchased months 2–12" in terms_review and "February 2027" in terms_review
 assert "Stripe" in privacy_review
 
 # Explicit fail-closed checkout is independent of the existence of review drafts.
