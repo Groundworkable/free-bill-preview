@@ -65,9 +65,9 @@ python3 preorder/payment-service/remote_fail_closed_smoke.py
 
 ## Refund and dispute audit schema — draft only
 
-The latest `schema.sql` also defines a **separate append-only journal** of refund and dispute status notifications, with event-ID uniqueness, positive amounts, and order correlation by Stripe PaymentIntent. CI tests assert that invalid and duplicate journal records fail and that the original purchase remains `paid_unfulfilled`.
+The latest `schema.sql` also defines a **separate event journal intended to be append-only** of refund and dispute status notifications, with event-ID uniqueness, positive amounts, and order correlation by Stripe PaymentIntent. CI tests assert that invalid and duplicate journal records fail and that the original purchase remains `paid_unfulfilled`.
 
-**Not operational:** the deployed isolated Cloudflare D1 database has **not** had this new schema applied; the live test Worker has not been updated to process financial-change events; the Stripe webhook remains subscribed only to the two Checkout Session completion event types and remains disabled. Recording a later refund or dispute, resolving delayed event order, issuing a refund, and activating membership all need separate verified implementation and authorization. No changes to the existing Groundwork renovation.
+**Not operational:** the deployed isolated Cloudflare D1 database has **not** had this new schema applied; the live test Worker has not been updated to process financial-change events; the Stripe webhook remains subscribed only to the two Checkout Session completion event types and remains disabled. The current schema does **not** prevent SQL UPDATE or DELETE; enforce an append-only write policy in the eventual handler and a tested migration before claiming immutable history. Recording a later refund or dispute, resolving delayed event order, issuing a refund, and activating membership all need separate verified implementation and authorization. No changes to the existing Groundwork renovation.
 
 ## Stripe-hosted terms acceptance — added safety gate
 
