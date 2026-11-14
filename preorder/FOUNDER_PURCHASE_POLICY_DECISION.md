@@ -14,27 +14,34 @@ The founder also intends to consider an early-buyer/price-protection benefit if 
 
 Customer email updates and optional text onboarding reminders are intended. Delivery systems, consent records, costs, cadence, opt-out and account-linking are not yet built/verified. Do not promise active SMS delivery before infrastructure and consent controls exist.
 
-## Founder-confirmed launch chronology — corrected November 14, 2026
+## Founder-confirmed launch/offer sequence — clarified November 14, 2026
 
-**Two different assets, two different target dates:**
+**Separate projects: marketing website ASAP; paid application official launch target January 1, 2027.** Founder-provided offer calendar below is a target schedule, conditional on verified application readiness, approved terms, tax and payment/fulfillment authorization. It is not authorization to activate payment links, public contracts, or renovation implementation.
 
-1. **Public marketing website / landing page:** relaunch **ASAP**, as soon as the approved polished website is ready. Its purpose is advertising, commercials, customer acquisition, Founding Access reservations, and, only after separate release authorization, consented pre-purchase collection.
-2. **Groundwork application / paid product:** **January 1, 2027** is the founder's official initial launch target. An earlier verified, usable app opening is permitted, but it **does not move the January 1 commencement date for customers who already pre-paid for the January 1 launch**.
+| Window | Pre-launch prepaid cohort (customer paid Nov 14–Dec 13) | New customer cohort | Operational meaning |
+|---|---|---|---|
+| Nov 14–Dec 13, 2026 | Pre-purchase offered when legally and operationally authorized; current links are INACTIVE | Not yet enrolled | Advance funds fully protected against refunds and not available for founder spending |
+| Dec 14–31, 2026 | **Complimentary founders' preview** if paid app is actually ready | If ordinary sales open early, customer-specific paid term starts on usable activation, per prior founder instruction; January promotion needs eligibility rules | Preview does **not** consume prepaid purchased membership |
+| Jan 1–31, 2027 | Previously collected advance is **applied to the January paid month** (working interpretation—no second January charge); funds continue under refund-reserve restrictions | New qualifying January enrollees receive **their first month free** | Official public product launch; dates subject to actual usability |
+| Feb 1–28, 2027 | Prepaid **monthly** cohort receives a complimentary February month | January entrants start paying after their individual full free-month trial ends (e.g. Jan 20 to Feb 19 free, first bill Feb 20), not necessarily on February 1 | Never shorten a customer's full free month |
+| Mar 1, 2027 onward | **Monthly** prepaid cohort could begin authorized recurring billing if customer separately consented before any subscription is created | Individual recurring cadence continues | Current Stripe prepay links are ONE-TIME; no renewals or payment authority exist in them |
 
-**If app is usable early:** Example: application becomes ready December 14, 2026. Customers who **pre-paid before the early opening** may move in and use their eligible paid experience **December 14–31 at no additional charge**; the originally purchased one-month or twelve-month term begins **January 1, 2027**, not December 14. **New customers who first purchase after that early opening** receive ordinary access with the membership term starting when their paid access becomes usable—for the example, December 14. Those customers' terms do not restart January 1.
+**Annual buyers need an independent clock.** A $96 annual advance funds 12 paid months. If February 2027 is promised as free *in addition* to that annual period, preserve all 12 paid months by extending the end date by a full month (illustrative: January 1, 2027–January 31, 2028, with one February 2027 bonus month credited), so **no annual renewal on March 1, 2027**. Founder still needs to confirm whether annual prebuyers also get the February bonus and the exact annual expiration mechanics. Do not unintentionally replace an annual term with a monthly one.
 
-**If app opening is delayed beyond January 1:** Promptly inform affected pre-paid customers; preserve the full purchased duration for activation when verified access actually becomes usable, and offer full pre-activation refunds on request. A contractual delayed-delivery cutoff and any legally required automatic refund procedures must be agreed separately; **the founder has not selected an automatic March 1 refund or a February launch instead of January 1**.
+**Founder wording requiring a final interpretation:** 'January pre-pay charges are pending acquisition.' This record interprets the initial payment as paying for January's first monthly term while remaining reserved for potential refund, not as an additional January billing event or as unrestricted revenue. Clarify final contractual accounting before any payment activation.
 
-**Systems implication:** A verified prepay order must be distinguished from live-access purchases. Track `purchased_at`, `offer/cohort`, `access_granted_at`, `paid_term_start_at`, `paid_term_end_at`, and any refund status without inferring that `paid_unfulfilled` authorizes application access. The early-use window is a courtesy benefit for the existing pre-launch prepaid cohort, not a deduction from purchased time. This is a **future app integration requirement, not an implemented entitlement feature**.
+**If launch slips:** no customer should lose promised paid time or promotional trial time before real usable access; send delay notices and offer pre-activation refunds on request. Final delivery deadline and any mandatory automatic refund procedure remain open legal/product decisions; do not invent February/March postponement.
 
-This date clarification is approved **as the founder's intent**, not an approval of customer-facing contractual language, Stripe activation, new functionality or alterations to the existing app renovation.
+**Full refund hold applies to all revenue.** Founder stated that they will not use **any** customer funds until the applicable refund period has elapsed. Operational design must separately track payment, fulfillment, refundable obligation, provider fees, disputes and eligibility for spending **per transaction/cohort**. Passing a policy refund deadline does not extinguish dispute, statutory, chargeback or unfulfilled-delivery exposure. Keep sufficient liquid reserves after release as required; automatic Stripe bank payout alone does not make proceeds available for founder discretionary use. This is not a claim of regulated escrow or external trust.
+
+**Not built:** dated cohorts, trial month credits, deferred paid term clocks, annual extension, recurring consent, grandfathered future rates, refund lock/availability calculation, customer messaging and early app access. These are product/billing integration needs to be considered in the existing renovation release process only with separate authorization; no current app implementation is approved here.
 
 ## Verified Stripe sandbox offers; not active public promises
 
 | Offer | One-time base amount | Bought now / supplied later | Taxes |
 |---|---:|---|---|
-| Standard Groundwork prepaid month | $9.99 | 1 paid month beginning Jan 1 if app ready by that date; if early, access beforehand is complimentary; if delayed, term begins upon actual usable activation | Applicable tax shown separately |
-| Standard Groundwork prepaid annual term | $96.00 | 12 paid months beginning Jan 1 if app ready by that date; if early, access beforehand is complimentary; if delayed, term begins upon actual usable activation | Applicable tax shown separately |
+| Standard Groundwork prepaid month | $9.99 | Working model: the one-time prepayment covers January 2027, February is complimentary, and separately consented recurring monthly payments may begin in March; earlier December access is complimentary; dates shift if unusable | Applicable tax shown separately |
+| Standard Groundwork prepaid annual term | $96.00 | Twelve paid months preserved; if February is a bonus month, annual expiration extends by one month rather than billing again in March; pending founder confirmation | Applicable tax shown separately |
 
 **These are not recurring subscription products.** Neither charges again automatically. The normal post-launch `$9.99/month` or `$96/year` pricing strategy and the separate Founding Access reservation offer must not be conflated with these one-time Stripe sandbox Payment Links.
 
@@ -88,6 +95,9 @@ Service/transactional emails must be distinguished from marketing consent. SMS n
 - [x] A2 future-access approach selected. **Planning authority only.**
 - [x] Confirm **marketing landing page ASAP** and **official application target January 1, 2027**, with prepay early access free until Dec 31, and new early buyers starting paid terms when activated (planning intent).
 - [ ] Verify paid-feature readiness and approve contractual promise/latest delay cutoff for the January 1 application target.
+- [ ] Confirm interpretation of 'January pre-pay charges pending acquisition' as January service covered by original prepayment.
+- [ ] Confirm February bonus for annual prepay purchasers and annual expiry extension; define first new-user free-month eligibility and real billing dates.
+- [ ] Approve separate opt-in and compliant subscription configuration for monthly March 1 renewals; current one-time Stripe links **cannot** renew.
 - [ ] Refund request response time; applicable automatic-refund requirements; post-activation refund calculation; unclaimed-access deadline.
 - [ ] Initial price protection eligibility, duration, exclusion/overlap rules and future one-time consent.
 - [ ] Email support identity and verified delivery/cancellation workflows; optional SMS consent and compliance.
