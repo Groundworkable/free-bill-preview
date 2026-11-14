@@ -38,6 +38,14 @@ jobs:
       - name: Verify Stripe webhook on local Cloudflare Workerd and D1
         working-directory: preorder/payment-service
         run: node --test worker.local.test.mjs
+  cloudflare-fail-closed:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify isolated deployed payment Worker refuses unsigned requests while disabled
+        run: python3 preorder/payment-service/remote_fail_closed_smoke.py
   browser-validate:
     runs-on: ubuntu-latest
     steps:
