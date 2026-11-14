@@ -74,6 +74,46 @@ class RefundReconciliationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             reconcile_test_snapshots(ORDER, [refund()], [], [event(), event()], complete=True)
 
+    def test_charge_only_dispute_resolves_using_verified_charge_snapshot(self):
+        provider_charge = dict(id="ch_proven", payment_intent="pi_testOne", amount=1059,
+                               currency="usd", livemode=False)
+        js = [dict(event_id="evt_dispute_charge", event_type="charge.dispute.created",
+                   object_id="dp_testOne", payment_intent_id=None, charge_id="ch_proven",
+                   amount_cents=1059, financial_status="needs_response")]
+        ds = [dict(id="dp_testOne", amount=1059, status="needs_response",
+                   payment_intent=None, charge="ch_proven", currency="usd", livemode=False)]
+        result = reconcile_test_snapshots(ORDER, [], ds, js, complete=True,
+                                          charge_snapshots=[provider_charge])
+        self.assertEqual(result["provided_charge_snapshot_count"], 1)
+        self.assertNotIn("unresolved_charge_only_event:evt_dispute_charge", result["concerns"])
+        self.assertNotIn("provider_dispute_wrong_or_missing_payment_intent:dp_testOne", result["concerns"])
+        self.assertIn("dispute_present_requires_manual_review", result["concerns"])
+        self.assertFalse(result["real_refund_execution_verified"])
+
+    def test_conflicting_charge_reference_does_not_silently_reconcile(self):
+        provider_charge = dict(id="ch_proven", payment_intent="pi_another", amount=1059,
+                               currency="usd", livemode=False)
+        js = [dict(event_id="evt_conflict", event_type="refund.updated",
+                   object_id="re_testOne", payment_intent_id="pi_testOne",
+                   charge_id="ch_proven", amount_cents=500, financial_status="succeeded")]
+        rs = [dict(refund(), charge="ch_proven")]
+        result = reconcile_test_snapshots(ORDER, rs, [], js, complete=True,
+                                          charge_snapshots=[provider_charge],
+                                          expected_refund_id="re_testOne", expected_refund_amount=500)
+        self.assertIn("charge_intent_conflict:evt_conflict", result["concerns"])
+        self.assertIn("charge_intent_conflict:re_testOne", result["concerns"])
+        self.assertFalse(result["snapshot_indicates_requested_refund_succeeded"])
+
+    def test_bad_or_duplicate_charge_snapshots_rejected(self):
+        provider_charge = dict(id="ch_proven", payment_intent="pi_testOne", amount=1059,
+                               currency="usd", livemode=False)
+        for items in ([provider_charge, provider_charge],
+                      [{**provider_charge, "livemode": True}],
+                      [{**provider_charge, "payment_intent": None}]):
+            with self.assertRaises(ValueError):
+                reconcile_test_snapshots(ORDER, [], [], [], complete=True,
+                                          charge_snapshots=items)
+
     def test_no_automatic_activation(self):
         with self.assertRaises(ValueError):
             reconcile_test_snapshots({**ORDER, "status": "active_membership"}, [], [], [], complete=True)
