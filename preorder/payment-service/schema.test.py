@@ -108,3 +108,27 @@ assert connection.execute(
 ).fetchone() == original
 assert connection.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 3
 print("PASS: journal UPDATE/DELETE blocked at database level; original records preserved")
+
+
+# Immutable purchase proof: payment evidence cannot be silently changed or
+# removed, including when a future refund/dispute notification is received.
+original_order = connection.execute(
+    "SELECT checkout_session_id, payment_intent_id, status, total_cents "
+    "FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'"
+).fetchone()
+for mutation in (
+    "UPDATE prepurchase_orders SET total_cents=999 WHERE checkout_session_id='cs_test_one'",
+    "UPDATE prepurchase_orders SET status='paid_unfulfilled' WHERE checkout_session_id='cs_test_one'",
+    "DELETE FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'",
+):
+    try:
+        with connection:
+            connection.execute(mutation)
+        raise AssertionError("Original payment evidence was mutable")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+assert connection.execute(
+    "SELECT checkout_session_id, payment_intent_id, status, total_cents "
+    "FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'"
+).fetchone() == original_order
+print("PASS: paid purchase rows cannot be updated or deleted")
