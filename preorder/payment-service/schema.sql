@@ -48,3 +48,16 @@ CREATE INDEX IF NOT EXISTS idx_payment_change_intent
   ON prepurchase_payment_changes(payment_intent_id);
 CREATE INDEX IF NOT EXISTS idx_payment_change_object
   ON prepurchase_payment_changes(object_id);
+
+-- Keep event history immutable even when a future handler processes retries.
+CREATE TRIGGER IF NOT EXISTS prevent_payment_change_update
+BEFORE UPDATE ON prepurchase_payment_changes
+BEGIN
+  SELECT RAISE(ABORT, 'Payment-change events are immutable');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_payment_change_delete
+BEFORE DELETE ON prepurchase_payment_changes
+BEGIN
+  SELECT RAISE(ABORT, 'Payment-change events are immutable');
+END;
