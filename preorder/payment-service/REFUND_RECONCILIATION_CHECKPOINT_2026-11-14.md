@@ -52,3 +52,19 @@ These items supersede earlier in-document observations about the **sandbox** hea
 - Founder provided a screenshot of the shared `hello@groundworkbyable.com` mailbox aliases and confirmed `billing@groundworkbyable.com` was successfully tested. Billing contact is proposed for purchase/refund requests; a formal customer-support SLA and notification delivery are not independently verified.
 - A proposed consolidated copy is at `preorder/CUSTOMER_TERMS_RELEASE_COPY_DRAFT_2026-11-14.md`. It is **not approved, effective, published, or configured as Stripe terms**.
 - Stripe test Payment Links still require Stripe-hosted terms acceptance and a valid approved public Terms of Service URL, plus a separately authorized time-limited test. This document is not permission to enable them.
+
+
+## Read-only charge correlation improvement — November 14, 2026
+
+- `refund_reconciliation.py` now optionally accepts independently supplied **test-mode Stripe charge snapshots**. This permits reconciling charge-only refund/dispute notifications by resolving the charge to its PaymentIntent without changing D1 or app state.
+- The function refuses duplicate, malformed, live-mode, non-USD or incomplete charge snapshots; detects contradictions between explicitly supplied PaymentIntents and charge-derived PaymentIntents; and keeps disputes subject to manual review.
+- Additional **synthetic** tests cover a successfully correlated charge-only dispute, conflicting identifiers, and malformed/duplicate snapshots. This is not proof of a real charge or refund and cannot replace fetching verified provider state.
+- Real charge retrieval, signed remote delivery, mapping verified customer contact to the order, and end-to-end refund execution remain outstanding. Do not enable the remote webhook or payment links from this change alone.
+
+## Stripe account and PR verification
+
+- Connected sandbox products and prices verified via Stripe API: one monthly `999`-cent one-time price and one annual `9600`-cent one-time price, with `tax_behavior=exclusive`, no recurring schedule, and one nonadjustable item per currently **inactive** Payment Link.
+- Both links still require a valid published Terms of Service URL and `consent_collection.terms_of_service=required`; they currently have no terms collection.
+- Stripe Tax settings `active` with the saved head-office address; this does **not** demonstrate that a tax registration exists or tax must be collected in every region.
+- The existing isolated **test** webhook has refund/dispute and checkout events subscribed but remains disabled. No sandbox Checkout Sessions were returned in the available list.
+- PR #17 public-site QA and offline preview **both passed** at the previous commit `64c68df`. The new charge-correlation changes require fresh CI verification.
