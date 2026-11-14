@@ -14,15 +14,15 @@
 - One-time Stripe prepay payments do **not** create recurring subscriptions or authorize saved-card renewals.
 - Founding Access free reservations, the organization contracts, and unreleased Advanced/Assets/Marketplace have separate terms.
 
-## Proposed policy to review — numbers and timing NOT approved
+## Refund policy — founder-approved eligibility and initiation timing; other operational/legal details still under review
 
 ### 1. Before the paid term starts
 
 **Recommendation:** Any customer who has prepaid can cancel before their purchased paid term starts and receive a **full refund**, including any tax refundable under applicable law, even if they received free December preview access. No cancellation fee. Process refund to the original payment method when possible.
 
-**Proposed internal service level:** After validating the order and request, initiate the refund within **5 business days**. Communicate the initiation date and refund ID; the bank/processor determines when the credit appears. Do not promise funds instantly.
+**Founder-approved general processing standard (November 14, 2026; planning only):** For eligible ordinary refund requests, initiate the refund through Stripe **within 5 business days after the request is received and the buyer/order is verified**. Log receipt and verification times; communicate the initiation date and refund identifier. The **seven-calendar-day full-refund eligibility window after usable paid access begins** determines whether a customer qualifies, not how long the company has to send the refund. Processor/bank timing to deliver funds is separate; do not promise instant credit. Implement prompt escalation for unresolved verification, disputed payments or tax exceptions rather than treating them as automatically refunded.
 
-**Customer's request channel:** a verified, monitored support email and a public support/contact route. Current website lists `hello@groundworkbyable.com`, but payment/refund support and response workflow are not yet proven functional.
+**Customer's request channel:** `billing@groundworkbyable.com` was created and founder-reported tested, sharing the `hello@groundworkbyable.com` inbox. It is the proposed payment/refund contact; ongoing monitoring, buyer verification, response tracking, customer notices and the public support route remain operational release checks.
 
 ### 2. If the January 1 app launch is at risk
 
@@ -69,7 +69,7 @@ The dates **January 8 and January 15 are not launch targets** and must not be ad
 - **After that window for the $9.99 prepaid month:** no ordinary voluntary partial-month refund for used service, except where access is not delivered, service defects, applicable law or other approved rights require a remedy.
 - Any refund or cancellation must **not** result in a later unauthorized subscription charge. Separately consented renewals must have independently operable cancellation controls.
 
-**Administrative details still open:** exactly how partial calendar months, a delayed launch, customer access not claimed, tax adjustments, cancellation cutoffs, and refund initiation timing are handled operationally; legal review; refund support; and final customer wording. A seven-day policy does not erase statutory or card-dispute rights.
+**Administrative details still open:** exactly how partial calendar months, a delayed launch, customer access not claimed, tax adjustments, cancellation cutoffs, and refund initiation controls are implemented and audited; legal review; refund support; and final customer wording. A seven-day policy does not erase statutory or card-dispute rights.
 
 **Founder reserve rule:** obligations to repay unused annual months can remain throughout the annual term. Maintain sufficient liquid reserve against remaining refund exposure, legal rights and disputes; **do not release the entire annual prepayment for discretionary spending after seven days**.
 
@@ -104,7 +104,8 @@ Before publishing this text, separately disclose the exact monthly/annual period
 
 - [x] Founder approved **January 15, 2027** as the unresolved-order cutoff: deliver access, obtain affirmative agreement to a specific later delivery date, or proactively cancel and initiate full refund within **five business days**. Silence is not consent; legal/operational review still required.
 - [x] Founder approved **full voluntary refund in first seven calendar days of the paid term**, thereafter **unused full annual paid months prorated at $8 each** before applicable tax adjustment, with no voluntary partial monthly refund after seven days (statutory/non-delivery rights preserved).
-- [ ] Five-business-day refund initiation target and exact operational cutoffs/tax adjustments confirmed (not included in the founder's explicit approval).
+- [x] Founder approved initiating eligible ordinary refunds within **five business days after receipt and order/customer verification**, distinct from the **seven-calendar-day** full-refund eligibility window. This is a planning approval, not a published guarantee.
+- [ ] Verify intake/verification timestamps, escalation rules, operational cutoffs, Stripe refund execution and tax adjustments before publication.
 - [ ] Functioning support/refund workflow and factual messaging reviewed.
 - [ ] Tax classification, retail license issuance, Stripe Tax head-office address and registrations validated.
 - [ ] Publish final terms + updated privacy policy, configure Stripe Checkout consent.
