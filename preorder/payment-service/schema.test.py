@@ -84,4 +84,15 @@ for row in [
         pass
 # The ledger has not amended the original immutable paid-unfulfilled order.
 assert connection.execute("SELECT status, total_cents FROM prepurchase_orders").fetchone() == ("paid_unfulfilled", 1059)
+for sql in (
+    "UPDATE prepurchase_payment_changes SET financial_status='failed' WHERE event_id='evt_refund_1'",
+    "DELETE FROM prepurchase_payment_changes WHERE event_id='evt_refund_1'",
+):
+    try:
+        with connection:
+            connection.execute(sql)
+        raise AssertionError("Journal history must be immutable")
+    except sqlite3.IntegrityError:
+        pass
+assert connection.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 3
 print("PASS: append-only refund/dispute journal, duplicate protection, no entitlement changes")
