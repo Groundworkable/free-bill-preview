@@ -36,6 +36,34 @@ export default {
       const row = await env.DB.prepare("SELECT status,subtotal_cents,tax_cents,total_cents FROM prepurchase_orders LIMIT 1").first();
       return Response.json(row);
     }
+    if (url.pathname === "/__test/journal-immutability" && request.method === "GET") {
+      // Deliberate local-only mutation attempts to test the D1 triggers.
+      // This route MUST NEVER appear in the deployable payment Worker.
+      const eventId = "evt_RefundDone";
+      const before = await env.DB.prepare(
+        "SELECT amount_cents FROM prepurchase_payment_changes WHERE event_id = ?"
+      ).bind(eventId).first();
+      if (!before) return Response.json({error:"Fixture missing"}, {status:409});
+      let updateBlocked = false;
+      let deleteBlocked = false;
+      try {
+        await env.DB.prepare(
+          "UPDATE prepurchase_payment_changes SET amount_cents = 777 WHERE event_id = ?"
+        ).bind(eventId).run();
+      } catch { updateBlocked = true; }
+      try {
+        await env.DB.prepare(
+          "DELETE FROM prepurchase_payment_changes WHERE event_id = ?"
+        ).bind(eventId).run();
+      } catch { deleteBlocked = true; }
+      const after = await env.DB.prepare(
+        "SELECT amount_cents FROM prepurchase_payment_changes WHERE event_id = ?"
+      ).bind(eventId).first();
+      return Response.json({
+        updateBlocked, deleteBlocked,
+        rowUnchanged: Boolean(after && after.amount_cents === before.amount_cents)
+      });
+    }
     if (url.pathname === "/__test/changes" && request.method === "GET") {
       const rows = await env.DB.prepare("SELECT * FROM prepurchase_payment_changes ORDER BY event_id").all();
       return Response.json(rows.results);
