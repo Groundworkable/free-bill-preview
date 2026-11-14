@@ -34,8 +34,13 @@ try:
             page.on("pageerror", lambda err: errors.append(str(err)))
             response = page.goto(base + "/", wait_until="domcontentloaded")
             assert response and response.status == 200
-            assert page.locator('a[href="/tour/"]').count() > 0
-            assert page.locator('a[href="/organizations/"]').count() > 0
+            assert page.locator('[data-nav="/tour/"]').count() > 0
+            assert page.locator('[data-nav="/organizations/"]').count() > 0
+            video = page.locator('video#bloom source[type="video/mp4"]')
+            assert video.count() == 1
+            assert video.get_attribute("src") == "./media/groundwork-bloom-loop.mp4"
+            assert context.request.head(base + "/media/groundwork-bloom-loop.mp4").status == 200
+            assert context.request.head(base + "/media/groundwork-bloom-backdrop.png").status == 200
             for slug in SLUGS:
                 response = page.goto(base + "/" + slug + "/", wait_until="domcontentloaded")
                 assert response and response.status == 200, (slug, response.status if response else None)
@@ -48,7 +53,7 @@ try:
             assert response and response.status == 200
             assert urlparse(page.url).path == "/tour/", page.url
             assert not errors, f"JavaScript errors {width}px: {errors}"
-            print(f"PASS: {width}px viewport, all 8 clean routes, legacy pages, canonical URLs, redirects")
+            print(f"PASS: {width}px viewport, approved Bloom media/navigation, all 8 clean routes, legacy pages, canonical URLs, redirects")
             context.close()
         browser.close()
 finally:
