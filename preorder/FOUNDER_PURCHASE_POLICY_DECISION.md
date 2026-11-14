@@ -109,7 +109,8 @@ Service/transactional emails must be distinguished from marketing consent. SMS n
 - [ ] Verify date computation for delays, first new-user free-month eligibility and actual billing dates.
 - [ ] Approve separate opt-in and compliant subscription configuration for monthly March 1 renewals; current one-time Stripe links **cannot** renew.
 - [x] Founder approved seven-day full post-paid-start refund and unused-full-month annual prorating (February 2027 free bonus excluded).
-- [ ] Refund initiation response time, applicable automatic-refund requirements, tax adjustments, partial-period calculations and unclaimed-access deadline.
+- [x] Founder approved **five business days from receipt of an eligible verified refund request** to initiate an ordinary refund through Stripe; this is separate from seven calendar days of full-refund eligibility after paid access begins. Planning approval only.
+- [ ] Verify operational intake/identity checks, exception escalation, applicable automatic-refund requirements, tax adjustments, partial-period calculations and unclaimed-access deadline.
 - [ ] Initial price protection eligibility, duration, exclusion/overlap rules and future one-time consent.
 - [ ] Email support identity and verified delivery/cancellation workflows; optional SMS consent and compliance.
 - [ ] Privacy policy update to accurately describe Stripe, preorders, service and refund records.
