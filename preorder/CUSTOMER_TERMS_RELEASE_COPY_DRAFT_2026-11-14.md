@@ -57,7 +57,9 @@ Non-delivery, defects in service, disputes and non-waivable statutory rights may
 
 To request a refund or ask about an order, email **billing@groundworkbyable.com** and provide your purchase reference and contact email; do not send payment card numbers or CVC. Refunds are made to the original payment method where supported. **A refund being initiated or marked pending is not proof that the customer's bank has received the funds.**
 
-**OPEN BEFORE PUBLICATION:** A general voluntary-request initiation deadline, treatment of unclaimed access, and tax-adjustment handling remain subject to founder/legal and operational review. Do **not** imply that the separate January 15 automatic-resolution five-business-day rule establishes a blanket deadline for every refund request.
+**Founder-approved general refund processing standard (planning only):** For an eligible refund request, Able Systems will initiate the refund through the payment processor **within five business days after the request is received and the customer/order has been verified**. This initiation deadline is different from the **seven calendar days after paid-term commencement** during which a voluntary full refund may be requested. Initiating the refund is not the same as bank receipt; provider and bank processing may take longer. Requests needing fraud, dispute, tax, or identity resolution require documented, prompt handling rather than an indefinite unrecorded hold.
+
+**OPEN BEFORE PUBLICATION:** Verification and intake procedures, treatment of unclaimed access, tax-adjustment handling, legally mandated remedies and operational capacity are still subject to review. This approved *planning* standard has not been published as an effective customer commitment.
 
 ## 5. Purchase confirmation, access and support
 
@@ -91,6 +93,6 @@ This section is **not** part of the proposed customer contract.
 5. Verify Stripe Tax registration obligations (a sandbox active Tax Settings status alone does not establish tax registration), customer support processing, license issuance, webhook and D1 schema, payment/refund reconciliation, and zero automatic entitlements before live checkout.
 6. The static website's `checkout-config.json` must remain `enabled=false`, `termsApproved=false`, all payment URLs null, until express publication and payment-launch authorization. This review document does **not** provide that authority.
 
-**Still open:** legal/regional review, exact activation delivery, delayed-date calculations, mid-month/January trial offer eligibility outside this pre-purchase cohort, unclaimed-access policy, voluntary-request processing deadline, tax treatment, published privacy language, customer-notice delivery, Stripe terms URL, issued South Carolina Retail License and isolated sandbox end-to-end test.
+**Still open:** legal/regional review, exact activation delivery, delayed-date calculations, mid-month/January trial offer eligibility outside this pre-purchase cohort, unclaimed-access policy, refund-processing implementation, tax treatment, published privacy language, customer-notice delivery, Stripe terms URL, issued South Carolina Retail License and isolated sandbox end-to-end test.
 
 **No deployment, database migrations, payments or app renovation are authorized here.**
