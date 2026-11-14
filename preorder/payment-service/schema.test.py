@@ -85,3 +85,26 @@ for row in [
 # The ledger has not amended the original immutable paid-unfulfilled order.
 assert connection.execute("SELECT status, total_cents FROM prepurchase_orders").fetchone() == ("paid_unfulfilled", 1059)
 print("PASS: append-only refund/dispute journal, duplicate protection, no entitlement changes")
+
+# The draft D1-compatible journal must reject mutation after insertion, not only
+# invalid inserts. These checks target actual SQLite trigger behavior.
+original = connection.execute(
+    "SELECT event_type,financial_status,amount_cents FROM prepurchase_payment_changes WHERE event_id=?",
+    ("evt_refund_1",)
+).fetchone()
+for mutation in (
+    "UPDATE prepurchase_payment_changes SET financial_status='succeeded' WHERE event_id='evt_refund_1'",
+    "DELETE FROM prepurchase_payment_changes WHERE event_id='evt_refund_1'",
+):
+    try:
+        with connection:
+            connection.execute(mutation)
+        raise AssertionError("Append-only journal accepted UPDATE or DELETE")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+assert connection.execute(
+    "SELECT event_type,financial_status,amount_cents FROM prepurchase_payment_changes WHERE event_id=?",
+    ("evt_refund_1",)
+).fetchone() == original
+assert connection.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 3
+print("PASS: journal UPDATE/DELETE blocked at database level; original records preserved")
