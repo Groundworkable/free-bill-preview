@@ -30,3 +30,15 @@
 **Approved policy remains untouched:** preactivation full refund, seven paid-day full refund, entirely unused annual purchased months at $8 before tax adjustment, January 8 follow-up and January 15 resolution cutoff. One-time prepay does not authorize renewal.
 
 **Release boundary:** Public checkout disabled; Draft PR #17 unmerged; no live Groundwork app, Supabase, or renovation changes.
+
+## Continuation: Stripe readiness and draft immutability checks
+
+- Read-only Stripe sandbox lookup on November 14 confirmed **zero Checkout Sessions**, PaymentIntents, and refunds in the available lists, and the existing test webhook is disabled.
+- Both previously configured test Payment Links remain inactive with `consent_collection=null` (not approved for customer-facing use).
+- Stripe Tax settings remain `status=pending`, with `head_office` missing; the sandbox registration list is empty. Do not claim automatic tax collection is ready.
+- Added draft SQLite triggers that reject UPDATE and DELETE against the payment-change journal, and a schema test that asserts mutations fail and the original rows remain intact.
+- Adjusted the **local-only** Workerd/D1 test seeding to execute complete SQL, preserving semicolons inside triggers. This change is not a remote D1 migration or Worker deployment.
+- The ordinary application SQL path is protected against accidental journal mutation; privileged schema administrators could still drop triggers. This is not a tamper-proof ledger.
+- CI was green at the preceding checkpoint. The new trigger changes require their own fresh CI verification.
+
+**Next decision gate:** resolve Stripe Tax head office, genuine tax registrations as applicable, published customer terms and hosted terms acceptance, monitored support, and review of the isolated Worker before any time-limited real sandbox checkout/refund test. No activation has been performed.
