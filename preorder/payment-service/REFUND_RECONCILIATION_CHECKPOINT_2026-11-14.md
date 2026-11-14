@@ -42,3 +42,13 @@
 - CI was green at the preceding checkpoint. The new trigger changes require their own fresh CI verification.
 
 **Next decision gate:** resolve Stripe Tax head office, genuine tax registrations as applicable, published customer terms and hosted terms acceptance, monitored support, and review of the isolated Worker before any time-limited real sandbox checkout/refund test. No activation has been performed.
+
+
+## Latest verified configuration (November 14, 2026)
+
+These items supersede earlier in-document observations about the **sandbox** head-office gate:
+
+- The connected Able Systems LLC test account returned Stripe Tax `status=active` after the founder-provided legal head-office address was saved through the Stripe Tax Settings API. It was read again and remained `active`. This does **not** prove a tax registration or authorization to collect tax.
+- Founder provided a screenshot of the shared `hello@groundworkbyable.com` mailbox aliases and confirmed `billing@groundworkbyable.com` was successfully tested. Billing contact is proposed for purchase/refund requests; a formal customer-support SLA and notification delivery are not independently verified.
+- A proposed consolidated copy is at `preorder/CUSTOMER_TERMS_RELEASE_COPY_DRAFT_2026-11-14.md`. It is **not approved, effective, published, or configured as Stripe terms**.
+- Stripe test Payment Links still require Stripe-hosted terms acceptance and a valid approved public Terms of Service URL, plus a separately authorized time-limited test. This document is not permission to enable them.
