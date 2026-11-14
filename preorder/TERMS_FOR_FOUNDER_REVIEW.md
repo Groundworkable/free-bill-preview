@@ -50,7 +50,7 @@ The purpose of the pre-purchase is to confirm willingness to pay and wait before
 
 If the expected activation timeframe changes, Able Systems will notify affected customers using their purchase contact information and provide a revised estimate and their options. **Proposed customer-protective policy: a full refund is available on request at any time before the purchased period starts.**
 
-**A2 draft timing proposal — NOT APPROVED:** Allow a full pre-activation refund on request at any time, with Able Systems initiating it within 5 business days of a verified request. Publish a credible latest paid-access delivery date before accepting money. Notify purchasers as soon as a likely delay is known; review their status at least 14 calendar days before the latest published deadline. If that deadline passes without access, propose initiating automatic full refunds within 5 business days unless the buyer has expressly agreed to a different delivery date. Stripe/provider processing time may delay the credit after initiation. Do not silently extend deadlines.
+**A2 draft timing proposal — NOT APPROVED:** Allow a full pre-activation refund on request at any time, with Able Systems proposing to initiate refunds within 5 business days of a verified request. Publish a credible final delivery date and fair delay/cancellation treatment before accepting money. Notify purchasers when a delay becomes likely and send an application readiness checkpoint 14 calendar days before the January 1, 2027 target. If the app misses January 1, provide direct same-day notice and proposed weekly updates, with the full pre-activation refund option maintained. The founder has **not** authorized a February or March replacement launch date, nor agreed to a specific automatic-refund trigger; a final legal cutoff and handling of unresponsive buyers still require approval. Stripe/provider processing time may delay the credit after initiation. Do not silently extend deadlines or presume consent.
 
 **[REQUIRED: Founder to approve a maximum postponement window and whether refunds are automatic if the original expected date is not met or if the product is not delivered.]** Any legally required refund rights apply regardless of this policy.
 
@@ -97,6 +97,8 @@ Nothing in these terms limits non-waivable consumer rights. **[REQUIRED: Legal r
 - **Founding Access:** Free reservation, followed by 30 days free after actual activation, with a proposed $7.99/month rate for the first twelve paid months. Not this purchase, not automatically charged, not converted without the separately approved terms and consent.
 - **Organizations:** Pilot and annual sponsorship arrangements are governed by separate agreements, not this consumer checkout.
 - **Advanced / Assets & Inventory / Marketplace:** Not part of the currently verified offer; nothing here promises access or a release date.
+
+**Separate refund policy draft for review:** `preorder/REFUND_DELAY_POLICY_FOR_APPROVAL.md`. It is not incorporated by default or effective unless reviewed and approved. The seven-day post-activation full-refund proposal and prorated unused annual months are still choices, not final customer rights.
 
 ## Required release approvals — NOT YET GIVEN
 
