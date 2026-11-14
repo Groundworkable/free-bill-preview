@@ -11,6 +11,9 @@ on:
       - "scripts/public_site_qa.py"
       - "scripts/organizations_browser_qa.py"
       - "scripts/clean_url_browser_qa.py"
+      - "scripts/preorder_browser_qa.py"
+      - "preorder/checkout-config.json"
+      - "preorder/payment-service/**"
       - ".github/workflows/public-site-qa.yml"
 jobs:
   validate:
@@ -19,6 +22,32 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run public HTML link, existing tool, and sitemap checks
         run: python3 scripts/public_site_qa.py
+  webhook-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify sandbox Stripe webhook signatures, prices and no activation
+        run: node --test preorder/payment-service/worker.test.mjs preorder/payment-service/payment-changes.test.mjs
+      - name: Verify isolated database schema, replay constraints and atomic rollback
+        run: python3 preorder/payment-service/schema.test.py
+      - name: Validate founder-approved offer calendar and no unauthorised renewals
+        run: python3 preorder/payment-service/offer-calendar.contract.test.py
+      - name: Confirm payment sandbox cannot deploy or route to existing app
+        run: python3 preorder/payment-service/isolation.test.py
+      - name: Install isolated local Worker test dependencies
+        working-directory: preorder/payment-service
+        run: npm install --no-save --no-package-lock --ignore-scripts wrangler@4 msw@2
+      - name: Verify Stripe webhook on local Cloudflare Workerd and D1
+        working-directory: preorder/payment-service
+        run: node --test worker.local.test.mjs
+  cloudflare-fail-closed:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify isolated deployed payment Worker refuses unsigned requests while disabled
+        run: python3 preorder/payment-service/remote_fail_closed_smoke.py
   browser-validate:
     runs-on: ubuntu-latest
     steps:
@@ -31,3 +60,5 @@ jobs:
         run: |
           python3 scripts/organizations_browser_qa.py
           python3 scripts/clean_url_browser_qa.py
+          python3 scripts/preorder_browser_qa.py
+

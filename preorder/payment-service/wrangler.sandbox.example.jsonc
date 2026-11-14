@@ -1,0 +1,26 @@
+{
+  // Template ONLY. This is not named wrangler.jsonc, so Wrangler does not
+  // auto-select it for deployment. Never point this at the Groundwork app Worker.
+  "name": "groundwork-payment-sandbox-isolated",
+  "main": "./worker.mjs",
+  "compatibility_date": "2026-11-13",
+  "workers_dev": false,
+  "routes": [],
+  "vars": {
+    // Intentionally blocked. An independent owner review is needed to enable.
+    "PAYMENTS_MODE": "disabled",
+    "TERMS_APPROVED": "false",
+    "TERMS_VERSION": "UNAPPROVED",
+    "MONTH_LINK_ID": "plink_1UbK33JK9stEim4w7BvY2CnM",
+    "ANNUAL_LINK_ID": "plink_1UbK3MJK9stEim4w2nS3loNW",
+    "MONTH_PRICE_ID": "price_1UbK2YJK9stEim4wCsZ0tyao",
+    "ANNUAL_PRICE_ID": "price_1UbK2aJK9stEim4wgnY5LRVR"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "groundwork-payment-sandbox-isolated",
+      "database_id": "REPLACE_WITH_NEW_ISOLATED_D1_UUID"
+    }
+  ]
+}

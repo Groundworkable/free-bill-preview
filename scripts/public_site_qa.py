@@ -106,6 +106,34 @@ sitemap_text = (ROOT/"sitemap.xml").read_text(encoding="utf-8")
 assert "https://groundworkbyable.online/index.html" not in sitemap_text
 for slug in SLUGS:
     assert "https://groundworkbyable.online/" + slug + "/" in sitemap_text
+# Pre-purchase must fail closed until real merchant checkout and published terms exist.
+import json
+gate = json.loads((ROOT/"preorder/checkout-config.json").read_text(encoding="utf-8"))
+preorder = (ROOT/"preorder/index.html").read_text(encoding="utf-8")
+assert gate["enabled"] is False and gate["termsApproved"] is False
+assert gate["termsUrl"] is None and gate["refundPolicyUrl"] is None
+assert set(gate["offers"]) == {"monthly", "annual"}
+for key, expected in (("monthly", 9.99), ("annual", 96)):
+    offer = gate["offers"][key]
+    assert offer["amountUsd"] == expected and offer["currency"] == "usd"
+    assert offer["paymentMode"] == "one_time" and offer["paymentLink"] is None
+    assert offer["taxBehavior"] == "exclusive" and offer["taxCode"] == "txcd_10103000"
+assert 'aria-disabled="true"' in preorder
+assert 'fetch("/preorder/checkout-config.json"' in preorder
+assert "No payment is collected on this page." in preorder
+assert "one_time" in preorder
+assert "Founding Access remains separate" in preorder
+assert "no automatic subscription" not in preorder.lower() or "automatic subscription" in preorder.lower()
+preorder_page = Page()
+preorder_page.feed(preorder)
+for u in preorder_page.links + preorder_page.media:
+    check_url(u, "preorder/index.html")
+for js in preorder_page.script_body:
+    if js.strip():
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".js", encoding="utf-8") as f:
+            f.write(js)
+            f.flush()
+            subprocess.run(["node", "--check", f.name], check=True)
 assert "Life doesn't" in (ROOT/"index.html").read_text()
 assert "bloom-orbit.mp4" in (ROOT/"index.html").read_text()
 free_page = Page()
