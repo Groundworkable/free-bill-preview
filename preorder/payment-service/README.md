@@ -51,6 +51,18 @@ The founder confirmed, via the Cloudflare dashboard workflow, that the following
 
 **Next gating work:** Founder-approved pre-purchase/refund/delay terms, verified public legal and support information, Stripe Tax head-office and legitimate tax registration, Stripe-hosted consent on the checkout link, and a time-limited Stripe test event. Keep both environment switches in their disabled states until those gates are satisfied.
 
+## Safe remote payment gate check — founder-run only
+
+The script `preorder/payment-service/remote_fail_closed_smoke.py` probes **only** the isolated Worker's `/webhooks/stripe` endpoint with an unsigned empty JSON request. It does not carry any Stripe credentials or valid events, does not read any customer information, and cannot create a paid order. It expects HTTP `503` with `Payment receiver not configured`, confirming that `PAYMENTS_MODE=disabled` is still in effect.
+
+Run only when ready to check actual cloud deployment:
+
+```sh
+python3 preorder/payment-service/remote_fail_closed_smoke.py
+```
+
+**Not yet run against Cloudflare:** this environment cannot resolve the Worker's external hostname. The script is intentionally **not** auto-run by CI (which lacks Cloudflare access and must not depend on a remote service). A `404` or `400` is not confirmation the intended disabled configuration is active: investigate deployed code/version and settings, with the Stripe destination and links kept disabled. Do not enable checkout based on this smoke check alone.
+
 ## Stripe-hosted terms acceptance — added safety gate
 
 The test receiver now checks `session.consent.terms_of_service === "accepted"` **and** requires `TERMS_APPROVED=true` and an immutable `TERMS_VERSION` (format `prepurchase-vYYYY-MM-DD`). The database retains that exact approved terms version with every paid-unfulfilled order. Without those values, the receiver returns 503 and cannot record a purchase.
