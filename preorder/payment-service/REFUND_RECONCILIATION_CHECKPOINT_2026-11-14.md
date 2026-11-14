@@ -81,3 +81,16 @@ The founder executed `remote_d1_additive_migration_2026-11-14.sql` in the Cloudf
 The pre-migration screenshot had shown the first two tables present and the other five objects missing. The follow-up screenshot returned all seven entries. This constitutes **founder-supplied evidence of remote schema-object presence**, not independently authenticated database access or proof that the trigger definitions are correct, the deployed Worker contains the draft journal handler, or that a real webhook/refund was processed. The migration should **not be rerun by default**; it is complete at the object-presence checkpoint. The Cloudflare Worker is still expected to be disabled. No production database was touched as part of the documented isolated migration.
 
 **Next release gate:** inspect isolated deployed Worker version against the reviewed `worker.mjs` (including `refund.*` and `charge.dispute.*` handling), verify actual D1 binding, and complete hosted customer terms acceptance and a separately authorized isolated test transaction. Never enable payment links or webhook based on schema-object presence alone.
+
+
+## Founder-supplied Cloudflare Worker source audit — November 14, 2026
+
+After the founder's remote D1 Console confirmed all seven schema objects, the founder shared text copied from the isolated payment Worker's Cloudflare editor. This supplied source is an **older checkout-only receiver**:
+
+- It recognizes only `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
+- It lacks the draft `recordPaymentChange` function and the `refund.*` / `charge.dispute.*` event handlers that appear in the current `preorder/payment-service/worker.mjs` in this PR.
+- It acknowledges unknown event types with HTTP 200 without journaling; **do not enable the subscribed refund/dispute webhook while this receiver is deployed**, since records could be silently missed.
+
+**Next controlled step (requires founder action in Cloudflare; not performed here):** Replace **only** the code in `groundwork-payment-sandbox-isolated` with the exact raw `preorder/payment-service/worker.mjs` from this branch, review the diff, and deploy only after verifying `PAYMENTS_MODE=disabled`, `TERMS_APPROVED=false`, and `TERMS_VERSION=UNAPPROVED` remain in the isolated Worker's configuration. Never copy `worker.local.entry.mjs` or local-only test routes into the deployed Worker. Secrets remain in Cloudflare bindings; do not paste them into source or GitHub. Re-run the safe remote fail-closed smoke test after any sandbox-only deployment. No Stripe Payment Links or webhook endpoint may be enabled as part of that code update.
+
+Evidence classification: remote schema presence is founder-confirmed by screenshot; deployed-source version is founder-supplied pasted text; production app is untouched. Current draft `worker.mjs` is CI-tested but has **not** been confirmed deployed.
