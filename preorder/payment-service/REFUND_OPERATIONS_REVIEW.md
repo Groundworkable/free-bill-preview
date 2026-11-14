@@ -43,3 +43,15 @@ An operational calendar must define the timezone, applicable business-day/holida
 ## Current limits and release boundary
 
 This document is a review checklist, not implementation evidence. Refund execution, current-state reconciliation, customer notices, support verification and remote end-to-end testing remain incomplete. Database-level append-only enforcement remains unfinished. Payment activation, publication, merge, deployment, schema application and application changes remain outside this preparation step.
+
+
+## Founder-provided contact routing — November 14, 2026
+
+The founder showed the mailbox alias administration page for `hello@groundworkbyable.com`, including newly created `billing@groundworkbyable.com` and existing `support@groundworkbyable.com` aliases. The aliases share the same underlying inbox; they are not independent queues or accounts.
+
+- Proposed dedicated billing, payment and refund contact: `billing@groundworkbyable.com`.
+- General application/account assistance: `support@groundworkbyable.com`.
+- General company contact: `hello@groundworkbyable.com`.
+- Before making these operational/customer-facing promises, verify inbound delivery, reply-from-alias identity, who monitors the shared inbox, response tracking and a complete test of the refund intake and follow-up process.
+
+This is founder-provided account configuration evidence, **not proof of sent/received email**, a live support SLA or approval to publish legal terms. Public checkout, remote webhook and refund operations remain disabled/unverified.
