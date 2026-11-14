@@ -32,7 +32,7 @@ An operational calendar must define the timezone, applicable business-day/holida
 
 - Verified support intake and buyer/order verification.
 - Exact paid-term commencement and remaining purchased months.
-- Agreed voluntary-request processing deadline; the approved January 15 automatic-resolution rule does not settle every request-processing detail.
+- Founder-approved planning standard: initiate eligible ordinary refunds within **five business days after receipt of the request and customer/order verification**, separate from the seven-calendar-day full-refund eligibility window. Verify timestamping, exception escalation and actual execution before treating this as operational.
 - Confirmed tax adjustments and provider refundable remainder.
 - Sandbox refund initiation, pending/success/failure handling and uncertain retry tested.
 - One refund operation reconciled across request, provider and journal, including duplicate/out-of-order deliveries.
