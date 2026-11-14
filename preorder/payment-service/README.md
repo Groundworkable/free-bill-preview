@@ -112,3 +112,18 @@ The automated tests mock Stripe network responses and exercise webhook logic wit
 ## Next release gates
 
 A customer-facing pre-purchase still needs approved dates/access terms, refund/delay policy, a support channel, a legally valid tax configuration, an issued Retail License, and a reconciliation model for future application users. No real money or customer access until those are verified.
+
+
+## Stripe sandbox webhook subscriptions — verified November 14, 2026
+
+The existing Stripe **test-mode** endpoint `we_1UbShUJK9stEim4wVJZvDGVz` was updated through Stripe's API and independently read back. It remains `status=disabled`, but its **configured event subscriptions** are now:
+
+- `checkout.session.completed` and `checkout.session.async_payment_succeeded`
+- `refund.created`, `refund.updated`, `refund.failed`
+- `charge.dispute.created`, `charge.dispute.updated`, `charge.dispute.closed`
+
+This matches the event types currently handled by the **draft** isolated receiver. It does not prove the deployed Worker handles those events, that the remote D1 journal schema is applied, that any test event has been delivered, or that refunds can be initiated. The isolated endpoint remains disabled and both test Payment Links remain inactive (`active=false`) with `consent_collection=null`.
+
+Stripe Tax head-office settings were separately read as `active` in the sandbox, while tax registrations remain unverified. The founder-reported tested billing contact is `billing@groundworkbyable.com`.
+
+**Next isolated test gate:** complete published terms/hosted consent, verify exact deployed Worker version and D1 schema, then explicitly authorize a temporary **test-mode-only** webhook/payment link exercise. Neither this documentation nor the webhook subscription update authorizes activation. The live Groundwork Worker, application, database, and website remain out of scope.
