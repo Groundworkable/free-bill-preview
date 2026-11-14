@@ -18,13 +18,13 @@ Groundwork by Able is still being prepared for public memberships. A pre-purchas
 
 Applicable sales tax is calculated and shown separately before payment. The customer must see a final total and agree to the terms before completing Stripe-hosted checkout. These are one-time charges; neither option authorizes automatic renewal or a subsequent card charge.
 
-**A2 future-access strategy selected for planning on November 14, 2026. This is NOT approval of the text below.** State a specific, credible expected activation date or clearly defined fulfillment window; set the latest acceptable delay and written notification schedule. **January 1, 2027 is a target for the public marketing website relaunch, not a guaranteed membership activation date.**
+**A2 future-access strategy selected for planning on November 14, 2026. This is NOT approval of the text below.** State a specific, credible expected activation date or clearly defined fulfillment window; set the latest acceptable delay and written notification schedule. **The public marketing website is targeted ASAP. January 1, 2027 is the founder's official application launch target; any legally binding delivery deadline must be explicitly finalized before charging customers.**
 
 ## Proposed contractual terms (review draft)
 
 ### 1. Seller and nature of the purchase
 
-Able Systems LLC operates Groundwork by Able. You are purchasing a future-access period for the standard individual membership, not immediate access to the full application. The membership period does not start when the payment is submitted. Groundwork Lite remains free; the public tour and free calculators do not require a pre-purchase.
+Able Systems LLC operates Groundwork by Able. You are purchasing a future-access period for the standard individual membership, not immediate access to the full application. For buyers who pre-purchase before the application opens, the membership period does not start when the payment is submitted. It begins January 1, 2027 if the paid application is usable by then, or on actual confirmed usable activation if the launch is delayed. If Groundwork opens early, pre-launch buyers can use eligible access at no extra charge before January 1, without shortening their purchased period. Buyers who first purchase after an early opening start their paid membership when usable access is granted. Groundwork Lite remains free; the public tour and free calculators do not require a pre-purchase.
 
 ### 2. Price, tax and payment
 
@@ -34,7 +34,9 @@ The one-time base purchase price is **$9.99 USD for one month** or **$96.00 USD 
 
 You will receive a payment confirmation and instructions for receiving access when the purchased membership becomes available. **[REQUIRED: Insert approved activation estimate/window and delivery method before offering payment.]**
 
-Your purchased term begins only when the standard paid application access covered by this offer has actually been made available to you and activation is confirmed. If you already have restricted beta access, that does not automatically begin or consume the separately purchased membership term. The purchased term is for standard Groundwork access as described in the final offer; it is not a commitment to launch future Advanced, Assets & Inventory, marketplace, automatic bank connections, or other unreleased functionality.
+**Proposed pre-launch cohort rule (founder intent, pending legal and technical review):** If the app is available on or before January 1, 2027, your purchased term begins January 1, 2027. If it opens earlier, you may use the eligible product free from your confirmed early onboarding date through December 31, 2026, and these complimentary days will not reduce your prepaid term. If the app opens after January 1, your purchased term begins only when usable paid access is actually delivered and confirmed. New customers purchasing after an early public app opening pay from their actual activation date and do not receive a January 1 restart. 
+
+This rule requires correct classification of pre-launch buyers versus new early-opening purchasers, and reliable access start/end tracking. No such application integration has been verified or deployed. If you already have restricted beta access, that does not automatically begin or consume the separately purchased membership term. The purchased term is for standard Groundwork access as described in the final offer; it is not a commitment to launch future Advanced, Assets & Inventory, marketplace, automatic bank connections, or other unreleased functionality.
 
 ### 3A. Confirmed pre-purchase intent; proposed early-buyer benefit
 
@@ -84,7 +86,7 @@ Optional SMS onboarding notices require separate affirmative permission, a relia
 
 ### 9. No investment or guaranteed product features
 
-A pre-purchase is not an investment, loan, deposit account, or promise of returns. The Groundwork platform is an informational and planning tool and does not provide personalized financial, legal, tax, or investment advice. Do not interpret the marketing site launch date, tour scenarios, or future roadmap as a promise that unfinished features will be included in this purchase.
+A pre-purchase is not an investment, loan, deposit account, or promise of returns. The Groundwork platform is an informational and planning tool and does not provide personalized financial, legal, tax, or investment advice. Do not interpret the marketing landing page launch, tour scenarios, or future roadmap as a promise that unfinished features will be included in this purchase. The official application launch target is January 1, 2027, subject to the published refund and delay terms and actual readiness.
 
 ### 10. Consumer protections
 
@@ -101,7 +103,8 @@ Nothing in these terms limits non-waivable consumer rights. **[REQUIRED: Legal r
 - [x] Founder selected A2 future-access pre-purchases as a planning direction (not release approval).
 - [ ] Founder explicitly approves the final copy and terms version.
 - [ ] Additional renewal-price grandfather benefit duration, eligibility, and separate future-purchase consent approved (if offered).
-- [ ] Launch/activation estimate, cutoff/delay notice, and delivery method finalized.
+- [x] Founder launch distinction clarified: marketing website ASAP; official application launch target January 1, 2027; pre-launch buyers' early use free through December 31; new early buyers' terms start on actual access.
+- [ ] Legally valid latest delivery date, cutoff/delay notice, and delivery method finalized.
 - [ ] Pre- and post-activation refund policy finalized; reviewed for applicable law.
 - [ ] Operational payment-to-customer fulfillment and refund support established.
 - [ ] Updated Privacy Policy and public support details reviewed.
