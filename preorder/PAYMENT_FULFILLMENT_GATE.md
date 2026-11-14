@@ -11,15 +11,16 @@ This document extends Draft PR #17 for the public marketing website, without cha
 - No Stripe Tax jurisdiction registrations currently configured; sandbox tax settings report missing `head_office`. A link having automatic tax enabled does **not** mean correct tax is being collected.
 - The live site checkout config remains disabled. Production account, customer billing and access entitlements were not modified.
 
-## Founder-confirmed two-launch and cohort policy — planning only
+## Founder launch calendar and cohorts — planning only
 
-- **Public landing/marketing website:** target **ASAP**. This is the acquisition and prospective pre-purchase entry point, subject to separate terms, tax, and payment approval.
-- **Groundwork paid application:** official **January 1, 2027** launch target, or an early opening if technically ready.
-- **Pre-launch paid reservation cohort:** when verified paid app access opens early, give these pre-paid customers complimentary use up to December 31; their purchased one-month/twelve-month paid terms begin January 1 if app access is then usable.
-- **New customers buying after an early app opening:** begin paid terms on the date their usable access is actually activated (e.g. December 14), with no Jan 1 restart.
-- **App delayed past January 1:** communicate timely, provide full refunds on request before paid activation, and preserve the full purchased term until usable activation. A legally sufficient final delivery/cancellation deadline remains to be approved, not invented.
-- **Do not merge cohorts with Founding Access**, which remains a distinct free reservation/30-day-free arrangement.
-- **Implementation remains pending:** identity linkage, early-access courtesy period, paid start/end tracking, distinct prepay vs early live-purchase offers, receipt and tax accounting, messaging and cancellation. Current webhook records `paid_unfulfilled` only; no app entitlements are authorized.
+- **Public marketing website:** launch ASAP, independently of the application. No payment links may activate until terms, tax, customer support and release gates are approved.
+- **Application:** official January 1, 2027 target; potential December 14 founders' preview if usable and verified.
+- **Prepaid monthly cohort (proposed November 14–December 13 enrollment):** prepaid one-time $9.99 covers **January 1–31**, December 14–31 access is complimentary if ready early, **February 1–28 is complimentary**, and **March 1 is the earliest separately authorized monthly renewal**. Existing Stripe prepay link is one-time, not a subscription; no recurring billing or card-on-file authorization is implemented.
+- **Prepaid annual cohort:** original $96 pays for **twelve months of service**. Whether February is a further free bonus and precisely how the twelve paid months shift/extend remains a founder choice. **No annual renewal in March.**
+- **New January cohort:** qualifying January purchasers get their **first full month free**; a recurring renewal would occur only after that individual's full trial and with separate explicit consent. E.g., a January 20 activation makes the first paid date approximately February 20, not automatically February 1. Rules for December early-opening customers are distinct.
+- **Delayed app launch:** unused days must not consume prepaid service or courtesy time. Founder intends communication and pre-activation refunds on request; legal final delivery and automatic-refund obligations remain for review.
+- **Founder no-spend rule for all customers:** funds from prepay **and ordinary paid users** remain reserved until all applicable refund periods have passed and liabilities are met. There is no single universal point when chargebacks/statutory refunds become impossible. Stripe payout does not make funds safe to spend; track **per-transaction** refundable amount, service delivered, fees, disputes, legal reserve and spendability outside the app. No escrow claim.
+- **Not implemented:** launch cohorts, free-preview entitlement, bonus periods, renewal authorization, individual trial dates, customer communications, tax accounting, reserve release controls or annual term extensions. This document is **not** authorization to edit the live app renovation.
 
 ## Event-to-order contract (pending implementation)
 Do not implement this from browser redirects or URL query strings. The only payment-success source is verified Stripe server-side evidence.
