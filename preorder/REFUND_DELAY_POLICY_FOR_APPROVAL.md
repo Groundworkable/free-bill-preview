@@ -1,6 +1,6 @@
 # Groundwork pre-purchase — refund, delay, and reserve policy for founder review
 
-**STATUS: DRAFT ONLY — November 14, 2026. NOT APPROVED, NOT PUBLISHED, NOT A LEGAL DETERMINATION.**
+**STATUS: FOUNDER APPROVED POST-ACTIVATION REFUND STRUCTURE — November 14, 2026. OTHER TERMS STILL DRAFT, NOT PUBLISHED OR LEGALLY CLEARED.**
 **Scope:** Individual $9.99 one-time monthly pre-purchase and $96 one-time annual pre-purchase. Public landing site is targeted ASAP. Groundwork paid application target is January 1, 2027. No payment activation or application modification is authorized by this draft.
 
 ## Rules established by the founder (not new commercial offers)
@@ -36,13 +36,16 @@
 
 ### 3. Once usable paid access begins
 
-**Proposed, not approved:**
-- Allow a **full voluntary refund within 7 calendar days** after the *paid term* actually starts (not after the promotional December preview).
-- After that voluntary period, annual buyers requesting cancellation receive a refund based on the base value of **entirely unused future purchased months**. For the $96 offer, each of the 12 purchased months represents **$8** before applicable tax adjustment; the free February month is not counted as a paid month. Do not count any undelivered month as used.
-- No ordinary pro-rata refund for a partly used one-month prepaid term after the 7-day grace period, except where service nonperformance, legal protections, or other approved customer policy require it.
-- Refund/termination should never result in a future unauthorized subscription charge. If the customer separately opts into renewal, the cancellation route must address that subscription independently.
+**FOUNDER-APPROVED POLICY STRUCTURE (not yet legal-reviewed or published):**
 
-**Operational cost of this generous annual policy:** the risk of returning unused annual months extends throughout the annual term. Keep an appropriately liquid reserve for unused service, statutory/refund rights and possible chargebacks; **do not release the entire annual purchase for spending merely after seven days**. Founder must choose whether they prefer this or a narrower, lawful cancellation policy.
+- Allow a **full voluntary refund during the first 7 calendar days after the purchased paid term actually starts**. A complimentary December founders' preview is **not** the paid-term start and does not consume the refund window; actual usable paid access must exist for that paid term to start.
+- **After the seven-day window:** annual buyers who cancel receive a prorated refund for **entirely unused future purchased months**. Each of the twelve months purchased for $96 is valued at **$8 before applicable tax adjustment**. **February's complimentary bonus is not a paid month**, and an undelivered paid month must not be counted as consumed. Do not refund a partly used current annual paid month under this voluntary unused-full-month formula, except where other rights apply.
+- **After that window for the $9.99 prepaid month:** no ordinary voluntary partial-month refund for used service, except where access is not delivered, service defects, applicable law or other approved rights require a remedy.
+- Any refund or cancellation must **not** result in a later unauthorized subscription charge. Separately consented renewals must have independently operable cancellation controls.
+
+**Administrative details still open:** exactly how partial calendar months, a delayed launch, customer access not claimed, tax adjustments, cancellation cutoffs, and refund initiation timing are handled operationally; legal review; refund support; and final customer wording. A seven-day policy does not erase statutory or card-dispute rights.
+
+**Founder reserve rule:** obligations to repay unused annual months can remain throughout the annual term. Maintain sufficient liquid reserve against remaining refund exposure, legal rights and disputes; **do not release the entire annual prepayment for discretionary spending after seven days**.
 
 ### 4. Unclaimed access
 
@@ -74,7 +77,8 @@ Before publishing this text, separately disclose the exact monthly/annual period
 ## Release blockers not lifted by this document
 
 - [ ] Founder approves a legal final delivery/refund cutoff and the handling of unresponsive buyers.
-- [ ] Founder approves the 5-business-day refund initiation target, 7-day post-paid-start full refund, and annual unused-month prorating **or revised alternatives**.
+- [x] Founder approved **full voluntary refund in first seven calendar days of the paid term**, thereafter **unused full annual paid months prorated at $8 each** before applicable tax adjustment, with no voluntary partial monthly refund after seven days (statutory/non-delivery rights preserved).
+- [ ] Five-business-day refund initiation target and exact operational cutoffs/tax adjustments confirmed (not included in the founder's explicit approval).
 - [ ] Functioning support/refund workflow and factual messaging reviewed.
 - [ ] Tax classification, retail license issuance, Stripe Tax head-office address and registrations validated.
 - [ ] Publish final terms + updated privacy policy, configure Stripe Checkout consent.
