@@ -14,12 +14,27 @@ The founder also intends to consider an early-buyer/price-protection benefit if 
 
 Customer email updates and optional text onboarding reminders are intended. Delivery systems, consent records, costs, cadence, opt-out and account-linking are not yet built/verified. Do not promise active SMS delivery before infrastructure and consent controls exist.
 
+## Founder-confirmed launch chronology — corrected November 14, 2026
+
+**Two different assets, two different target dates:**
+
+1. **Public marketing website / landing page:** relaunch **ASAP**, as soon as the approved polished website is ready. Its purpose is advertising, commercials, customer acquisition, Founding Access reservations, and, only after separate release authorization, consented pre-purchase collection.
+2. **Groundwork application / paid product:** **January 1, 2027** is the founder's official initial launch target. An earlier verified, usable app opening is permitted, but it **does not move the January 1 commencement date for customers who already pre-paid for the January 1 launch**.
+
+**If app is usable early:** Example: application becomes ready December 14, 2026. Customers who **pre-paid before the early opening** may move in and use their eligible paid experience **December 14–31 at no additional charge**; the originally purchased one-month or twelve-month term begins **January 1, 2027**, not December 14. **New customers who first purchase after that early opening** receive ordinary access with the membership term starting when their paid access becomes usable—for the example, December 14. Those customers' terms do not restart January 1.
+
+**If app opening is delayed beyond January 1:** Promptly inform affected pre-paid customers; preserve the full purchased duration for activation when verified access actually becomes usable, and offer full pre-activation refunds on request. A contractual delayed-delivery cutoff and any legally required automatic refund procedures must be agreed separately; **the founder has not selected an automatic March 1 refund or a February launch instead of January 1**.
+
+**Systems implication:** A verified prepay order must be distinguished from live-access purchases. Track `purchased_at`, `offer/cohort`, `access_granted_at`, `paid_term_start_at`, `paid_term_end_at`, and any refund status without inferring that `paid_unfulfilled` authorizes application access. The early-use window is a courtesy benefit for the existing pre-launch prepaid cohort, not a deduction from purchased time. This is a **future app integration requirement, not an implemented entitlement feature**.
+
+This date clarification is approved **as the founder's intent**, not an approval of customer-facing contractual language, Stripe activation, new functionality or alterations to the existing app renovation.
+
 ## Verified Stripe sandbox offers; not active public promises
 
 | Offer | One-time base amount | Bought now / supplied later | Taxes |
 |---|---:|---|---|
-| Standard Groundwork prepaid month | $9.99 | 1 month of paid access starting only after verified activation | Applicable tax shown separately |
-| Standard Groundwork prepaid annual term | $96.00 | 12 months of paid access starting only after verified activation | Applicable tax shown separately |
+| Standard Groundwork prepaid month | $9.99 | 1 paid month beginning Jan 1 if app ready by that date; if early, access beforehand is complimentary; if delayed, term begins upon actual usable activation | Applicable tax shown separately |
+| Standard Groundwork prepaid annual term | $96.00 | 12 paid months beginning Jan 1 if app ready by that date; if early, access beforehand is complimentary; if delayed, term begins upon actual usable activation | Applicable tax shown separately |
 
 **These are not recurring subscription products.** Neither charges again automatically. The normal post-launch `$9.99/month` or `$96/year` pricing strategy and the separate Founding Access reservation offer must not be conflated with these one-time Stripe sandbox Payment Links.
 
@@ -41,9 +56,9 @@ Advanced, Assets & Inventory, and Marketplace remain unreleased and excluded.
 ## Proposed customer protections — review, not approval
 
 1. **Before activation:** customer can cancel at any time for a full refund of the payment (including associated tax as applicable), no reason required. Proposed merchant deadline: initiate refund within **5 business days** of verified request. Stripe typically takes **5–10 business days** after initiation to display the credit, and it can take longer (https://support.stripe.com/questions/how-long-refunds-take-to-process).
-2. **Activation estimate:** publish a concrete, evidence-supported earliest or expected date and **latest guaranteed delivery deadline** *before accepting a prepayment*. Current January 1, 2027 target is for the public website; it is **not** a committed paid-service activation date.
+2. **Activation estimate:** publish a concrete, evidence-supported earliest or expected date and **latest guaranteed delivery deadline** *before accepting a prepayment*. January 1, 2027 is the **official application launch target**; the marketing site is targeted **ASAP**. The target becomes a binding delivery promise only once the approved customer terms clearly say so and readiness is verified.
 3. **Delay:** notify buyers immediately when a miss becomes likely, including a revised date and the right to cancel for a full refund. Proposed advance checkpoint: **14 calendar days before the published latest delivery deadline**. The founder must approve the precise notice schedule and operational ability to send it.
-4. **Missed latest deadline:** proposed default is **automatically initiate full refunds within 5 business days of the missed deadline** unless a buyer has affirmatively agreed to a separate, clearly documented alternative. No silent extension or presumed consent.
+4. **Missed delivery date:** founder's current stated approach is communication and **full pre-activation refunds if requested**. Do not presume automatic cancellation or silently extend a legally binding delivery commitment; review any mandatory automatic refund requirements and decide an appropriate customer-protective final deadline before publishing.
 5. **After activation:** founder must choose an operational, lawful rule. **Proposed for review:** 7 calendar days after actual activation for a voluntary full refund; after that, annual prepayments may get a prorated refund for entirely unused future months, and monthly prepayments are nonrefundable for used service except where statutory rights, service non-delivery, or defects require otherwise. Do not present this as approved.
 6. **Unredeemed but ready:** propose a post-ready reminder sequence and a founder-approved *refund rather than forfeiture* of prepayments after an objectively defined unclaimed-access deadline. Do not treat email delivery alone as consumption of paid membership.
 
@@ -71,8 +86,9 @@ Service/transactional emails must be distinguished from marketing consent. SMS n
 ## Outstanding owner sign-offs (A2 intent does not equal these approvals)
 
 - [x] A2 future-access approach selected. **Planning authority only.**
-- [ ] Exact earliest/expected and latest delivery date **based on verified paid-feature readiness**, not marketing launch.
-- [ ] Refund request response time; automatic refund trigger; post-activation refund calculation; unclaimed-access deadline.
+- [x] Confirm **marketing landing page ASAP** and **official application target January 1, 2027**, with prepay early access free until Dec 31, and new early buyers starting paid terms when activated (planning intent).
+- [ ] Verify paid-feature readiness and approve contractual promise/latest delay cutoff for the January 1 application target.
+- [ ] Refund request response time; applicable automatic-refund requirements; post-activation refund calculation; unclaimed-access deadline.
 - [ ] Initial price protection eligibility, duration, exclusion/overlap rules and future one-time consent.
 - [ ] Email support identity and verified delivery/cancellation workflows; optional SMS consent and compliance.
 - [ ] Privacy policy update to accurately describe Stripe, preorders, service and refund records.
