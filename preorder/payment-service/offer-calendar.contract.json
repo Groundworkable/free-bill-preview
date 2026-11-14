@@ -37,7 +37,12 @@
     "never_consume_undelivered_paid_or_bonus_time": true,
     "notify_customers_and_offer_pre_activation_refunds": true,
     "exact_adjusted_start_dates": "UNAPPROVED",
-    "final_delivery_cutoff": "UNAPPROVED"
+    "final_unresolved_order_resolution_date": "2027-01-15",
+    "resolution_choices": ["usable_access_delivered", "affirmative_agreement_to_specific_extended_date", "full_refund_initiated"],
+    "silence_counts_as_extension_consent": false,
+    "unresolved_without_extension_refund_initiation_business_days": 5,
+    "cutoff_approval": "founder_approved_planning_only",
+    "contract_legal_review_status": "PENDING"
   },
   "full_refund_reserve": {
     "covers_prepaid_and_new_customer_receipts": true,
