@@ -43,6 +43,27 @@ References:
 
 **Residual blockers:** Cloudflare-authenticated source/version metadata inspection, verification of matched AUD without disclosing it, negative Access-policy validation, and bounded founder approval for any remote mutation. Full active version ID has already been captured; do not request it again. Rollback eligibility is documented but not exercised.
 
+## Read-only metadata inspection authorization — November 15, 2026
+
+The founder responded **"approved onward"** to the preceding proposal to inspect Cloudflare's existing Worker version metadata **read-only**. Scope is limited to inspection. No permission for a new version upload, traffic deployment, rollback, Access policy edit, variable edit, Worker route change, D1 mutation, or payment/notification activation is implied.
+
+### Available read-only inspection methods
+
+**Preferred Cloudflare dashboard:** Workers & Pages → `groundwork-founder-notifications-isolated` → **Deployments** → current active version `1f97ea8e-4ba6-47d9-87f6-11594c938cc1` → version details (if available). Inspect the exact version ID, production traffic share, compatibility date/flags, bindings **names/types only**, and any indicator of rollback eligibility. If submitting screenshots, **redact values of every variable, tokens, JWT, URLs with credentials, account IDs and private audience/JWKS material**; keep field labels and version ID visible. Do not click Deploy, Rollback or Edit.
+
+**Alternate CLI in an already authenticated owner environment (read-only commands only):**
+```bash
+npx wrangler@4.162.0 versions view 1f97ea8e-4ba6-47d9-87f6-11594c938cc1 --name groundwork-founder-notifications-isolated --json
+npx wrangler@4.162.0 deployments list --name groundwork-founder-notifications-isolated --json
+```
+**DO NOT paste raw CLI JSON into GitHub, ChatGPT or logs**; it may include plaintext variable values and other sensitive metadata. Examine it locally and share only a manually redacted screenshot or a sanitized list of field names and types. Do not ask the founder to produce new Cloudflare credentials, supply tokens in chat, enable account access, or run `wrangler versions upload` / `wrangler deploy`.
+
+Cloudflare documentation confirms these are read-only views:
+- https://developers.cloudflare.com/workers/wrangler/commands/workers/ (`versions view`, `deployments list`)
+- https://developers.cloudflare.com/workers/versions-and-deployments/
+
+**Current execution status:** No authenticated Cloudflare management connector or account session is available to this ChatGPT conversation. Consequently **the remote version metadata has not been retrieved**, and no production preservation or rollback claim can be made based on this authorization alone.
+
 ## Release conditions — STOP unless each is satisfied
 
 | Condition | Current evidence | Status |
