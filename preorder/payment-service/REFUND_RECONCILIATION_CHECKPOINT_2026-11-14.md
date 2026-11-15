@@ -108,3 +108,10 @@ Following the founder-reported Cloudflare-only replacement of the isolated Worke
 A fresh Stripe **test-mode** API read also confirmed the webhook endpoint `we_1UbShUJK9stEim4wVJZvDGVz` remained `disabled` and both existing test-mode Payment Links `plink_1UbK3MJK9stEim4w2nS3loNW` and `plink_1UbK33JK9stEim4w7BvY2CnM` remained `active=false`.
 
 **Verification boundary:** Remote fail-closed behavior is independently tested; source hash, full deployed code version, actual signed event delivery and remote D1 journal inserts remain unverified. Founder-supplied Cloudflare screenshots showed the required individual variables, secrets and seven remote SQL object names. No checkout, live payment, webhook activation, application entitlement, or production deployment was performed.
+
+
+## Founder-verified business and billing alias delivery — November 14, 2026
+
+The founder supplied inbox screenshots showing receipt of two separate test messages from an external Gmail address, addressed respectively to `billing@groundworkbyable.com` and `business@groundworkbyable.com`. Both **inbound** deliveries were successfully observed. `business@` is designated for organizational/pilot/partnership inquiries; `billing@` remains the billing/refund contact. The affiliate-specific alias/program is not needed for this release and is not approved implementation scope.
+
+This verifies **inbound alias routing only**. It does not establish outbound send-as, case tracking, a formal response SLA, automated purchase/refund notifications or Stripe customer-email correlation. No paid mailbox or new subscription is required by this checkpoint. Live checkout remains disabled.
