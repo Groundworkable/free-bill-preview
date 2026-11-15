@@ -57,3 +57,12 @@ Test payloads used fabricated `GW-TEST-NO-ORDER-001` purchase reference, no real
 **Verified:** Provider transport accepted and marked all three messages delivered to the chosen destination address. **Not verified:** physical inbox placement or rendering, replies, automated sends tied to signed Stripe events, customer-email authentication, suppression/retry/duplicate handling within a production notification pipeline, real refund initiation, or app fulfillment.
 
 The isolated Worker and Stripe checkout remain disabled. No public deployment or production app changes.
+
+
+## Founder Gmail screenshot confirmation — November 15, 2026
+
+The founder supplied Gmail screenshots of all three controlled emails at the `ablejr30@gmail.com` recipient address, showing `Groundwork by Able <billing@groundworkbyable.com>` as sender and the simulated content readable in Gmail. The `[GROUNDWORK TEST 2/3]` and `[GROUNDWORK TEST 3/3]` screenshots visibly show Gmail's **Inbox** label. The purchase confirmation is also visibly opened in Gmail and the green/gold branded HTML renders with the test warning, mock order reference, monetary amounts and footer intact. These screenshots supplement, rather than replace, Resend's provider-delivered status.
+
+**Rendering distinction:** Tests 2/3 (delivery status) and 3/3 (refund initiated) were intentionally sent as **plain text** and consequently look unbranded in Gmail. This is not a failure of the separately saved Resend draft templates, which have branded HTML versions. The controlled sends did **not** use or publish those templates. Their actual dynamic HTML rendering and placeholder substitution, automated Stripe-to-recipient correlation, duplicate prevention and real event-triggered delivery remain unverified.
+
+All three tests are *simulations*. No actual transaction or refund occurred. No further test messages should be sent without another user direction or authorization.
