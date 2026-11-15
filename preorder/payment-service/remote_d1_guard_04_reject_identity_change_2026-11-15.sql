@@ -1,0 +1,3 @@
+UPDATE prepurchase_notification_outbox
+SET notice_ref='ALTERED_NOT_ALLOWED'
+WHERE notification_key='gwn1_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
