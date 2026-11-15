@@ -25,7 +25,7 @@ public_start = published.index(marker)
 public_end = published.index('<div class="legal-links">', public_start)
 modal_start = company.index('<dialog id="gwPolicyDialog"')
 embedded_start = company.index(marker, modal_start)
-embedded_end = company.index('</section>', embedded_start)
+embedded_end = company.index('\n</section>', embedded_start)
 
 def normalized_policy_markup(source: str) -> str:
     return re.sub(r"\\s+", " ", source).strip()
