@@ -3,7 +3,7 @@
 -- An ambiguous send attempt must be manually reconciled: NEVER auto-reset it.
 -- Recipient fingerprint must be an HMAC with a separate secret, NOT plain SHA(email).
 CREATE TABLE IF NOT EXISTS prepurchase_notification_outbox (
-  notification_key TEXT PRIMARY KEY
+  notification_key TEXT PRIMARY KEY NOT NULL
     CHECK (length(notification_key) = 69 AND substr(notification_key,1,5) = 'gwn1_'),
   checkout_session_id TEXT NOT NULL REFERENCES prepurchase_orders(checkout_session_id),
   notice_type TEXT NOT NULL
