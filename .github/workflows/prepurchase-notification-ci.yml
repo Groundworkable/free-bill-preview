@@ -26,6 +26,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  remote-worker-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm remote isolated Worker remains disabled and hides test-only routes
+        run: python3 preorder/payment-service/remote_fail_closed_smoke.py
+
   notification-safe-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 8
