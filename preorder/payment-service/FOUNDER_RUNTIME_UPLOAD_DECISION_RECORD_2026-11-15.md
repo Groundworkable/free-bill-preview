@@ -64,6 +64,17 @@ Cloudflare documentation confirms these are read-only views:
 
 **Current execution status:** No authenticated Cloudflare management connector or account session is available to this ChatGPT conversation. Consequently **the remote version metadata has not been retrieved**, and no production preservation or rollback claim can be made based on this authorization alone.
 
+## Live unauthenticated Access boundary smoke — verified November 15, 2026
+
+At commit `d76dea6ca6f1e9c4a07a3e43c5e86ac78777bab9`, [GitHub Actions run 43743050818](https://github.com/Groundworkable/free-bill-preview/actions/runs/43743050818) passed both jobs. The new `founder_access_unauthenticated_smoke.py` sends **one credential-free GET** to the existing founder Worker with redirects disabled; it never sends a cookie, Access identity token, POST, review or dispatch request, and does not print returned bodies or redirect destinations. It accepts only a recognizable Access login redirect or Access-branded rejection; it fails on the bootstrap's 503, public 200, 404, ordinary 403, unrecognized redirect, network uncertainty, or leaked application response. GitHub job log recorded:
+
+```text
+PASS: founder Worker rejects this unauthenticated request with an Access challenge
+LIMITATION: exact founder allowlist, AUD equality and logged-in identity are not tested
+```
+
+The same workflow separately revalidated that the isolated payment Worker still returns disabled 503 and does not expose local test-only paths. This **closes the single unauthenticated request boundary check**, not the wrong-account/Access audience checks. The probe's domain and behavior are intentionally fixed to the existing founder Worker. No Cloudflare account API was used, no changes were made, and no credentials were supplied.
+
 ## Release conditions — STOP unless each is satisfied
 
 | Condition | Current evidence | Status |
@@ -73,6 +84,7 @@ Cloudflare documentation confirms these are read-only views:
 | **Full active version ID** retained as rollback reference | Founder copied exact ID from Cloudflare Deployments: `1f97ea8e-4ba6-47d9-87f6-11594c938cc1`; short ID matches prior screenshot | **PASS (identifier captured)**; rollback eligibility itself remains untested |
 | Worker's route, Access protection, runtime date/flags, identity variable names, bindings | Multiple dashboard screenshots | **PASS (observed baseline)** |
 | AUD tag equals runtime AUD variable | Full values correctly withheld | **NOT VERIFIED** — compare privately, never paste into GitHub |
+| Unauthenticated direct Worker request blocked by Access | One credential-free GET challenged in GitHub Actions run 43743050818 | **PASS (single live probe)** |
 | No Access bypass on wrong account | Not independently tested | **NOT VERIFIED** |
 | Wrangler variable preservation and Worker-level Access semantics | Cloudflare documentation verifies `--keep-vars` and Worker-ID-scoped Access; local dry run passed | **PASS (documentation only)**; actual live preservation still unverified |
 | One-time inactive version upload authorization | No such authorization | **NO-GO** |
