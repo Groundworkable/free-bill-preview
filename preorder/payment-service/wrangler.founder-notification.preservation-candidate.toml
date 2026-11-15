@@ -1,0 +1,36 @@
+# REVIEW CANDIDATE ONLY — NEVER DEPLOY OR UPLOAD FROM CI.
+# For existing Cloudflare Worker groundwork-founder-notifications-isolated only.
+# NOT for groundwork-payment-sandbox-isolated, a new Worker or public checkout.
+#
+# Founder screenshots (2026-11-15) confirm production workers.dev URL is ON,
+# preview URLs OFF, Worker-level Access All traffic/Owner Only, and two
+# dashboard-managed production identity vars. This file aims to retain that
+# observed state; its presence does NOT prove Cloudflare will preserve it.
+#
+# Before ANY remote version upload: compare the current deployed Worker version,
+# compatibility date/flags, bindings, Access policy, route and variables with
+# this proposed configuration; require separately recorded founder approval.
+# Uploads are Cloudflare mutations even if they are NOT immediately deployed.
+name = "groundwork-founder-notifications-isolated"
+main = "./founder_notification_worker.draft.mjs"
+compatibility_date = "2026-11-15"
+workers_dev = true
+preview_urls = false
+keep_vars = true
+
+# No routes, custom domains, service bindings, D1, schedules, queues, or
+# Stripe/Resend/HMAC credentials are configured here.
+# In particular: do NOT put FOUNDER_ACCESS_AUD or FOUNDER_ACCESS_EMAIL here.
+# Both existing dashboard-managed identity variables must remain unchanged.
+#
+# All operational gates remain explicitly CLOSED.
+[vars]
+FOUNDER_NOTIFICATION_ADMIN_MODE = "disabled"
+FOUNDER_NOTIFICATION_REVIEW_ENABLED = "false"
+FOUNDER_NOTIFICATION_DISPATCH_ENABLED = "false"
+NOTIFICATION_SEND_MODE = "disabled"
+NOTIFICATION_OPERATOR_RELEASE = "false"
+NOTIFICATION_TEMPLATES_APPROVED = "false"
+PAYMENTS_MODE = "disabled"
+TERMS_APPROVED = "false"
+TERMS_VERSION = "UNAPPROVED"
