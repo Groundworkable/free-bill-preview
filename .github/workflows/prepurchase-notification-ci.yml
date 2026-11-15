@@ -1,0 +1,63 @@
+name: Groundwork pre-purchase notification test gate
+
+on:
+  push:
+    branches:
+      - site/prepurchase-checkout-gate-2026-11-13
+    paths:
+      - "preorder/payment-service/**"
+      - "preorder/checkout-config.json"
+      - "scripts/preorder_legal_release_gate.py"
+      - "preorder/PRIVACY_POLICY_V2_COMPLETE_CANDIDATE_2026-11-14.md"
+      - "preorder/PRIVACY_V2_PREPURCHASE_REVIEW_2026-11-14.md"
+      - "preorder/CUSTOMER_TERMS_RELEASE_COPY_DRAFT_2026-11-14.md"
+      - ".github/workflows/prepurchase-notification-ci.yml"
+  pull_request:
+    paths:
+      - "preorder/payment-service/**"
+      - ".github/workflows/prepurchase-notification-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: groundwork-notify-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  notification-safe-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact checkout SHA and branch
+        run: |
+          git rev-parse HEAD
+          git status --short
+      - name: Check disabled website and legal publication gates
+        run: python3 scripts/preorder_legal_release_gate.py
+      - name: Check immutable purchase and journal database
+        run: python3 preorder/payment-service/schema.test.py
+      - name: Check notification ledger SQL transitions
+        run: python3 preorder/payment-service/notification_ledger.test.py
+      - name: Check refund and dispute read-only reconciliation
+        run: python3 preorder/payment-service/refund_reconciliation.test.py
+      - name: Check Stripe purchase-to-recipient consistency
+        run: python3 preorder/payment-service/purchase_contact_check.test.py
+      - name: Check offline notification preflight
+        run: python3 preorder/payment-service/notification_preflight.test.py
+      - name: Check offer and free-month calendar
+        run: python3 preorder/payment-service/offer-calendar.contract.test.py
+      - name: Check staged service isolation
+        run: python3 preorder/payment-service/isolation.test.py
+      - name: Check isolated sender/Stripe/Resend adapters with mocks
+        run: |
+          node --test \
+            preorder/payment-service/notification_sender.sandbox.test.mjs \
+            preorder/payment-service/notification_provider_adapters.sandbox.test.mjs
+      - name: Verify webhook signature and financial notifications with mocks
+        run: |
+          node --test \
+            preorder/payment-service/worker.test.mjs \
+            preorder/payment-service/payment-changes.test.mjs
