@@ -75,6 +75,17 @@ LIMITATION: exact founder allowlist, AUD equality and logged-in identity are not
 
 The same workflow separately revalidated that the isolated payment Worker still returns disabled 503 and does not expose local test-only paths. This **closes the single unauthenticated request boundary check**, not the wrong-account/Access audience checks. The probe's domain and behavior are intentionally fixed to the existing founder Worker. No Cloudflare account API was used, no changes were made, and no credentials were supplied.
 
+## Offline Cloudflare version-metadata sanitizer — prepared, NOT run against the account
+
+`founder_version_metadata_redact.py` is a **fail-closed, local-only JSON filter** for the founder's already-recorded active version. It accepts **only**:
+- Version UUID `1f97ea8e-4ba6-47d9-87f6-11594c938cc1`.
+- Compatibility date `2026-11-15` and an explicitly empty compatibility-flags array.
+- Exactly the two expected binding names `FOUNDER_ACCESS_AUD` and `FOUNDER_ACCESS_EMAIL`, with recognized variable binding types `plain_text` or `secret_text`. Any unexpected DB/service binding or unfamiliar response structure fails as **UNVERIFIED**.
+
+The tool emits only fixed success/failure messages and **never outputs raw JSON or binding values**. It has a `--self-test` mode with synthetic hostile fixtures that rejects altered version IDs/dates, flags, duplicate or unknown bindings, malformed structures and missing identity variables. This test requires no Cloudflare login, network request or credentials.
+
+**Limitations:** Wrangler's real response schema can differ; if it does, the filter fails closed and must be reviewed rather than weakened to accept unknown metadata. A successful filtered result does not prove the Worker-level Access policy, protected routing, or the outcome of any future upload. Piping raw metadata into the local filter is only appropriate in an already authenticated, privately controlled environment; do **not** paste it into chat, public GitHub Actions logs or a PR comment.
+
 ## Release conditions — STOP unless each is satisfied
 
 | Condition | Current evidence | Status |
