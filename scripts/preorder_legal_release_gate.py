@@ -7,6 +7,7 @@ published = (root / "privacy.html").read_text(encoding="utf-8")
 company = (root / "contact/index.html").read_text(encoding="utf-8")
 privacy_review = (root / "preorder/PRIVACY_V2_PREPURCHASE_REVIEW_2026-11-14.md").read_text(encoding="utf-8")
 terms_review = (root / "preorder/CUSTOMER_TERMS_RELEASE_COPY_DRAFT_2026-11-14.md").read_text(encoding="utf-8")
+privacy_candidate = (root / "preorder/PRIVACY_POLICY_V2_COMPLETE_CANDIDATE_2026-11-14.md").read_text(encoding="utf-8")
 gate = json.loads((root / "preorder/checkout-config.json").read_text(encoding="utf-8"))
 
 # Detect silent revision of the existing public policy or Company legal viewer.
@@ -20,6 +21,17 @@ assert "billing@groundworkbyable.com" in privacy_review and "billing@groundworkb
 assert "refund" in terms_review.lower() and "January 15, 2027" in terms_review
 assert "purchased months 2–12" in terms_review and "February 2027" in terms_review
 assert "Stripe" in privacy_review
+assert "NOT PUBLISHED" in privacy_candidate and "privacy-v2" in privacy_candidate
+assert "privacy-v1" in privacy_candidate and "NOT PUBLISHED OR EFFECTIVE" in privacy_candidate
+for disclosure in (
+    "Stripe", "Cloudflare", "Supabase", "Google Analytics",
+    "billing@groundworkbyable.com", "support@groundworkbyable.com",
+    "hello@groundworkbyable.com", "no single promised deletion period",
+    "does **not** store the buyer's email address",
+    "does **not** authorize recurring charges"
+):
+    assert disclosure in privacy_candidate, disclosure
+
 
 # Explicit fail-closed checkout is independent of the existence of review drafts.
 assert gate["enabled"] is False and gate["termsApproved"] is False
