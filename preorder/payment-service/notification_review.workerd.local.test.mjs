@@ -27,12 +27,12 @@ const server=createTestHarness({workers:[{
 const base="https://example.invalid";
 async function post(path,body={}) {
   const response=await server.fetch(base+path,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
-  assert.equal(response.status,200,await response.text());
+  assert.equal(response.status,200,`HTTP ${response.status}`);
   return response.json();
 }
 async function status() {
   const response=await server.fetch(base+"/__test/review/status");
-  assert.equal(response.status,200,await response.text());
+  assert.equal(response.status,200,`HTTP ${response.status}`);
   return response.json();
 }
 before(async()=>{
