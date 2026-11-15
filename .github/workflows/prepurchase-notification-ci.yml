@@ -107,14 +107,14 @@ jobs:
         working-directory: preorder/payment-service
         run: |
           set -eu
-          mkdir -p .founder-runtime-release
-          find .founder-runtime-build -maxdepth 1 -type f | grep -E '\.(m?js)$' > .founder-runtime-release/bundle-files.txt
-          test "$(wc -l < .founder-runtime-release/bundle-files.txt)" -eq 1
-          BUNDLE="$(cat .founder-runtime-release/bundle-files.txt)"
-          cp "$BUNDLE" .founder-runtime-release/founder_notification_worker.bundle.mjs
-          cp founder_notification_bootstrap.disabled.mjs .founder-runtime-release/rollback_bootstrap.disabled.mjs
+          mkdir -p founder-runtime-release
+          find .founder-runtime-build -maxdepth 1 -type f | grep -E '\.(m?js)$' > founder-runtime-release/bundle-files.txt
+          test "$(wc -l < founder-runtime-release/bundle-files.txt)" -eq 1
+          BUNDLE="$(cat founder-runtime-release/bundle-files.txt)"
+          cp "$BUNDLE" founder-runtime-release/founder_notification_worker.bundle.mjs
+          cp founder_notification_bootstrap.disabled.mjs founder-runtime-release/rollback_bootstrap.disabled.mjs
           (
-            cd .founder-runtime-release
+            cd founder-runtime-release
             sha256sum founder_notification_worker.bundle.mjs rollback_bootstrap.disabled.mjs > SHA256SUMS
             printf 'Groundwork founder-notifications runtime REVIEW candidate only\\n'
             printf 'Source commit: %s\\n' "$GITHUB_SHA"
@@ -122,12 +122,12 @@ jobs:
             printf 'DO NOT replace the live 503 bootstrap, run wrangler deploy, or enable send/review/payment flags.\\n'
             printf 'No Cloudflare routing, Access, DB, provider, or secret configuration is included.\\n'
             printf 'Read preorder/payment-service/FOUNDER_RUNTIME_DEPLOYMENT_REVIEW_2026-11-15.md in Draft PR #17.\\n'
-          ) > .founder-runtime-release/READ_BEFORE_USE.txt
-          rm .founder-runtime-release/bundle-files.txt
+          ) > founder-runtime-release/READ_BEFORE_USE.txt
+          rm founder-runtime-release/bundle-files.txt
       - name: Publish review-only bundled release candidate as CI artifact
         uses: actions/upload-artifact@v4
         with:
           name: founder-runtime-review-${{ github.sha }}
-          path: preorder/payment-service/.founder-runtime-release/
+          path: preorder/payment-service/founder-runtime-release/
           if-no-files-found: error
           retention-days: 7
