@@ -104,3 +104,16 @@ It computes stable SHA-256-derived **review keys**, includes no contact email in
 
 **Major remaining implementation gap:** the `previously_sent_keys` collection is in-memory caller input, **not an authoritative atomic send ledger**. A durable idempotent send log, race protection, retries after ambiguous provider timeouts, recipient verification and secure outbound orchestration must be designed and verified before any automated customer messages. No such service was deployed by this checkpoint; all Resend templates remain unpublished.
 
+
+
+## Durable notification outbox design — draft-only, November 15, 2026
+
+Files staged in PR #17: `notification_ledger.draft.sql` and `notification_ledger.test.py`. They are **not included in `schema.sql`**, not migrated to the remote isolated D1 database, and not connected to the deployed Worker, Stripe, Resend templates or existing Groundwork app.
+
+The draft adds a unique notification key and logical `(checkout_session_id, notice_type, notice_ref)` constraint, a recipient **HMAC** fingerprint (not an unkeyed hash of email), constrained state transitions, a single attempt token, recorded provider acceptance and delivery, and a database-enforced append-only state audit journal. The transition test exercises duplicate collisions, immutable identities, forbidden transitions, missing evidence, foreign keys, a manual-review hold and deletion/alteration rejection. It explicitly protects the SQLite nullable primary-key corner case.
+
+**Safety boundary:** This is a database *design* and synthetic test, not a functional or independently authenticated mail service. The database cannot independently prove Stripe authenticity, recipient ownership, a correct email address, approval of customer copy or provider delivery. A `review_verified` state does **not** establish those facts by itself.
+
+A provider request can time out after sending. The draft deliberately treats `attempt_started` with uncertain outcome as **manual review**, never an automatic retry. A robust future sender must durably claim the row before network activity, use provider-side idempotency, reconcile ambiguous outcomes by provider reference, prevent multiple workers from sending, and establish authenticated recipient, security, delivery evidence, failure handling and authorized deletion/retention rules. It must never claim exactly-once delivery from this local schema alone.
+
+**No notification ledger migration has been run, and no customer sending is authorized.**
