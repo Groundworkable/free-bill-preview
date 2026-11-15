@@ -87,3 +87,6 @@ jobs:
       - name: Run signed webhook, D1 ledger and mocked Resend end-to-end Workerd test
         working-directory: preorder/payment-service
         run: node --test worker.local.test.mjs
+      - name: Verify native Workerd D1 review approval transaction and rollback
+        working-directory: preorder/payment-service
+        run: node --test notification_review.workerd.local.test.mjs
