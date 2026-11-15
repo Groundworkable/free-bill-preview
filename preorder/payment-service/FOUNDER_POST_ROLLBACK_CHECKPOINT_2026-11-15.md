@@ -41,3 +41,21 @@ A Cloudflare dashboard **manual code paste and Deploy** is NOT the same operatio
 ## Why the historical version matters
 
 The post-rollback Cloudflare deployment list now includes `22367a82` alongside `1f97ea8e`. The original staging goal of obtaining an inactive candidate version may already be satisfied, depending on what that earlier version actually contains; **verification, not another deployment**, is the next logical action.
+
+## Full historical version identifier and genuine read-only code inspection
+
+Founder copied historical version UUID `22367a82-2713-4f1f-b927-65301fe75a17`, matching the `22367a82` short ID in the rollback screenshot. This is the accidentally deployed version, **not the currently active** Worker.
+
+Cloudflare's documented GET endpoint `/accounts/{account_id}/workers/workers/{worker_id}/versions/{version_id}?include=modules` returns module bytes and version metadata. The read-only deployments-list endpoint returns the actively serving version as its first result. This makes it possible to compare the historical code to the exact CI bundle, not merely infer parity from timestamps or labels.
+
+Added `founder_historical_version_inspect.py`. With an **existing privately held, read-only** Cloudflare API token (`CLOUDFLARE_API_TOKEN`) and account identifier (`CLOUDFLARE_ACCOUNT_ID`) set in the founder's shell, run:
+
+    python3 preorder/payment-service/founder_historical_version_inspect.py --check
+
+The script performs two **GET-only** requests, retains responses in process memory, never prints source/module bytes/credentials/identity values, checks single JS module SHA256 `63282db30b16f3ed46a1ac0dfd1c8a5e6702a759a88bb93d7404e1ab74330f8d` (from passing CI), requires identity variables and any declared operational variables to be disabled, rejects other bindings, and verifies original `1f97ea8e-4ba6-47d9-87f6-11594c938cc1` remains at 100%. The tool **fails closed** if Cloudflare's API response shape or transformed code differs. An exact code mismatch means **UNVERIFIED**, not proof of a harmful upload.
+
+Run `--self-test` without credentials to validate synthetic guard fixtures. CI runs this synthetic test only; **it does not access the Cloudflare account**.
+
+Cloudflare API references: https://developers.cloudflare.com/api/resources/workers/subresources/beta/subresources/workers/subresources/versions/methods/get/ ; https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/deployments/methods/list/ .
+
+**No API token was created, read, or requested in chat. No Cloudflare changes; no version promotion.**
