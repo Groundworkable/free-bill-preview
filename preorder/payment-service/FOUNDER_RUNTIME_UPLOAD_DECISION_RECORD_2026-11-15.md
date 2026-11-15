@@ -28,6 +28,21 @@ Sources:
 - https://developers.cloudflare.com/workers/configuration/cloudflare-access/
 - https://developers.cloudflare.com/workers/wrangler/configuration/
 
+## Cloudflare preservation semantics verified against current documentation (Nov 15, 2026)
+
+**Documented, not live-tested:** Cloudflare's Wrangler `versions upload` explicitly supports `--keep-vars` (normally false): when enabled, existing environment variables are **not deleted before adding configured variables**. `--strict` stops uploads with conflicting remote changes. The candidate and pinned CI command both include these options. Therefore Cloudflare's *published behavior* supports retaining `FOUNDER_ACCESS_AUD` and `FOUNDER_ACCESS_EMAIL` while adding nine disabled operational flags. This does **not** prove preservation on this specific Worker until a separately authorized staging/upload and subsequent metadata check.
+
+Worker-level Access is attached by **Worker ID** to the Worker (not by the active script's version prefix) and, when configured for **All traffic**, protects all domains/routes associated with it. This supports the existing owner-only Access app continuing across code-version changes, *assuming no Worker identity, Access policy, or routing changes*. Confirm this by read-only inspection before and after any future upload, rather than assuming.
+
+Wrangler supports read-only `versions view <FULL_VERSION_ID> --name groundwork-founder-notifications-isolated --json` and `deployments list --name groundwork-founder-notifications-isolated --json`. These commands require a separately authenticated Cloudflare environment; none is available in the GitHub CI check, and they were **not run**. Do not paste raw outputs containing variable values or secrets into tickets or chat.
+
+References:
+- https://developers.cloudflare.com/workers/wrangler/commands/workers/ (`versions upload`, `--keep-vars`, `--strict`, `versions view`, `deployments list`)
+- https://developers.cloudflare.com/workers/configuration/cloudflare-access/ (`Protect one Worker`, `worker` destination)
+- https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/
+
+**Residual blockers:** Cloudflare-authenticated source/version metadata inspection, verification of matched AUD without disclosing it, negative Access-policy validation, and bounded founder approval for any remote mutation. Full active version ID has already been captured; do not request it again. Rollback eligibility is documented but not exercised.
+
 ## Release conditions — STOP unless each is satisfied
 
 | Condition | Current evidence | Status |
@@ -38,7 +53,7 @@ Sources:
 | Worker's route, Access protection, runtime date/flags, identity variable names, bindings | Multiple dashboard screenshots | **PASS (observed baseline)** |
 | AUD tag equals runtime AUD variable | Full values correctly withheld | **NOT VERIFIED** — compare privately, never paste into GitHub |
 | No Access bypass on wrong account | Not independently tested | **NOT VERIFIED** |
-| Actual Wrangler upload preserves dashboard identity values, Access and route | Local `--keep-vars` dry run only | **NOT VERIFIED** |
+| Wrangler variable preservation and Worker-level Access semantics | Cloudflare documentation verifies `--keep-vars` and Worker-ID-scoped Access; local dry run passed | **PASS (documentation only)**; actual live preservation still unverified |
 | One-time inactive version upload authorization | No such authorization | **NO-GO** |
 | Separate production rollout authorization | Not sought | **NO-GO** |
 | Payment/notification dispatch/checkout release | All remain disabled | **NO-GO by design** |
@@ -50,7 +65,7 @@ The founder used Cloudflare's Deployments copy control and supplied the complete
 
 ### AFTER (and only after) separate bounded authorization for an inactive upload
 1. Record exact PR commit, review artifact checksum, full current active version ID, target Worker, disabled operational settings, and chosen version-upload command/config.
-2. Confirm the CLI's treatment of dashboard-managed production variables and Worker-level Access configuration. If this cannot be confirmed, **stop rather than assume `keep_vars` alone is enough**.
+2. Reconfirm the documented `--keep-vars` and Worker-level Access behavior against this Worker's current remote metadata; keep `--strict` enabled. If the actual remote settings conflict, **stop**.
 3. A founder-approved **version upload** may then occur without creating a production deployment. The upload **still changes the Cloudflare account** and is a separate approval event.
 4. Verify, using read-only dashboard evidence, the active deployment still routes 100% to the original known-good version; no preview/route/Access changes, no new bindings or secrets, and an uploaded inactive version is visible with correct metadata.
 5. Only a *subsequent*, distinct approval could authorize sending any traffic to the replacement code. Admin, review, dispatch, all provider sends and all payment/legal gates must remain disabled; no DB binding.
