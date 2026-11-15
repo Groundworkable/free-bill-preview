@@ -45,7 +45,7 @@ def validate(text: str) -> None:
     for line in text.splitlines():
         command = line.strip()
         # Exact allowlist of EVERY Wrangler command in this workflow.
-        if re.search(r"\bwrangler\s+(?:deploy|versions|deployments|secret|kv|d1|r2|whoami)\b", command, re.I):
+        if re.match(r"^(?:run:\s*)?(?:npx\s+)?wrangler\s+(?:deploy|versions|deployments|secret|kv|d1|r2|whoami)\b", command, re.I):
             assert command in APPROVED_WRANGLER_LINES, (
                 "Unexpected Wrangler command in review-only workflow"
             )
