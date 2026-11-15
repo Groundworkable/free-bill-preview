@@ -34,7 +34,7 @@ Sources:
 | --- | --- | --- |
 | Exact target Worker and scope | Screenshots and candidate TOML | **PASS (review-only)** |
 | Active production version short ID and traffic | `1f97ea8e` at 100% | **PASS (short ID only)** |
-| **Full active version ID** retained as rollback target | Not yet copied from dashboard | **OPEN / NO-GO** |
+| **Full active version ID** retained as rollback reference | Founder copied exact ID from Cloudflare Deployments: \`1f97ea8e-4ba6-47d9-87f6-11594c938cc1\`; short ID matches prior screenshot | **PASS (identifier captured)**; rollback eligibility itself remains untested |
 | Worker's route, Access protection, runtime date/flags, identity variable names, bindings | Multiple dashboard screenshots | **PASS (observed baseline)** |
 | AUD tag equals runtime AUD variable | Full values correctly withheld | **NOT VERIFIED** — compare privately, never paste into GitHub |
 | No Access bypass on wrong account | Not independently tested | **NOT VERIFIED** |
@@ -43,8 +43,10 @@ Sources:
 | Separate production rollout authorization | Not sought | **NO-GO** |
 | Payment/notification dispatch/checkout release | All remain disabled | **NO-GO by design** |
 
-### One safe founder action to close the next evidence item
-In **Cloudflare → Workers & Pages → `groundwork-founder-notifications-isolated` → Deployments**, use the small **copy icon next to the current active `1f97ea8e` entry** and paste only the copied **version identifier**, or open its read-only details if the icon copies only the eight-character prefix. This is an identifier, **not** a credential. Do not click Deploy or Rollback or change any settings. If it still shows eight characters, report that instead of guessing.
+### Full active version ID captured (founder confirmation, November 15, 2026)
+The founder used Cloudflare's Deployments copy control and supplied the complete version identifier: \`1f97ea8e-4ba6-47d9-87f6-11594c938cc1\`. It matches the earlier screenshot's eight-character prefix and the version displayed at 100% traffic. The value is a version identifier, not a credential. This closes the **full ID retrieval** task, but it does not prove rollback eligibility, future restoration behavior, access-policy integrity, or preservation of production variables during an upload. The founder should NOT be asked to retrieve this ID again.
+
+**Next review gate:** reconcile the proposed offline version-upload configuration with Cloudflare's live application protections and verify the future release/restore procedure; no upload or deployment is authorized. Avoid requesting additional Cloudflare UI actions merely to generate more evidence without a concrete need.
 
 ### AFTER (and only after) separate bounded authorization for an inactive upload
 1. Record exact PR commit, review artifact checksum, full current active version ID, target Worker, disabled operational settings, and chosen version-upload command/config.
