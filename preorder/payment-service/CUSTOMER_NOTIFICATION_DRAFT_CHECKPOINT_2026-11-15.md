@@ -150,3 +150,14 @@ Files: `notification_provider_adapters.sandbox.mjs` and `notification_provider_a
 
 The adapter tests are added to GitHub Actions. **No CI results have been independently confirmed for this commit**.
 
+
+
+## Remote sandbox readiness and test route safety — November 15, 2026
+
+**Authoritative read-only inspection from connected accounts** confirmed Able Systems LLC is the sole accessible Stripe **test-mode** account. Monthly and annual one-time Payment Links remain **inactive** with `consent_collection=null`; the dedicated test webhook remains **disabled** (checkout/refund/dispute subscriptions configured but not enabled). The Resend sending domain is verified and sending-enabled; the **three Georgia-branded notification templates remain unpublished drafts**. Draft PR #17 remains unmerged.
+
+The Cloudflare *remote* isolated Worker was founder-reported deployed with a payments-disabled configuration. A prior independent unsigned-request check found HTTP `503 Payment receiver not configured`, but its exact deployed code hash is not independently verified, and the **draft notification ledger was never migrated remotely**. The release cannot move to signed remote webhook events or customer emails based only on successful local Workerd CI.
+
+Added a **non-mutating remote safety extension** to `remote_fail_closed_smoke.py` (commit `0ffe0e5`) checking the disabled webhook `503` response **and** that GET requests to three local-only test routes return `404`. A separately named remote safety job in `.github/workflows/prepurchase-notification-ci.yml` now runs this smoke script without Stripe, Resend or Cloudflare secrets (commit `b485780`). A non-404 local-only endpoint or unexpected webhook availability is a **hard failure**, not authorization to proceed. This never sends a signed event, reads user records, mutates D1 or enables payments. **Fresh CI for the extended remote smoke check is not yet verified.**
+
+**Remaining gates:** verify exact isolated Worker source/bindings and read-only D1 objects; design an independently approved remote test transaction/notification procedure using Stripe test-mode credentials and the allowlisted founder inbox; separately approve temporary activation, refund/terms handling, provider delivery and rollback; keep public checkout closed.
