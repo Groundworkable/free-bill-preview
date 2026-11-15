@@ -49,6 +49,8 @@ jobs:
         run: python3 preorder/payment-service/schema.test.py
       - name: Check notification ledger SQL transitions
         run: python3 preorder/payment-service/notification_ledger.test.py
+      - name: Verify isolated notification migration parity and preservation
+        run: python3 preorder/payment-service/remote_d1_notification_migration.test.py
       - name: Check refund and dispute read-only reconciliation
         run: python3 preorder/payment-service/refund_reconciliation.test.py
       - name: Check Stripe purchase-to-recipient consistency
