@@ -45,6 +45,8 @@ jobs:
         run: |
           git rev-parse HEAD
           git status --short
+      - name: Reject any live deploy path or credential access in review-only CI
+        run: python3 preorder/payment-service/founder_ci_no_deploy_guard.py
       - name: Check disabled website and legal publication gates
         run: python3 scripts/preorder_legal_release_gate.py
       - name: Enforce sandbox provider and deployable Worker isolation
