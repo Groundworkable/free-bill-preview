@@ -215,10 +215,12 @@ test("signed checkout to local D1 to reviewed notification to mocked Resend; rep
   });
   const first=await dispatch();
   assert.equal(first.status,200);
-  assert.deepEqual(await first.json(),{status:"provider_accepted_await_delivery_evidence"});
+  const firstResult=await first.json();
+  assert.equal(firstResult.status,"provider_accepted_await_delivery_evidence",JSON.stringify(firstResult));
   const again=await dispatch();
   assert.equal(again.status,200);
-  assert.deepEqual(await again.json(),{status:"not_reviewed_or_inconsistent"});
+  const againResult=await again.json();
+  assert.equal(againResult.status,"not_reviewed_or_inconsistent",JSON.stringify(againResult));
   assert.equal(calls.resendPost,1,"exactly one mocked provider send");
   assert.equal(calls.stripeCheckout,1,"repeat should not read provider");
   const state=await (await server.fetch("https://example.invalid/__test/notification/outbox")).json();
@@ -282,9 +284,10 @@ test("signed refund journal to separately reviewed notice to mocked Resend, no a
   });
   assert.equal(prepared.status,200,await prepared.text());
   const attempted=await post("/__test/notification/dispatch",{notificationKey:KEY});
-  assert.deepEqual(await attempted.json(),{status:"provider_accepted_await_delivery_evidence"});
-  assert.deepEqual(await (await post("/__test/notification/dispatch",{notificationKey:KEY})).json(),
-    {status:"not_reviewed_or_inconsistent"});
+  const attemptResult=await attempted.json();
+  assert.equal(attemptResult.status,"provider_accepted_await_delivery_evidence",JSON.stringify(attemptResult));
+  const repeatResult=await (await post("/__test/notification/dispatch",{notificationKey:KEY})).json();
+  assert.equal(repeatResult.status,"not_reviewed_or_inconsistent",JSON.stringify(repeatResult));
   assert.equal(sent,1);
   const after=await (await server.fetch("https://example.invalid/__test/notification/outbox")).json();
   const record=after.rows.find(x=>x.notification_key===KEY);
