@@ -202,16 +202,20 @@ export function isolatedD1NotificationStore(db) {
       ).bind(refund, intent).first();
     },
     async claim(key, token) {
-      const result = await db.prepare(
-        "UPDATE prepurchase_notification_outbox SET state='attempt_started',attempt_token=?,attempt_started_at=datetime('now'),changed_at=datetime('now') WHERE notification_key=? AND state='review_verified'"
-      ).bind(token,key).run();
-      return result.meta?.changes === 1;
+      // D1 meta.changes is derived from sqlite3_total_changes(), which can
+      // include the append-only audit trigger's INSERT. Do not interpret
+      // that total as the number of outbox rows conditionally claimed.
+      // RETURNING reports exactly the one row changed by this atomic UPDATE.
+      const row = await db.prepare(
+        "UPDATE prepurchase_notification_outbox SET state='attempt_started',attempt_token=?,attempt_started_at=datetime('now'),changed_at=datetime('now') WHERE notification_key=? AND state='review_verified' RETURNING notification_key"
+      ).bind(token,key).first();
+      return row?.notification_key === key;
     },
     async providerAccepted(key, token, messageId) {
-      const result = await db.prepare(
-        "UPDATE prepurchase_notification_outbox SET state='provider_accepted',provider_message_id=?,provider_accepted_at=datetime('now'),changed_at=datetime('now') WHERE notification_key=? AND attempt_token=? AND state='attempt_started'"
-      ).bind(messageId,key,token).run();
-      return result.meta?.changes === 1;
+      const row = await db.prepare(
+        "UPDATE prepurchase_notification_outbox SET state='provider_accepted',provider_message_id=?,provider_accepted_at=datetime('now'),changed_at=datetime('now') WHERE notification_key=? AND attempt_token=? AND state='attempt_started' RETURNING notification_key"
+      ).bind(messageId,key,token).first();
+      return row?.notification_key === key;
     },
   };
 }
