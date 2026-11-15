@@ -15,7 +15,7 @@ Target is **only** Cloudflare Worker `groundwork-founder-notifications-isolated`
 | **Production bindings inventory** | **No connected bindings** displayed | Settings → Bindings screenshot, November 15, 2026 |
 | **Production variables inventory** | Exactly two entries displayed: `FOUNDER_ACCESS_AUD` and `FOUNDER_ACCESS_EMAIL`, both Type `Variable` | Settings → Runtime variables and secrets screenshot; AUD deliberately redacted |
 | **Observability logging** | Logs enabled; invocation logs and dashboard persistence checked | Settings → Observability screenshot |
-| **Active deployment version** | **`1f97ea8e` at 100% traffic** | Deployments screenshot, November 15, 2026; short UI ID only |
+| **Active deployment version** | **`1f97ea8e-4ba6-47d9-87f6-11594c938cc1`** — `1f97ea8e` short display at 100% traffic | Full ID founder-copied from Deployments, matching screenshot prefix (Nov 15, 2026) |
 | **Production compatibility date** | **`2026-11-15`** | Settings → Runtime screenshot, November 15, 2026; matches proposed candidate |
 | **Compatibility flags** | No flags shown; field displays placeholder | Screenshot confirms none listed, not an independent API query |
 | **Runtime placement** | `Default` | Screenshot confirmed |
@@ -29,7 +29,7 @@ Target is **only** Cloudflare Worker `groundwork-founder-notifications-isolated`
 ## Still unknown / blocking (do not infer)
 | Field | Why needed | Safe read-only dashboard location |
 | --- | --- | --- |
-| **Full immutable active version ID and confirmation of rollback eligibility** | Screenshot shows short ID `1f97ea8e` serving 100%; confirm full version identifier and contents before planning a rollback | Worker → **Deployments** → active entry / version details, read-only |
+| **Rollback eligibility and full-version metadata** | Full active ID now recorded; actual restore eligibility, code and bindings in the version still require review | Cloudflare version/rollback policy and future version details; no rollback action approved |
 | **Independent compatibility/config reconciliation** | Date `2026-11-15`, flags blank, placement Default, cache Disabled were screenshot-confirmed; verify the proposed upload preserves those as well as other deploy-version settings | Worker Settings → Runtime plus prospective version review; NO upload yet |
 | **Independent pre-upload preservation verification** | Dashboard screenshot shows only the two founder identity variables and **no connected bindings**; inspect any Cloudflare version-change preview before approval for silent changes | Future review gate; no upload or deployment authorized |
 | **Exact current Access AUD matches stored variable** | The name being present is not evidence its value is correct | Compare privately inside Cloudflare; **do not post values** |
@@ -56,4 +56,4 @@ If the currently deployed compatibility date/flags differ, **STOP** and reconcil
 - After any separately approved replacement: test Access and unchanged routing; disabled status/review/dispatch; no D1, Stripe, Resend, webhook or public checkout exposure; restore original version immediately if any mismatch.
 - No *upload*, deploy, Worker route edit, Access policy edit, secret creation or data change has been authorized by this checkpoint.
 
-**Read-only Cloudflare dashboard inventory COMPLETE for the currently viewed production settings.** The next work is desk review of the exact script upload/versioning procedure and preservation of the protected workers.dev route, Access app, variables, runtime configuration and rollback. Do not ask founder to re-send the same screenshots. Separate approval is required before any Cloudflare mutation; runtime policy behavior, full active version ID, Access AUD value equality and wrong-account denial remain unverified.
+**Read-only Cloudflare dashboard inventory COMPLETE for the currently viewed production settings.** The next work is desk review of the exact script upload/versioning procedure and preservation of the protected workers.dev route, Access app, variables, runtime configuration and rollback. Do not ask founder to re-send the same screenshots. Separate approval is required before any Cloudflare mutation; runtime policy behavior, rollback eligibility, Access AUD value equality and wrong-account denial remain unverified. Full active version ID was founder-confirmed and recorded above.
