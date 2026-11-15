@@ -149,6 +149,9 @@ export async function independentlyReviewFounderNotice(env, key, trustedReviewer
 
 export function isolatedD1ReviewStore(db) {
   return {
+    async getEvidence(key) {
+      return db.prepare("SELECT * FROM prepurchase_notification_review_evidence WHERE notification_key=?").bind(key).first();
+    },
     async get(key) {
       return db.prepare("SELECT * FROM prepurchase_notification_outbox WHERE notification_key=?").bind(key).first();
     },
