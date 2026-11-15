@@ -99,3 +99,27 @@ test("Resend refuses arbitrary recipients, templates, sender and malformed varia
   await assert.rejects(pending.send(base));
   assert.equal(count,1);
 });
+
+
+test("Workerd-compatible manual redirect refuses provider redirects without following them", async () => {
+  let stripeCalls=0;
+  const stripe=stripeTestReadAdapter(env,async(_url,options)=>{
+    stripeCalls++;
+    assert.equal(options.redirect,"manual");
+    return respond({error:"redirect not followed"},302);
+  });
+  await assert.rejects(stripe.checkout(sessionId));
+  assert.equal(stripeCalls,1);
+  const resendCalls=[];
+  const resend=resendFounderTestTransport(env,async(url,options)=>{
+    resendCalls.push({url,options});
+    assert.equal(options.redirect,"manual");
+    return respond({error:"redirect not followed"},302);
+  });
+  assert.equal(await resend.templateIsPublished(alias),false);
+  await assert.rejects(resend.send({to:email,templateAlias:alias,
+    variables:{ORDER_REFERENCE:"TEST"},idempotencyKey:key,
+    from:"Groundwork by Able <billing@groundworkbyable.com>"}));
+  assert.equal(resendCalls.length,2);
+  assert.ok(resendCalls.every(call=>call.options.method==="GET"));
+});
