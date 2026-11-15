@@ -1,11 +1,13 @@
 # Groundwork by Able — Privacy Policy
 
-**COMPLETE PRIVACY-V2 PUBLICATION CANDIDATE — FOUNDER AND LEGAL REVIEW ONLY. NOT PUBLISHED OR EFFECTIVE.**
+**FOUNDER-APPROVED PRIVACY-V2 WORDING — PENDING LEGAL AND IMPLEMENTATION REVIEW. NOT PUBLISHED OR EFFECTIVE.**
 
 **Operator:** Able Systems LLC, doing business through Groundwork by Able  
 **Proposed version:** privacy-v2 (not operative until formally published)  
 **Effective date:** TO BE SET AT AUTHORIZED PUBLICATION — do not backdate or display a false effective date  
 **Official published policy until then:** https://groundworkbyable.online/privacy.html (privacy-v1, effective October 3, 2026)
+
+**Founder wording approval:** Confirmed November 14, 2026 for this complete candidate as drafted. Approval is for legal/implementation review; it does **not** authorize public publication, assign an effective date, configure Stripe Terms or activate checkout. Material customer-facing revisions require renewed founder review.
 
 > **Editorial boundary:** The sections below are proposed customer-facing copy. This page is not an offer to purchase. It does not activate a payment method, membership, or feature. Changes to actual provider usage, notifications, account linkage, data retention and geographic eligibility must be reviewed before publication.
 
@@ -117,7 +119,7 @@ The public website also provides a contact page: https://groundworkbyable.online
 - [x] Names Stripe as a **conditional** checkout and tax provider without saying the test-only flow is live.
 - [x] Includes billing and support aliases; founder screenshots verified inbound delivery for billing and business aliases (support alias separately listed but ongoing operations not validated).
 - [x] Does not promise a numeric retention period, automatic fulfillment, recurring billing, or non-existent bank connections.
-- [ ] Founder approval of THIS full revised privacy policy; earlier approval was for customer **terms**, not privacy-v2.
+- [x] Founder approved the full privacy-v2 customer-facing wording on November 14, 2026 for legal and implementation review. The earlier terms approval is separate. **Publication is not approved.**
 - [ ] Review provider configurations and support/notice delivery in actual implementation, including Google Analytics/cookie disclosures and any user-identity linking.
 - [ ] Legal and jurisdiction review; confirm applicable privacy rights and statutory retention/eligibility rules before final release.
 - [ ] Choose a truthful effective date at publication, put the new version in `privacy.html`, and synchronize the embedded Company & Information policy reader plus its `privacy-v1` metadata.
