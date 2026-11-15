@@ -81,3 +81,12 @@ A second founder-authorized controlled test sent the actual saved HTML layouts (
 | Georgia refund initiated `[GROUNDWORK GEORGIA TEST 3/3]` | `01a1de8c-d2e2-7a2d-8c8d-5c9a79d71548` | delivered |
 
 Verification confirmed all three outgoing HTML bodies include Georgia font styling and zero unresolved `{{{VARIABLE}}}` placeholders. **Gmail rendering of this newer Georgia set has not yet been confirmed by founder screenshots**. Resend drafts have **not** been published; the control used API sends with hydrated HTML to avoid activating production template publication. Payment links/webhook, isolated Worker disabled flags, and public website remain unchanged.
+
+
+## Founder Gmail visual verification — Georgia branded HTML set (November 15, 2026)
+
+The founder supplied seven Gmail screenshots showing the **second**, Georgia-style test set (subjects `[GROUNDWORK GEORGIA TEST 1/3]`, `2/3`, `3/3`) in the Gmail Inbox. All three messages display the intended dark-green header, **Georgia serif `Groundwork` wordmark**, smaller `by Able` label, readable sans-serif message title and body, conspicuous red/orange simulation warning, and billing contact. Screenshots show the purchase-confirmation body and footer, delivery-update body and footer, and refund-initiated body and footer; the Gmail list view shows all three messages. No obvious clipping, missing placeholder, or rendering error is visible at the supplied desktop Gmail viewport.
+
+**Verification now complete:** Sending-domain SMTP delivery (Resend status), founder-confirmed Gmail inbox placement, desktop-Gmail HTML visual inspection of all three **manually hydrated** preview messages.
+
+**Not yet verified:** Branded HTML on mobile/other mail clients, approval of final transactional copy, actual Resend template publish/send-variable rendering, event-driven delivery, recipient identity controls, duplicate sends, receipt/case management, actual Stripe payment/refund webhook and D1 reconciliation. Drafts remain **unpublished** and payment gates disabled. A screenshot is **not** express founder approval of live notifications or payments.
