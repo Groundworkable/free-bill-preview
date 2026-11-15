@@ -231,10 +231,66 @@ test("signed checkout to local D1 to reviewed notification to mocked Resend; rep
   assert.equal((await (await server.fetch("https://example.invalid/__test/order")).json()).status,"paid_unfulfilled");
 });
 
-test("refund event stored in D1 does not itself send or grant access",async()=>{
-  const changes=(await (await server.fetch("https://example.invalid/__test/changes")).json());
-  assert.ok(changes.some(x=>x.event_type==="refund.created"));
-  const notifications=(await (await server.fetch("https://example.invalid/__test/notification/outbox")).json());
-  assert.equal(notifications.rows.some(x=>x.notice_type==="refund_initiated"),false);
-  assert.equal((await (await server.fetch("https://example.invalid/__test/order")).json()).status,"paid_unfulfilled");
+test("signed refund journal to separately reviewed notice to mocked Resend, no automatic refund email",async()=>{
+  const KEY = "gwn1_" + "d".repeat(64);
+  const refundId="re_LocalRefund";
+  const signedRefund=makeEvent("evt_LocalNotificationRefund","refund.created",{
+    object:"refund",id:refundId,charge:"ch_LocalCharge",payment_intent:paymentId,
+    amount:300,currency:"usd",status:"pending",livemode:false
+  });
+  assert.equal((await send(signedRefund)).status,200);
+  const existing=(await (await server.fetch("https://example.invalid/__test/changes")).json());
+  assert.ok(existing.some(x=>x.event_id==="evt_LocalNotificationRefund" && x.financial_status==="pending"));
+  const before=(await (await server.fetch("https://example.invalid/__test/notification/outbox")).json());
+  assert.equal(before.rows.some(x=>x.notice_type==="refund_initiated"),false,
+    "Signed financial events must not automatically send notifications");
+  let sent=0;
+  mockStripe();
+  network.use(
+    http.get("https://api.stripe.com/v1/checkout/sessions/:session",()=>
+      HttpResponse.json(makeSession())),
+    http.get("https://api.stripe.com/v1/checkout/sessions/:session/line_items",()=>
+      HttpResponse.json({object:"list",has_more:false,data:lineItems})),
+    http.get("https://api.stripe.com/v1/refunds/:id",({params})=>{
+      assert.equal(params.id,refundId);
+      return HttpResponse.json({
+        object:"refund",id:refundId,livemode:false,amount:300,currency:"usd",
+        payment_intent:paymentId,status:"pending",created:1794650000
+      });
+    }),
+    http.get("https://api.resend.com/templates/:alias",({params})=>{
+      assert.equal(params.alias,"groundwork-refund-initiated-review");
+      return HttpResponse.json({object:"template",alias:params.alias,
+        status:"published",has_unpublished_versions:false});
+    }),
+    http.post("https://api.resend.com/emails",async({request})=>{
+      sent++;
+      assert.equal(request.headers.get("Idempotency-Key"),KEY);
+      const body=await request.json();
+      assert.deepEqual(body.to,["founder-test@example.com"]);
+      assert.equal(body.template.id,"groundwork-refund-initiated-review");
+      assert.equal(body.template.variables.REFUND_REFERENCE,refundId);
+      assert.equal(body.template.variables.REFUND_AMOUNT,"$3.00");
+      return HttpResponse.json({id:"01a1de7c-664c-7a96-9e4c-f8a9589c1ee2"});
+    })
+  );
+  const post=async(path,payload)=>server.fetch("https://example.invalid"+path,{
+    method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)
+  });
+  const prepared=await post("/__test/notification/prepare",{
+    notificationKey:KEY,kind:"refund_initiated",noticeRef:refundId
+  });
+  assert.equal(prepared.status,200,await prepared.text());
+  const attempted=await post("/__test/notification/dispatch",{notificationKey:KEY});
+  assert.deepEqual(await attempted.json(),{status:"provider_accepted_await_delivery_evidence"});
+  assert.deepEqual(await (await post("/__test/notification/dispatch",{notificationKey:KEY})).json(),
+    {status:"not_reviewed_or_inconsistent"});
+  assert.equal(sent,1);
+  const after=await (await server.fetch("https://example.invalid/__test/notification/outbox")).json();
+  const record=after.rows.find(x=>x.notification_key===KEY);
+  assert.equal(record.state,"provider_accepted");
+  assert.deepEqual(after.journal.filter(x=>x.notification_key===KEY).map(x=>x.new_state),
+    ["review_pending","review_verified","attempt_started","provider_accepted"]);
+  const order=await (await server.fetch("https://example.invalid/__test/order")).json();
+  assert.equal(order.status,"paid_unfulfilled");
 });
