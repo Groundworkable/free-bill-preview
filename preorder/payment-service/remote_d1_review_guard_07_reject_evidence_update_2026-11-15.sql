@@ -1,0 +1,3 @@
+UPDATE prepurchase_notification_review_evidence
+ SET reviewer_hmac='dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'
+ WHERE notification_key='gwn1_9999999999999999999999999999999999999999999999999999999999999999';
