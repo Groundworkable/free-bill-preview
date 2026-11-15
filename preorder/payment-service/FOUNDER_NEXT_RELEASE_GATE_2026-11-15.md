@@ -1,27 +1,17 @@
-# Founder notification Worker — next actual Cloudflare step
+# Founder Worker — CURRENT next gate after accidental deployment and rollback
 
-Scope: only the existing groundwork-founder-notifications-isolated Worker, not the payment receiver or website.
+**Status Nov 15, 2026:** The founder manually deployed a candidate version (`22367a82` short ID shown in Cloudflare) and **rolled back**. A screenshot confirms original bootstrap `1f97ea8e-4ba6-47d9-87f6-11594c938cc1` restored at **100%** production traffic. The historical candidate version is listed as Ready but **not receiving production traffic**.
 
-Known active version: 1f97ea8e-4ba6-47d9-87f6-11594c938cc1 at 100% in the founder's Cloudflare screenshot.
-Production workers.dev enabled, previews disabled, owner-only Access All traffic.
-Existing identity variables FOUNDER_ACCESS_AUD and FOUNDER_ACCESS_EMAIL; no connected bindings; compatibility 2026-11-15.
+The previous instruction to stage via Cloudflare Edit code is **superseded**. **Do not paste, Save, Deploy, Rollback or upload again.** The version may already exist and should be inspected without another account mutation.
 
-Local CI completed the exact Wrangler version-upload dry run with all nine operational gates disabled, no database binding, and no send, review, payment or public checkout activation.
+See [post-rollback checkpoint](./FOUNDER_POST_ROLLBACK_CHECKPOINT_2026-11-15.md) for exact evidence and remaining gaps.
 
-## One authenticated read-only operation
+## Read-only actions that can proceed
 
-Run from the checkout of this PR in an already authenticated founder-owned terminal:
+- GitHub CI: fresh unauthenticated Cloudflare Access smoke; separate disabled-payment Worker check. Both are credential-free.
+- Cloudflare owner (only if needed later): inspect historical version `22367a82` and compare its source and metadata to the CI-tested artifact. Do not send variable values, audience tag or raw JSON.
+- Keep `1f97ea8e` at 100% until version integrity, Access and rollback controls are verified.
 
-    python3 preorder/payment-service/founder_cloudflare_readonly_preflight.py --check
+GitHub CI source: `124f9ea5775788842907b984489327d2a0c0ee4f`, [run 43762783601](https://github.com/Groundworkable/free-bill-preview/actions/runs/43762783601), review artifact `founder-runtime-review-124f9ea5775788842907b984489327d2a0c0ee4f`.
 
-The command invokes only pinned Wrangler 4.162.0 versions view and deployments list, compares version/compatibility and 100% traffic, and prints a sanitized PASS or UNVERIFIED. Raw metadata is never printed or saved. No upload or deploy operation exists in the script.
-
-If UNVERIFIED, STOP. A passing result is not proof of Access AUD equality or rollback and is not permission to deploy.
-
-## Next separate decision (not performed)
-
-Only after the read-only preflight and confirming AUD privately may a separately authorized, inactive version upload be considered. Cloudflare's versions upload supports creating a new Worker version without directing production traffic to it. Strict and keep-vars are required to preserve dashboard-managed variables. Check the exact commit, review artifact checksum and current production version before any account mutation.
-
-No live Worker change, no Stripe/Resend activation, no webhook enablement, no merge, and no public checkout opening are authorized by this document.
-
-References: https://developers.cloudflare.com/workers/versions-and-deployments/ and https://developers.cloudflare.com/workers/wrangler/commands/workers/
+**No new deployment, notification dispatch, email, payment activation, database migration, or PR merge is approved.**
