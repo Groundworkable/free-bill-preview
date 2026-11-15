@@ -13,10 +13,12 @@
  */
 import { dispatchFounderTestNotification, isolatedD1NotificationStore } from "./notification_sender.sandbox.mjs";
 import { stripeTestReadAdapter, resendFounderTestTransport } from "./notification_provider_adapters.sandbox.mjs";
+import { independentlyReviewFounderNotice, isolatedD1ReviewStore } from "./notification_reviewer.draft.mjs";
 
 const notificationKeyPattern = /^gwn1_[a-f0-9]{64}$/;
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const CONFIRM = "SEND_FOUNDER_TEST_NOTICE";
+const REVIEW_CONFIRM = "REVIEW_FOUNDER_TEST_NOTICE";
 const NO_STORE = Object.freeze({
   "Cache-Control": "no-store, private",
   "X-Content-Type-Options": "nosniff",
@@ -70,10 +72,10 @@ function sameOrigin(request) {
   try { return new URL(origin).origin === new URL(request.url).origin; }
   catch { return false; }
 }
-async function readDispatchRequest(request) {
+async function readOperatorRequest(request,expectedConfirm,expectedAction) {
   const type = request.headers.get("Content-Type") || "";
   if (!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(type)) return null;
-  if (request.headers.get("X-Groundwork-Operator-Action") !== "founder-dispatch") return null;
+  if (request.headers.get("X-Groundwork-Operator-Action") !== expectedAction) return null;
   if (Number(request.headers.get("Content-Length") || 0) > 512) return null;
   const body = await request.text();
   if (new TextEncoder().encode(body).byteLength > 512) return null;
@@ -81,7 +83,7 @@ async function readDispatchRequest(request) {
   try { parsed = JSON.parse(body); } catch { return null; }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed) ||
       Object.keys(parsed).sort().join(",") !== "confirm,notificationKey") return null;
-  if (parsed.confirm !== CONFIRM ||
+  if (parsed.confirm !== expectedConfirm ||
       !notificationKeyPattern.test(parsed.notificationKey || "")) return null;
   return parsed.notificationKey;
 }
@@ -95,15 +97,18 @@ export function createFounderNotificationWorker({
   createStore = isolatedD1NotificationStore,
   createStripe = stripeTestReadAdapter,
   createResend = resendFounderTestTransport,
+  reviewer = independentlyReviewFounderNotice,
+  createReviewStore = isolatedD1ReviewStore,
 } = {}) {
   return {
     async fetch(request, env, ctx) {
       const url = new URL(request.url);
       const statusRoute = url.pathname === "/founder/notifications/status";
       const dispatchRoute = url.pathname === "/founder/notifications/dispatch";
-      if (!statusRoute && !dispatchRoute) return reply("not_found",404);
+      const reviewRoute = url.pathname === "/founder/notifications/review";
+      if (!statusRoute && !dispatchRoute && !reviewRoute) return reply("not_found",404);
       if (statusRoute && request.method !== "GET" ||
-          dispatchRoute && request.method !== "POST") return reply("method_not_allowed",405);
+          (dispatchRoute || reviewRoute) && request.method !== "POST") return reply("method_not_allowed",405);
       if (!adminConfigured(env)) return reply("service_disabled",503);
       if (!await authenticate(env, ctx)) return reply("access_denied",403);
       if (!sameOrigin(request)) return reply("origin_denied",403);
@@ -130,10 +135,27 @@ export function createFounderNotificationWorker({
         } catch { return reply("storage_unavailable",503); }
       }
 
+      if (reviewRoute) {
+        if (env.FOUNDER_NOTIFICATION_REVIEW_ENABLED !== "true") return reply("review_disabled",503);
+        let key;
+        try { key = await readOperatorRequest(request,REVIEW_CONFIRM,"founder-review"); }
+        catch { return reply("invalid_request",400); }
+        if (!key) return reply("invalid_request",400);
+        try {
+          // Acquire identity directly from trusted Access again; never from a header.
+          const verifiedIdentity = await ctx.access.getIdentity();
+          const result = await reviewer(env,key,verifiedIdentity.email,{
+            store:createReviewStore(env.DB),provider:createStripe(env),
+          });
+          return reply(result.status,result.status === "review_verified" ? 200 :
+            result.status==="review_disabled" ? 503 : 409);
+        } catch { return reply("review_unavailable",503); }
+      }
+
       // Sending requires a separate explicit enablement, beyond Access login.
       if (!dispatchConfigured(env)) return reply("dispatch_disabled",503);
       let key;
-      try { key = await readDispatchRequest(request); }
+      try { key = await readOperatorRequest(request,CONFIRM,"founder-dispatch"); }
       catch { return reply("invalid_request",400); }
       if (!key) return reply("invalid_request",400);
 
