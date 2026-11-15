@@ -4,7 +4,7 @@
 
 **Full replacement drafted:** `preorder/PRIVACY_POLICY_V2_COMPLETE_CANDIDATE_2026-11-14.md`. This is a single policy combining privacy-v1 website/beta practices with proposed conditional Stripe pre-purchase disclosures. It avoids claims that the payment flow is currently open or that buyer email is already linked to payment records. The current policy in `privacy.html` and the matching Company & Information embedded reader have **not** changed.
 
-**Founder review status:** pending approval of the full new privacy-v2 wording; the founder's prior approval covered the **customer pre-purchase terms**, not this privacy policy. Legal/jurisdictional review and actual provider/notification practices remain publication gates. Do not give a future effective date until publication is authorized.
+**Founder review status:** founder approved the full new privacy-v2 wording on November 14, 2026, separately from the approved customer pre-purchase terms. This is wording approval **for final legal and implementation review**, not publication approval. Legal/jurisdictional review and actual provider/notification practices remain publication gates. Do not give an effective date until publication is authorized.
 
 **Alignment:** The proposed policy names Stripe, Cloudflare D1 limited transaction records, Resend where used, Supabase, Google Analytics, beta request handling and existing support aliases; confirms no stored card data in the draft Worker, no D1 buyer email or entitlement, and no auto-renewal. The isolated Worker/test Stripe checkout remain disabled.
 
