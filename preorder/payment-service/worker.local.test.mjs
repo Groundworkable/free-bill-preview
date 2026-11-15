@@ -214,10 +214,10 @@ test("signed checkout to local D1 to reviewed notification to mocked Resend; rep
     body:JSON.stringify({notificationKey:KEY})
   });
   const first=await dispatch();
-  assert.equal(first.status,200,await first.text());
+  assert.equal(first.status,200);
   assert.deepEqual(await first.json(),{status:"provider_accepted_await_delivery_evidence"});
   const again=await dispatch();
-  assert.equal(again.status,200,await again.text());
+  assert.equal(again.status,200);
   assert.deepEqual(await again.json(),{status:"not_reviewed_or_inconsistent"});
   assert.equal(calls.resendPost,1,"exactly one mocked provider send");
   assert.equal(calls.stripeCheckout,1,"repeat should not read provider");
