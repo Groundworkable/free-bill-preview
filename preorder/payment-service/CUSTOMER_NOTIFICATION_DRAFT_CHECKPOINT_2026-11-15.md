@@ -136,3 +136,17 @@ The sender then calls the draft D1 adapter's atomic `UPDATE ... WHERE state='rev
 Tests use a synthetic Stripe Session, fake test-only IDs, mock database, mock provider and mock transport; they do not call Stripe, Resend or Cloudflare. The tests cover disabled gates, unavailable template, missing approval, identity/amount/terms conflicts, atomic claim rejection, idempotency key, provider timeout and missing acknowledgement. These tests are wired into `.github/workflows/public-site-qa.yml`; **CI result has not yet been verified**.
 
 **Remaining release blockers:** implement independently reviewed and authenticated real adapters; ensure exact Stripe-email identity verification and HMAC key management; verify and publish templates with approval; validate provider-side idempotency and reconciliation; approve a bounded test-only deployment, then conduct a separate audited signed-webhook-to-D1-to-Resend flow. No live payment or customer email path is authorized.
+
+
+## Authenticated provider adapter **draft code** — November 15, 2026
+
+Files: `notification_provider_adapters.sandbox.mjs` and `notification_provider_adapters.sandbox.test.mjs`.
+
+- **Stripe reader:** restricted authenticated `GET` requests to `https://api.stripe.com/v1/checkout/sessions/{cs_test_*}`, the session's complete one-line-item listing, and `https://api.stripe.com/v1/refunds/{re_*}`. Requires test Stripe credentials and sandbox flags; validates returned object type, exact reference and test-mode `livemode=false`, and refuses paginated or incomplete line items. It does not create a Stripe session, charge, refund or customer.
+- **Resend transport:** requires distinct founder-only release flags, configured sending credentials and exact founder-controlled recipient; sends only one of the three configured approved template aliases from `billing@groundworkbyable.com` with a stable `gwn1_` idempotency key. It queries Resend's template endpoint and will **refuse to send** until the specific template is published with no unpublished edits. All three real templates are currently **draft/unpublished**. No template was published or email sent here.
+- All network adapters are **not wired into** a runtime handler, webhook, cron, Cloudflare Worker or app. There is no newly deployed endpoint or real notification sender. The synthetic test suite uses injected fake HTTP responses, ensuring the expected provider paths, payloads and denial scenarios without real API calls.
+
+**Important distinction:** An API response mocked in tests is not proof of live Stripe connectivity, identity ownership, provider delivery or tax setup. The sender core's injection-based operator approval is not an implemented authentication flow, and the exact test recipient and signing secret are not configured in deployed Cloudflare. The full signed checkout/refund → D1 → Resend chain remains not demonstrated. The `NOTIFICATION_SEND_MODE` sender gate is absent in the currently deployed isolated Worker, which remains payments-disabled.
+
+The adapter tests are added to GitHub Actions. **No CI results have been independently confirmed for this commit**.
+
