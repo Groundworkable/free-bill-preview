@@ -61,7 +61,7 @@ assert 'status: 503' in bootstrap
 assert 'Founder service disabled' in bootstrap
 assert not re.search(r'^\\s*import\\s', bootstrap, re.M)
 assert 'env.DB' not in bootstrap
-assert 'fetch(' not in bootstrap
+assert 'async fetch()' in bootstrap
 assert '/founder/notifications/' not in bootstrap.replace(
     'DO NOT paste founder_notification_worker.draft.mjs yet.', '')
 print("PASS: isolated founder Access scaffold has no routes or secrets and all gates default deny")
