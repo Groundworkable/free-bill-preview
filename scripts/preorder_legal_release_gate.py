@@ -15,6 +15,29 @@ assert "Version: privacy-v1" in published and "Effective October 3, 2026" in pub
 assert "privacy-v1" in company and "October 3, 2026" in company
 assert "Stripe" not in published, "The public policy was modified without a reviewed v2 release"
 
+# The Company & Information modal embeds the full published privacy text.
+# Detect drift in ANY customer-facing paragraph, not just the version/date label.
+# Only tolerate whitespace differences between standalone and embedded markup.
+import re
+
+marker = '<div class="kicker">Groundwork · Privacy</div>'
+public_start = published.index(marker)
+public_end = published.index('<div class="legal-links">', public_start)
+modal_start = company.index('<dialog id="gwPolicyDialog"')
+embedded_start = company.index(marker, modal_start)
+embedded_end = company.index('</section>', embedded_start)
+
+def normalized_policy_markup(source: str) -> str:
+    return re.sub(r"\\s+", " ", source).strip()
+
+standalone_policy = normalized_policy_markup(published[public_start:public_end])
+embedded_policy = normalized_policy_markup(company[embedded_start:embedded_end])
+assert standalone_policy == embedded_policy, (
+    "Company & Information privacy reader drifted from privacy.html; "
+    "both public-policy locations must remain synchronized"
+)
+assert standalone_policy.count('<section class="legal-section">') == 12
+
 # Proposed legal materials must never be mistaken for effective terms.
 assert "NOT PUBLISHED" in privacy_review and "NOT PUBLISHED" in terms_review
 assert "billing@groundworkbyable.com" in privacy_review and "billing@groundworkbyable.com" in terms_review
