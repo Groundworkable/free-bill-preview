@@ -40,6 +40,8 @@ jobs:
         run: python3 preorder/payment-service/purchase_contact_check.test.py
       - name: Verify notification preflight and duplicate-send safeguards
         run: python3 preorder/payment-service/notification_preflight.test.py
+      - name: Verify draft notification D1 ledger and manual hold transitions
+        run: python3 preorder/payment-service/notification_ledger.test.py
       - name: Validate founder-approved offer calendar and no unauthorised renewals
         run: python3 preorder/payment-service/offer-calendar.contract.test.py
       - name: Confirm payment sandbox cannot deploy or route to existing app
