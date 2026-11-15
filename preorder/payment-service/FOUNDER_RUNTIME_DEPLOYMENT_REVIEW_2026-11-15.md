@@ -11,6 +11,24 @@ Scope: Groundworkable/free-bill-preview Draft PR #17, separate Worker `groundwor
 - Artifact checksums identify **contents only**. They do not prove or authorize a safe Cloudflare production deployment.
 - The current live Worker continues to run `founder_notification_bootstrap.disabled.mjs` responding `Founder service disabled` (503). Founder sign-in and the two identity vars were founder-confirmed at the previous checkpoint, not independently re-read via a Cloudflare management API in this session.
 
+## Founder screenshot verification — November 15, 2026 (read-only)
+
+The founder supplied Cloudflare dashboard screenshots of the **same Worker**, showing:
+- **Domains:** Production `workers.dev` URL is enabled, with an Access lock/policy note. Preview `workers.dev` URL is disabled. No custom domains or routes appear.
+- **Settings → Production variables:** `FOUNDER_ACCESS_AUD` and `FOUNDER_ACCESS_EMAIL` both exist as separate variables. The AUD value was deliberately redacted. The configured email is the exact owner identity expected by the current Access policy.
+- **Access:** The Worker-level Access protection is **All traffic** (production and previews), with **Groundwork Owner Only**, an **Allow** rule restricted to the founder's exact address. AUD tag and JWKS application values are present; their values were withheld.
+
+**Verified from screenshots:** policy scope, route presence, variable names, policy display. **Not verified:** exact AUD equality between Access tag and variable, wrong-account denial, currently deployed script's exact version ID, any live runtime behavior beyond previously observed disabled bootstrap, or whether a new code upload preserves all settings. No dashboard changes requested.
+
+### Current Cloudflare documentation reviewed
+
+- [Cloudflare Worker-level Access](https://developers.cloudflare.com/workers/configuration/cloudflare-access/) confirms one-Worker All traffic protections and `ctx.access` validation.
+- [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/) confirms that `workers_dev=false` disables the workers.dev route; `keep_vars=true` preserves dashboard-managed variables when Wrangler deploys, but does not by itself guarantee the Access/route state.
+- [Worker versions and deployments](https://developers.cloudflare.com/workers/versions-and-deployments/) separates uploaded versions from deployments, with complete version contents including code, bindings and compatibility settings.
+- [Worker rollbacks](https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/) documents rolling back to a previous deployed Worker version via Deployments.
+
+**Next preparation:** prepare and independently review a *candidate-only* config/command that explicitly keeps `workers_dev=true`, `preview_urls=false`, `keep_vars=true`, never introduces a route or binding, and preserves the separately managed Access policy and current identity variables. Prefer a non-live version upload followed by exact-state review, but **do not execute any Cloudflare upload or deployment** without the founder's specific approval. Record the current version ID and rollback method before authorization. A source-only check cannot establish the Cloudflare-side preservation guarantee.
+
 ## Blocker — deployment must preserve live dashboard configuration
 The existing draft `wrangler.founder-notification.draft.toml` contains `workers_dev=false` and `preview_urls=false`, reflecting its original no-route preparation phase. The current standalone Worker already has an **Access-protected workers.dev URL**. **Never deploy this draft TOML unchanged:** it may remove/disable the active protected workers.dev endpoint or overwrite dashboard-owned variables.
 
