@@ -91,7 +91,7 @@ jobs:
             preorder/payment-service/payment-changes.test.mjs
       - name: Install isolated Workerd and mock-provider dependencies
         working-directory: preorder/payment-service
-        run: npm install --no-save --no-package-lock --ignore-scripts wrangler@4 msw@2
+        run: npm install --no-save --no-package-lock --ignore-scripts wrangler@4.162.0 msw@2
       - name: Dry-run bundle founder-only runtime without deploying
         working-directory: preorder/payment-service
         run: |
@@ -105,8 +105,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ""
           CLOUDFLARE_ACCOUNT_ID: ""
         run: |
-          set -eu
-          npx wrangler versions upload --config ./wrangler.founder-notification.preservation-candidate.toml --dry-run --keep-vars --strict --outdir ./.founder-version-preservation-dry-run
+          set -euo pipefail
+          npx wrangler versions upload --config ./wrangler.founder-notification.preservation-candidate.toml --dry-run --keep-vars --strict --outdir ./.founder-version-preservation-dry-run 2>&1 | tee .founder-version-upload-dry-run.log
+          python3 founder_version_binding_output_gate.py
           node founder_version_upload_dry_run.test.mjs
       - name: Require exact source parity between tested and version-upload dry-run bundles
         working-directory: preorder/payment-service
