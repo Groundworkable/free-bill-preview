@@ -171,7 +171,7 @@ test("local D1 original purchase evidence rejects UPDATE and DELETE", async()=>{
 test("signed checkout to local D1 to reviewed notification to mocked Resend; repeat never sends",async()=>{
   const KEY = "gwn1_" + "c".repeat(64);
   mockStripe();
-  const calls = {stripeCheckout:0, stripeItems:0, resendPost:0, resendGet:0};
+  const calls = {stripeCheckout:0, stripeItems:0, resendGet:0};
   network.use(
     http.get("https://api.stripe.com/v1/checkout/sessions/:session",({params})=>{
       calls.stripeCheckout++;
@@ -188,17 +188,6 @@ test("signed checkout to local D1 to reviewed notification to mocked Resend; rep
       return HttpResponse.json({
         object:"template",alias:params.alias,status:"published",has_unpublished_versions:false
       });
-    }),
-    http.post("https://api.resend.com/emails",async({request})=>{
-      calls.resendPost++;
-      assert.equal(request.headers.get("Idempotency-Key"),KEY);
-      assert.equal(request.headers.get("Authorization"),"Bearer re_FAKE_LOCAL_ONLY");
-      const payload=await request.json();
-      assert.deepEqual(payload.to,["founder-test@example.com"]);
-      assert.equal(payload.template.id,"groundwork-prepurchase-confirmation-review");
-      assert.equal(payload.template.variables.ORDER_REFERENCE,sessionId);
-      assert.equal(payload.template.variables.TOTAL_PAID,"$10.59");
-      return HttpResponse.json({id:"01a1de7c-664c-7a96-9e4c-f8a9589c1ee1"});
     })
   );
   const duplicateCheckout=await send(makeEvent("evt_LocalNotifyDuplicate"));
@@ -221,7 +210,8 @@ test("signed checkout to local D1 to reviewed notification to mocked Resend; rep
   assert.equal(again.status,200);
   const againResult=await again.json();
   assert.equal(againResult.status,"not_reviewed_or_inconsistent",JSON.stringify(againResult));
-  assert.equal(calls.resendPost,1,"exactly one mocked provider send");
+  assert.equal(firstResult.__test_mock_resend_posts,1,"local Workerd must verify the exact send and header");
+  assert.equal(againResult.__test_mock_resend_posts,0,"repeat must not send");
   assert.equal(calls.stripeCheckout,1,"repeat should not read provider");
   const state=await (await server.fetch("https://example.invalid/__test/notification/outbox")).json();
   const row=state.rows.find(x=>x.notification_key===KEY);
@@ -246,7 +236,6 @@ test("signed refund journal to separately reviewed notice to mocked Resend, no a
   const before=(await (await server.fetch("https://example.invalid/__test/notification/outbox")).json());
   assert.equal(before.rows.some(x=>x.notice_type==="refund_initiated"),false,
     "Signed financial events must not automatically send notifications");
-  let sent=0;
   mockStripe();
   network.use(
     http.get("https://api.stripe.com/v1/checkout/sessions/:session",()=>
@@ -264,16 +253,6 @@ test("signed refund journal to separately reviewed notice to mocked Resend, no a
       assert.equal(params.alias,"groundwork-refund-initiated-review");
       return HttpResponse.json({object:"template",alias:params.alias,
         status:"published",has_unpublished_versions:false});
-    }),
-    http.post("https://api.resend.com/emails",async({request})=>{
-      sent++;
-      assert.equal(request.headers.get("Idempotency-Key"),KEY);
-      const body=await request.json();
-      assert.deepEqual(body.to,["founder-test@example.com"]);
-      assert.equal(body.template.id,"groundwork-refund-initiated-review");
-      assert.equal(body.template.variables.REFUND_REFERENCE,refundId);
-      assert.equal(body.template.variables.REFUND_AMOUNT,"$3.00");
-      return HttpResponse.json({id:"01a1de7c-664c-7a96-9e4c-f8a9589c1ee2"});
     })
   );
   const post=async(path,payload)=>server.fetch("https://example.invalid"+path,{
@@ -288,7 +267,8 @@ test("signed refund journal to separately reviewed notice to mocked Resend, no a
   assert.equal(attemptResult.status,"provider_accepted_await_delivery_evidence",JSON.stringify(attemptResult));
   const repeatResult=await (await post("/__test/notification/dispatch",{notificationKey:KEY})).json();
   assert.equal(repeatResult.status,"not_reviewed_or_inconsistent",JSON.stringify(repeatResult));
-  assert.equal(sent,1);
+  assert.equal(attemptResult.__test_mock_resend_posts,1,"local Workerd must verify refund send and header");
+  assert.equal(repeatResult.__test_mock_resend_posts,0,"repeat must not send");
   const after=await (await server.fetch("https://example.invalid/__test/notification/outbox")).json();
   const record=after.rows.find(x=>x.notification_key===KEY);
   assert.equal(record.state,"provider_accepted");
