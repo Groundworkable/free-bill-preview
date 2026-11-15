@@ -13,6 +13,10 @@ Target is **only** Cloudflare Worker `groundwork-founder-notifications-isolated`
 | Access Allow policy | **Groundwork Owner Only**; exact single founder email | Screenshot confirmed |
 | Production identity binding names | `FOUNDER_ACCESS_AUD`, `FOUNDER_ACCESS_EMAIL` | Screenshot confirmed |
 | **Active deployment version** | **`1f97ea8e` at 100% traffic** | Deployments screenshot, November 15, 2026; short UI ID only |
+| **Production compatibility date** | **`2026-11-15`** | Settings → Runtime screenshot, November 15, 2026; matches proposed candidate |
+| **Compatibility flags** | No flags shown; field displays placeholder | Screenshot confirms none listed, not an independent API query |
+| **Runtime placement** | `Default` | Screenshot confirmed |
+| **Runtime cache** | `Disabled` | Screenshot confirmed |
 | Earlier deployment entries | `e8cdb15e`, `1801d112` shown as Ready | Historical UI entries, not proven complete rollback copies |
 | Active version description | `Add variable: FOUNDER_ACCESS_AUD FOUNDER_ACCESS...` (truncated) | Dashboard description; do not infer full contents |
 | Traffic metrics at capture | 0 req/sec, 0% error rate | Dashboard snapshot only; does not prove access denial or runtime safety |
@@ -23,7 +27,7 @@ Target is **only** Cloudflare Worker `groundwork-founder-notifications-isolated`
 | Field | Why needed | Safe read-only dashboard location |
 | --- | --- | --- |
 | **Full immutable active version ID and confirmation of rollback eligibility** | Screenshot shows short ID `1f97ea8e` serving 100%; confirm full version identifier and contents before planning a rollback | Worker → **Deployments** → active entry / version details, read-only |
-| **Current compatibility date and compatibility flags** | Avoid accidental runtime behavior change from candidate date `2026-11-15` | Worker → **Settings** → Runtime / Compatibility settings (dashboard UI label may vary) |
+| **Independent compatibility/config reconciliation** | Date `2026-11-15`, flags blank, placement Default, cache Disabled were screenshot-confirmed; verify the proposed upload preserves those as well as other deploy-version settings | Worker Settings → Runtime plus prospective version review; NO upload yet |
 | **All current bindings and variables (names/types only)** | Ensure candidate does not remove service bindings, secrets or other production config | Worker → Settings → Bindings, Variables and Secrets; **redact all values** |
 | **Exact current Access AUD matches stored variable** | The name being present is not evidence its value is correct | Compare privately inside Cloudflare; **do not post values** |
 | **Wrong-account denial and versioned rollback behavior** | Verify security and recovery independently | Separately approved testing and rollback plan; do not attempt yet |
@@ -49,4 +53,4 @@ If the currently deployed compatibility date/flags differ, **STOP** and reconcil
 - After any separately approved replacement: test Access and unchanged routing; disabled status/review/dispatch; no D1, Stripe, Resend, webhook or public checkout exposure; restore original version immediately if any mismatch.
 - No *upload*, deploy, Worker route edit, Access policy edit, secret creation or data change has been authorized by this checkpoint.
 
-**Next founder input (one screenshot only):** open **Cloudflare → Workers & Pages → groundwork-founder-notifications-isolated → Settings**, find **Compatibility date / Compatibility flags**, and send a screenshot with that section visible. No edits, Deploy, Rollback, or variable values. If the UI labels differ, send the Settings overview and we will locate it together.
+**Next founder input (one screenshot only):** stay on **Cloudflare → Workers & Pages → groundwork-founder-notifications-isolated → Settings**, scroll to **Bindings** (and nearby **Runtime variables and secrets** if visible) and send a screenshot of the whole section, showing *only binding/variable names and types*. Hide any values, especially tokens, AUD, and secrets. **Do not add, edit, deploy, or roll back anything.** The existing prior screenshot established the two identity variable names; this additional screenshot checks the complete bindings inventory.
