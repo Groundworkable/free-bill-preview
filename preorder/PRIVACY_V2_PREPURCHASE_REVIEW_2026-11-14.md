@@ -1,5 +1,14 @@
 # Groundwork by Able — Privacy Policy pre-purchase changes for review
 
+## Complete consolidated policy for review — November 14, 2026
+
+**Full replacement drafted:** `preorder/PRIVACY_POLICY_V2_COMPLETE_CANDIDATE_2026-11-14.md`. This is a single policy combining privacy-v1 website/beta practices with proposed conditional Stripe pre-purchase disclosures. It avoids claims that the payment flow is currently open or that buyer email is already linked to payment records. The current policy in `privacy.html` and the matching Company & Information embedded reader have **not** changed.
+
+**Founder review status:** pending approval of the full new privacy-v2 wording; the founder's prior approval covered the **customer pre-purchase terms**, not this privacy policy. Legal/jurisdictional review and actual provider/notification practices remain publication gates. Do not give a future effective date until publication is authorized.
+
+**Alignment:** The proposed policy names Stripe, Cloudflare D1 limited transaction records, Resend where used, Supabase, Google Analytics, beta request handling and existing support aliases; confirms no stored card data in the draft Worker, no D1 buyer email or entitlement, and no auto-renewal. The isolated Worker/test Stripe checkout remain disabled.
+
+
 **DRAFT ONLY — November 14, 2026. NOT PUBLISHED OR EFFECTIVE.**
 
 **Existing published source of truth:** `/privacy.html` — `privacy-v1`, effective October 3, 2026, covering the public site and invitation-only beta. The Company & Information view also displays that existing policy. Neither published location may be silently replaced or described as already covering real customer pre-purchases.
