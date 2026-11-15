@@ -184,3 +184,29 @@ export function isolatedD1ReviewStore(db) {
     },
   };
 }
+
+/**
+ * Read-only dispatch gate. An outbox state flag or review timestamp alone
+ * cannot authorize email. Verify immutable signed proof and the exact notice.
+ * The notification sender rechecks the Stripe/provider evidence separately.
+ */
+export async function verifyFounderReviewSeal(env,notice,proof) {
+  if (!proof || !notice || !enabled(env)) return false;
+  if (notice.state!=="review_verified" || !notice.review_completed_at) return false;
+  const fields=["notification_key","checkout_session_id","notice_type",
+    "notice_ref","recipient_hmac"];
+  if (fields.some(k=>notice[k]!==proof[k])) return false;
+  if (proof.reviewed_at!==notice.review_completed_at ||
+      !/^[a-f0-9]{64}$/.test(proof.reviewer_hmac||"") ||
+      !/^[a-f0-9]{64}$/.test(proof.provider_proof_hmac||"") ||
+      !/^[a-f0-9]{64}$/.test(proof.authorization_seal||"")) return false;
+  const reviewerHash=await hmac(env.NOTIFICATION_REVIEW_SEAL_SECRET,
+    "reviewer-v1:"+normEmail(env.FOUNDER_ACCESS_EMAIL));
+  if(proof.reviewer_hmac!==reviewerHash) return false;
+  const expected=await hmac(env.NOTIFICATION_REVIEW_SEAL_SECRET,
+    "approval-v1:"+JSON.stringify([
+      proof.notification_key,proof.reviewer_hmac,proof.provider_proof_hmac,
+      proof.reviewed_at,
+    ]));
+  return proof.authorization_seal===expected;
+}
