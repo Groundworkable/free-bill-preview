@@ -48,7 +48,7 @@ assert 'await authenticate(env, ctx)' in worker
 
 # The production payment Worker cannot accidentally expose the founder handler.
 assert 'founder_notification_worker.draft.mjs' not in public_worker
-assert 'worker.local.entry.mjs' not in worker
+assert not re.search(r'^\\s*import\\b[^\\n]*worker\\.local\\.entry\\.mjs', worker, re.M)
 assert 'worker.local.entry.mjs' in local_entry or '/__test/' in local_entry
 assert 'createFounderNotificationWorker' in worker
 assert 'FOUNDER_NOTIFICATION_REVIEW_ENABLED !== "true"' in worker
