@@ -35,3 +35,19 @@ Before any separately approved remote integration test:
 ## Current decision
 
 **GO** for read-only remote D1 inventory and disabled safety checks. **NO-GO** for remote ledger migration, provider activation, signed remote event injection, publishing/sending notifications or live payments without separate scoped approval.
+
+
+## Remote D1 migration completed — founder-confirmed, November 15, 2026
+
+The founder explicitly approved only the isolated notification ledger migration in `groundwork-payment-sandbox-isolated`. A comment-free migration with **two notification tables, one index and seven triggers** was prepared and tested in GitHub Actions. The founder executed it in the named Cloudflare D1 Console and supplied the resulting read-only inventory screenshots: **all 17 of 17 expected schema objects were `PRESENT`**, including the seven pre-existing payment objects and all ten new notification objects.
+
+This verifies **object-name presence** in the right console; it does **not** yet establish byte-for-byte definitions, the physical runtime binding, trigger operation against remote data, or remote payment and email integrations. Do not re-run the migration. No main-app database, Stripe payment link, webhook, Resend template, or public checkout setting was changed as part of the approved work.
+
+### Next read-only verification (no migration or test writes authorized)
+
+1. In **the same isolated D1 Console**, execute only `preorder/payment-service/remote_d1_notification_readonly_definition_audit.sql`. It selects from `sqlite_master` and flags `KEY_CLAUSES_FOUND`, `REVIEW_DEFINITION` or `MISSING` for all ten notification objects. `KEY_CLAUSES_FOUND` is a **partial clause-presence check**, not full semantic proof of triggers or indexes.
+2. In Cloudflare **Workers & Pages → groundwork-payment-sandbox-isolated → Settings → Bindings**, inspect (do not edit) the D1 binding. Expect **variable name `DB`**, type **D1 database**, target **`groundwork-payment-sandbox-isolated`**. A screenshot of the binding **without secrets** lets the founder compare it with the isolated database; the unchanged PR template alone cannot prove the remote Worker setting.
+3. In Worker **Settings → Variables and Secrets**, only inspect the labels and nonsecret values: `PAYMENTS_MODE=disabled`, `TERMS_APPROVED=false`, `TERMS_VERSION=UNAPPROVED`. Never reveal the Stripe/Resend secret values.
+4. Continue to keep Stripe test Payment Links inactive, its webhook disabled, and all Resend transaction templates unpublished. No writes to the remote D1 are required for these steps.
+
+A live remote D1 trigger-behavior test would require a **separately approved** isolated synthetic insert and a safe rollback/cleanup approach; it is not authorized by the preceding read-only inventory or this continuation.
