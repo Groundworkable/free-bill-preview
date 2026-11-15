@@ -13,7 +13,7 @@
  */
 import { dispatchFounderTestNotification, isolatedD1NotificationStore } from "./notification_sender.sandbox.mjs";
 import { stripeTestReadAdapter, resendFounderTestTransport } from "./notification_provider_adapters.sandbox.mjs";
-import { independentlyReviewFounderNotice, isolatedD1ReviewStore } from "./notification_reviewer.draft.mjs";
+import { independentlyReviewFounderNotice, isolatedD1ReviewStore, verifyFounderReviewSeal } from "./notification_reviewer.draft.mjs";
 
 const notificationKeyPattern = /^gwn1_[a-f0-9]{64}$/;
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -99,6 +99,7 @@ export function createFounderNotificationWorker({
   createResend = resendFounderTestTransport,
   reviewer = independentlyReviewFounderNotice,
   createReviewStore = isolatedD1ReviewStore,
+  verifyReview = verifyFounderReviewSeal,
 } = {}) {
   return {
     async fetch(request, env, ctx) {
@@ -168,6 +169,10 @@ export function createFounderNotificationWorker({
             row.state !== "review_verified" ||
             typeof row.review_completed_at !== "string" ||
             !row.review_completed_at) return reply("review_not_verified",409);
+        // A state label and timestamp are insufficient without a separately
+        // sealed, immutable approval record.
+        const proof=await createReviewStore(env.DB).getEvidence(key);
+        if (!await verifyReview(env,row,proof)) return reply("review_evidence_missing",409);
         // No signed delivery-copy approval adapter exists yet; fail closed.
         if (row.notice_type === "delivery_update") return reply("delivery_review_not_configured",409);
 
