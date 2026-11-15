@@ -134,7 +134,55 @@ export default {
       // Synthetic, local Workerd ONLY: retain a short, non-PII failure phase.
       // The production Worker does not import this entrypoint or expose this route.
       const outbox = isolatedD1NotificationStore(env.DB);
-      const providerTransport = resendFounderTestTransport(env);
+      let mockResendPosts = 0;
+      // Local-only Resend POST simulator inside the SAME Workerd isolate.
+      // The external Node/MSW interceptor in the test runner did not expose
+      // the custom Idempotency-Key header. Never silently remove that check:
+      // inspect both fetch init and the constructed Workerd Request here.
+      // All other Stripe/template GET requests continue through mocked fetch.
+      const localResendFetch = async (destination, options) => {
+        if (destination !== "https://api.resend.com/emails") {
+          return fetch(destination, options);
+        }
+        if (options?.method !== "POST" || options.redirect !== "manual") {
+          throw new Error("Local simulation requires a manual-redirect POST");
+        }
+        const outgoing = new Request(destination, options);
+        const outgoingKey = outgoing.headers.get("Idempotency-Key");
+        const inputKey = new Headers(options.headers).get("Idempotency-Key");
+        if (outgoingKey !== notificationKey || inputKey !== notificationKey) {
+          throw new Error("Missing or altered Workerd idempotency header");
+        }
+        if (outgoing.headers.get("Authorization") !== "Bearer re_FAKE_LOCAL_ONLY") {
+          throw new Error("Local simulation missing fake test authorization");
+        }
+        const payload = JSON.parse(options.body);
+        if (!Array.isArray(payload.to) || payload.to.length !== 1 ||
+            payload.to[0] !== "founder-test@example.com" ||
+            payload.from !== "Groundwork by Able <billing@groundworkbyable.com>") {
+          throw new Error("Local simulation unexpected recipient or sender");
+        }
+        const alias = payload.template?.id;
+        const vars = payload.template?.variables;
+        const receiptByAlias = {
+          "groundwork-prepurchase-confirmation-review":
+            "01a1de7c-664c-7a96-9e4c-f8a9589c1ee1",
+          "groundwork-refund-initiated-review":
+            "01a1de7c-664c-7a96-9e4c-f8a9589c1ee2",
+        };
+        if (!receiptByAlias[alias] || !vars ||
+            vars.ORDER_REFERENCE !== "cs_test_ABC123local" ||
+            (alias === "groundwork-prepurchase-confirmation-review" &&
+              vars.TOTAL_PAID !== "$10.59") ||
+            (alias === "groundwork-refund-initiated-review" &&
+              (vars.REFUND_REFERENCE !== "re_LocalRefund" ||
+                vars.REFUND_AMOUNT !== "$3.00"))) {
+          throw new Error("Local simulation template data mismatch");
+        }
+        mockResendPosts++;
+        return Response.json({ id: receiptByAlias[alias] });
+      };
+      const providerTransport = resendFounderTestTransport(env, localResendFetch);
       let testPhase = "preflight";
       let testFailureClass = null;
       const store = {
@@ -174,6 +222,7 @@ export default {
         },
       });
       return Response.json({ ...result, __test_phase: testPhase,
+        __test_mock_resend_posts: mockResendPosts,
         ...(testFailureClass ? { __test_failure_class: testFailureClass } : {}) });
     }
     if (url.pathname === "/__test/notification/outbox" && request.method === "GET") {
