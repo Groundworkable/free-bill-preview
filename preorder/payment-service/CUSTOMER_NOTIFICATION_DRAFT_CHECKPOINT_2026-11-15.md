@@ -40,3 +40,20 @@ The prepared content says a payment receipt **does not grant paid app access**; 
 7. Conduct controlled tests using sandbox provider events and founder-controlled inbox with explicit authorization; confirm delivery and matching identifiers/amounts without exposing card data.
 
 **Safety:** Resend templates are still drafts; no payment URLs, Stripe Payment Links, webhooks, Cloudflare Worker flags, public pages, Groundwork app entitlements, or subscription billing settings were changed.
+
+
+## Founder-authorized controlled outbound transport test — 2026-11-15 09:14 UTC
+
+Authorized by founder for recipient `ablejr30@gmail.com`; sender `Groundwork by Able <billing@groundworkbyable.com>`. The following individually sent **simulated** notifications were verified as **delivered by Resend** using read-only provider retrieval of each email ID:
+
+| Test purpose | Subject | Resend email ID | Provider status |
+| --- | --- | --- | --- |
+| Purchase confirmation | `[GROUNDWORK TEST 1/3] Purchase confirmation — NO CHARGE` | `01a1de7c-664c-7a96-9e4c-f8a9589c1ee1` | delivered |
+| Delivery status | `[GROUNDWORK TEST 2/3] Delivery update — NO ACTUAL ORDER` | `01a1de7c-8afd-7510-acfc-c2c81801ed2c` | delivered |
+| Refund initiated | `[GROUNDWORK TEST 3/3] Refund initiated notice — NO REFUND` | `01a1de7c-91f6-7ed3-ab2c-071c279b2327` | delivered |
+
+Test payloads used fabricated `GW-TEST-NO-ORDER-001` purchase reference, no real Stripe objects or monetary transactions, explicit simulation labeling, and per-email idempotency keys. Only the purchase-confirmation probe included HTML; all had plain-text content. These were standalone **test sends**, not a publish or rendering of the three Resend draft templates. **The draft templates remain unpublished.**
+
+**Verified:** Provider transport accepted and marked all three messages delivered to the chosen destination address. **Not verified:** physical inbox placement or rendering, replies, automated sends tied to signed Stripe events, customer-email authentication, suppression/retry/duplicate handling within a production notification pipeline, real refund initiation, or app fulfillment.
+
+The isolated Worker and Stripe checkout remain disabled. No public deployment or production app changes.
