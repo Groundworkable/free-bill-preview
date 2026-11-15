@@ -1,12 +1,12 @@
 # Groundwork by Able — Individual Pre-Purchase Terms and Refund/Delay Policy
 
-**CUSTOMER-FACING COPY FOR FOUNDER + LEGAL REVIEW — NOT EFFECTIVE, NOT PUBLISHED, NOT AN OFFER**
+**FOUNDER-APPROVED CUSTOMER-FACING WORDING — PENDING LEGAL REVIEW; NOT EFFECTIVE, NOT PUBLISHED, NOT AN OFFER**
 
 **Seller:** Able Systems LLC (Groundwork by Able)  
 **Terms version:** UNAPPROVED (do not manufacture a version identifier)  
 **Release authority:** NONE — do not use this draft as the Stripe Terms of Service URL, activate Payment Links, or edit the live website/application.
 
-This is a consolidated proposed publication draft based on the founder-approved *commercial* schedule and refund/delay structure. Founder approval of those business decisions is **not** final approval of these contractual words. Any legally required rights supersede more restrictive language.
+The founder confirmed approval of the **customer-facing wording** of this draft on November 14, 2026, building on the already-approved commercial schedule and refund/delay structure. This is approval of the proposed copy for final review, **not legal clearance, a publication decision, or authorization for checkout**. Material changes to the customer-facing copy require renewed founder approval. Any legally required rights supersede more restrictive language.
 
 ## 1. What you are buying
 
