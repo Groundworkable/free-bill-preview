@@ -28,7 +28,7 @@ embedded_start = company.index(marker, modal_start)
 embedded_end = company.index('\n</section>', embedded_start)
 
 def normalized_policy_markup(source: str) -> str:
-    return re.sub(r"\\s+", " ", source).strip()
+    return re.sub(r"\s+", " ", source).strip()
 
 standalone_policy = normalized_policy_markup(published[public_start:public_end])
 embedded_policy = normalized_policy_markup(company[embedded_start:embedded_end])
