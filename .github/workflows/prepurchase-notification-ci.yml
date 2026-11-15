@@ -53,6 +53,8 @@ jobs:
         run: python3 preorder/payment-service/notification_ledger.test.py
       - name: Verify immutable, signed review evidence schema in ephemeral SQLite
         run: python3 preorder/payment-service/notification_review_evidence.test.py
+      - name: Verify approved remote-only review evidence migration remains additive
+        run: python3 preorder/payment-service/remote_d1_review_evidence_migration.test.py
       - name: Verify isolated notification migration parity and preservation
         run: python3 preorder/payment-service/remote_d1_notification_migration.test.py
       - name: Rehearse founder-approved remote D1 synthetic guard scripts in memory
