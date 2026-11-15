@@ -1,114 +1,127 @@
 #!/usr/bin/env python3
-"""Safe *local* review of a Cloudflare Worker version JSON document.
+"""Validate an existing Worker version without revealing its metadata.
 
-Accepts JSON from stdin and emits only a FIXED, tightly scoped PASS/UNVERIFIED
-summary. Never prints the raw input, arbitrary fields, variable names outside
-a hardcoded allowlist, variable contents, account IDs, or credentials.
+The schema follows Cloudflare Wrangler 4.162.0's versions/view.ts:
+`versions view --json` emits the version object directly, with the
+compatibility settings under `resources.script_runtime` and the bindings
+under `resources.bindings`. This tool makes NO Cloudflare API call.
 
-This does NOT authenticate or call Cloudflare; it only validates the shape
-of version metadata provided by the operator. Only useful if an authenticated
-read-only 'wrangler versions view --json' command yields the expected fields.
-Fail closed on unknown structure. No data is written to disk.
-
-Usage in a previously authenticated, owner-controlled shell ONLY:
+Only use locally with an already authenticated owner-controlled terminal:
   npx wrangler@4.162.0 versions view \
     1f97ea8e-4ba6-47d9-87f6-11594c938cc1 \
     --name groundwork-founder-notifications-isolated --json \
     | python3 founder_version_metadata_redact.py
 
-Do not post the JSON itself; it could contain variable values.
+NEVER paste raw JSON, audience values or credentials into chat/GitHub/CI.
+The tool prints only fixed PASS/UNVERIFIED messages and writes no files.
 """
 import json
-import re
 import sys
 
+# Cloudflare Wrangler 4.162.0 source, not a guess about the output schema:
+# https://github.com/cloudflare/workers-sdk/blob/wrangler%404.162.0/packages/wrangler/src/versions/view.ts
 ACTIVE_VERSION = "1f97ea8e-4ba6-47d9-87f6-11594c938cc1"
 EXPECTED_BINDINGS = {"FOUNDER_ACCESS_AUD", "FOUNDER_ACCESS_EMAIL"}
 EXPECTED_DATE = "2026-11-15"
-SAFE_VARIABLE_TYPES = {"plain_text", "secret_text"}
+EXPECTED_TYPE = "plain_text"  # Dashboard showed both as Variable, not Secret
 
 
 class Unverified(Exception):
     pass
 
 
-def root_version(data):
-    if not isinstance(data, dict):
-        raise Unverified
-    # Wrangler's output schema may vary. Interpret only explicit known wrappers.
-    obj = data
-    for _ in range(2):
-        if "result" in obj and isinstance(obj["result"], dict):
-            obj = obj["result"]
-        elif "version" in obj and isinstance(obj["version"], dict):
-            obj = obj["version"]
-        else:
-            break
-    return obj
-
-
 def inspect(data):
-    obj = root_version(data)
-    supplied_id = obj.get("id", obj.get("version_id"))
-    if supplied_id != ACTIVE_VERSION:
+    if not isinstance(data, dict) or data.get("id") != ACTIVE_VERSION:
         raise Unverified
-    if obj.get("compatibility_date") != EXPECTED_DATE:
+    resources = data.get("resources")
+    if not isinstance(resources, dict):
         raise Unverified
-    flags = obj.get("compatibility_flags")
-    if flags != []:
+    runtime = resources.get("script_runtime")
+    if not isinstance(runtime, dict):
         raise Unverified
-    bindings = obj.get("bindings")
+    if runtime.get("compatibility_date") != EXPECTED_DATE:
+        raise Unverified
+    # Cloudflare's optional compatibility_flags may be absent for no flags.
+    if runtime.get("compatibility_flags", []) != []:
+        raise Unverified
+    bindings = resources.get("bindings")
     if not isinstance(bindings, list):
         raise Unverified
-
     names = []
-    for b in bindings:
-        if not isinstance(b, dict):
+    for binding in bindings:
+        if not isinstance(binding, dict):
             raise Unverified
-        name, kind = b.get("name"), b.get("type")
-        if name not in EXPECTED_BINDINGS or kind not in SAFE_VARIABLE_TYPES:
+        if binding.get("name") not in EXPECTED_BINDINGS:
             raise Unverified
-        names.append(name)
-    if len(names) != len(EXPECTED_BINDINGS) or len(set(names)) != len(names):
+        if binding.get("type") != EXPECTED_TYPE:
+            raise Unverified
+        names.append(binding["name"])
+    if len(names) != 2 or set(names) != EXPECTED_BINDINGS:
         raise Unverified
     return True
 
 
 def self_test():
-    # Synthetic data only. A fake variable payload must never be printed.
-    obj = {
+    # Matches the *structural shape* returned by Wrangler 4.162.0.
+    # All values below are synthetic; real Cloudflare metadata is NOT fetched.
+    fake = {
         "id": ACTIVE_VERSION,
-        "compatibility_date": EXPECTED_DATE,
-        "compatibility_flags": [],
-        "bindings": [
-            {"name": "FOUNDER_ACCESS_AUD", "type": "plain_text", "text": "sensitive-value-do-not-print"},
-            {"name": "FOUNDER_ACCESS_EMAIL", "type": "plain_text", "text": "private@example.invalid"},
-        ],
+        "metadata": {"created_on": "2026-11-15T00:00:00Z"},
+        "resources": {
+            "script": {"handlers": ["fetch"]},
+            "script_runtime": {
+                "compatibility_date": EXPECTED_DATE,
+                "compatibility_flags": [],
+            },
+            "bindings": [
+                {"name": "FOUNDER_ACCESS_AUD", "type": "plain_text", "text": "fake-do-not-print"},
+                {"name": "FOUNDER_ACCESS_EMAIL", "type": "plain_text", "text": "private@example.invalid"},
+            ],
+        },
     }
-    assert inspect(obj)
-    assert inspect({"result": obj})
-    assert inspect({"version": obj})
+    import copy
+    assert inspect(fake)
+    absent_flags = copy.deepcopy(fake)
+    del absent_flags["resources"]["script_runtime"]["compatibility_flags"]
+    assert inspect(absent_flags)
 
-    for corrupt in (
-        dict(obj, id="some-other-version"),
-        dict(obj, compatibility_date="2026-11-14"),
-        dict(obj, compatibility_flags=["dangerous_extra_flag"]),
-        dict(obj, bindings=obj["bindings"][:1]),
-        dict(obj, bindings=obj["bindings"] + [obj["bindings"][0]]),
-        dict(obj, bindings=obj["bindings"] + [{"name": "DB", "type": "d1", "value": "secret"}]),
-        dict(obj, bindings=None),
-        {"value": "sensitive-value-do-not-print"},
-        [obj],
+    unsafe = []
+    for key, value in (
+        ("id", "wrong-version"),
+        ("resources", None),
+        ("compatibility_date", "2026-11-14"),
+        ("compatibility_flags", ["no_nodejs_compat"]),
+        ("bindings", []),
+        ("bindings", fake["resources"]["bindings"][:1]),
+        ("bindings", fake["resources"]["bindings"] * 2),
+        ("bindings", fake["resources"]["bindings"] + [{"name": "DB", "type": "d1", "id": "fake"}]),
+        ("bindings", [{"name": "FOUNDER_ACCESS_AUD", "type": "secret_text"},
+                       fake["resources"]["bindings"][1]]),
     ):
-        try:
-            inspect(corrupt)
-        except Unverified:
-            pass
+        obj = copy.deepcopy(fake)
+        if key == "id":
+            obj["id"] = value
+        elif key == "resources":
+            obj["resources"] = value
+        elif key in ("compatibility_date", "compatibility_flags"):
+            obj["resources"]["script_runtime"][key] = value
         else:
-            raise AssertionError("Unsafe synthetic metadata was accepted")
-
-    print("PASS: synthetic metadata sanitizer accepts only active version, exact compatibility, two identity variables, no extra bindings")
-    print("LIMITATION: only synthetic data was inspected; no authenticated Cloudflare request occurred")
+            obj["resources"]["bindings"] = value
+        unsafe.append(obj)
+    unsafe.extend([
+        # The old speculative flat schema must NOT pass.
+        {"id": ACTIVE_VERSION, "compatibility_date": EXPECTED_DATE,
+         "compatibility_flags": [], "bindings": fake["resources"]["bindings"]},
+        {"result": fake}, {"version": fake}, [fake], {"value": "fake-do-not-print"},
+    ])
+    for bad in unsafe:
+        try:
+            inspect(bad)
+        except Unverified:
+            continue
+        raise AssertionError("Unexpected Worker version data passed strict validation")
+    print("PASS: synthetic Wrangler 4.162.0 nested metadata shape and fail-closed mutations")
+    print("LIMITATION: Cloudflare live version metadata was not fetched")
 
 
 def main():
@@ -119,16 +132,14 @@ def main():
         print("UNVERIFIED: unsupported invocation; no data printed")
         return 1
     try:
-        data = json.load(sys.stdin)
-        inspect(data)
+        inspect(json.load(sys.stdin))
     except (Unverified, ValueError, TypeError, UnicodeError):
-        print("UNVERIFIED: metadata structure or required release invariants did not match")
+        print("UNVERIFIED: metadata structure or release invariants did not match")
         print("No raw Cloudflare metadata was printed or saved")
         return 1
-
-    print("PASS: provided metadata matches the recorded active version UUID and compatibility date")
-    print("PASS: exactly the two founder identity variable binding names and recognized variable types; no other bindings listed")
-    print("LIMITATION: this does not prove Access policy, route preservation, rollback behavior or the live state of future uploads")
+    print("PASS: current Worker version ID, compatibility date and absence of flags match")
+    print("PASS: exactly two expected founder identity Variables; no other bindings")
+    print("LIMITATION: Access policy, route state, active traffic and rollback are NOT verified")
     return 0
 
 
