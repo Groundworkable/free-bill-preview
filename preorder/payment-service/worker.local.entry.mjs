@@ -3,6 +3,8 @@
  * NOT included in the sandbox Worker deployment template.
  */
 import paymentWorker from "./worker.mjs";
+import { dispatchFounderTestNotification, isolatedD1NotificationStore } from "./notification_sender.sandbox.mjs";
+import { stripeTestReadAdapter, resendFounderTestTransport } from "./notification_provider_adapters.sandbox.mjs";
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -95,6 +97,61 @@ export default {
       const rows = await env.DB.prepare("SELECT * FROM prepurchase_payment_changes ORDER BY event_id").all();
       return Response.json(rows.results);
     }
+
+    // LOCAL-TEST-ONLY notification handoff probes. These are forbidden in the
+    // deployed Worker; only this test entrypoint exposes them to Workerd.
+    if (url.pathname === "/__test/notification/prepare" && request.method === "POST") {
+      const { notificationKey, kind, noticeRef } = await request.json();
+      if (!/^gwn1_[0-9a-f]{64}$/.test(notificationKey || "") ||
+          !["purchase_confirmation", "refund_initiated"].includes(kind) ||
+          (kind === "purchase_confirmation" && noticeRef !== "purchase") ||
+          (kind === "refund_initiated" && !/^re_[a-zA-Z0-9]+$/.test(noticeRef || ""))) {
+        return Response.json({ error: "Invalid local-only notification" }, { status: 400 });
+      }
+      const recipient = env.NOTIFICATION_TEST_RECIPIENT;
+      const key = await crypto.subtle.importKey(
+        "raw", new TextEncoder().encode(env.NOTIFICATION_RECIPIENT_HMAC_SECRET),
+        { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+      );
+      const bytes = new Uint8Array(await crypto.subtle.sign(
+        "HMAC", key, new TextEncoder().encode(recipient.trim().toLowerCase())
+      ));
+      const hmac = Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+      const alias = kind === "purchase_confirmation"
+        ? "groundwork-prepurchase-confirmation-review"
+        : "groundwork-refund-initiated-review";
+      const session = "cs_test_ABC123local";
+      await env.DB.prepare(
+        "INSERT INTO prepurchase_notification_outbox(notification_key,checkout_session_id,notice_type,notice_ref,recipient_hmac,template_alias) VALUES (?,?,?,?,?,?)"
+      ).bind(notificationKey,session,kind,noticeRef,hmac,alias).run();
+      await env.DB.prepare(
+        "UPDATE prepurchase_notification_outbox SET state='review_verified',review_completed_at=datetime('now'),changed_at=datetime('now') WHERE notification_key=? AND state='review_pending'"
+      ).bind(notificationKey).run();
+      return Response.json({ state: "review_verified" });
+    }
+    if (url.pathname === "/__test/notification/dispatch" && request.method === "POST") {
+      const { notificationKey } = await request.json();
+      const result = await dispatchFounderTestNotification(env, notificationKey, {
+        store: isolatedD1NotificationStore(env.DB),
+        provider: stripeTestReadAdapter(env),
+        transport: resendFounderTestTransport(env),
+        approval: {
+          async isAuthorized() { return env.__TEST_OPERATOR_AUTHORIZED === "true"; },
+          async deliveryCopy() { throw new Error("Not an authorized local notification"); },
+        },
+      });
+      return Response.json(result);
+    }
+    if (url.pathname === "/__test/notification/outbox" && request.method === "GET") {
+      const rows = await env.DB.prepare(
+        "SELECT notification_key,notice_type,notice_ref,state,attempt_token,provider_message_id FROM prepurchase_notification_outbox ORDER BY notice_type"
+      ).all();
+      const journal = await env.DB.prepare(
+        "SELECT notification_key,old_state,new_state FROM prepurchase_notification_state_journal ORDER BY id"
+      ).all();
+      return Response.json({ rows: rows.results, journal: journal.results });
+    }
+
     return paymentWorker.fetch(request,env,ctx);
   }
 };
