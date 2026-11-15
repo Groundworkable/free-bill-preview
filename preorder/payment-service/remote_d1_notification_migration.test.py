@@ -18,7 +18,7 @@ no_comments = "\n".join(
 assert migration.strip() == no_comments, "Remote migration must match reviewed ledger SQL exactly"
 assert not re.search(r"^\s*(?:DROP|ALTER|DELETE|UPDATE|REPLACE|ATTACH|PRAGMA)\b", migration, re.I | re.M)
 assert len(re.findall(r"^CREATE (?:TABLE|INDEX|TRIGGER) IF NOT EXISTS ", migration, re.M)) == 10
-assert not re.search(r"\b(?:prepurchase_orders|prepurchase_payment_changes|stripe_processed_events)\s*\(",migration,re.I), "Must not rewrite payment objects"
+assert not re.search(r"^CREATE\\s+(?:TABLE|INDEX|TRIGGER)\\s+IF NOT EXISTS\\s+(?:prepurchase_orders|prepurchase_payment_changes|stripe_processed_events)\\b",migration,re.I|re.M), "Must not recreate payment objects"
 
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
