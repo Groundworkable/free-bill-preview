@@ -36,3 +36,19 @@ The exact committed JavaScript sender/provider-adapter source and test bodies we
 Added `.github/workflows/prepurchase-notification-ci.yml` as a **branch-scoped push/PR** no-secret workflow running the exact committed Python SQLite and Node mock tests. The workflow has no deploy, payment, email, remote database or provider action. It checks out the commit SHA and runs the existing test scripts. It was added on commit `4fdb02576d52510a62d4c722042d5be9b6c66a11`.
 
 At the time of the check, the GitHub connector returned **zero CI workflow runs and zero commit status checks** for that head; a passing native CI execution **remains unverified**. The connected GitHub interface has no start-workflow dispatch action, and local GitHub cloning is unavailable due to hostname resolution in the execution environment. Do **not** infer an Actions run from the existence of the workflow file.
+
+
+## Additional exact Workerd integration test staged — November 15, 2026
+
+The isolated **test-only** Worker entrypoint (`worker.local.entry.mjs`) now exposes local-only notification prepare, dispatch and read-only state-inspection routes. The test harness loads existing immutable payment schema plus `notification_ledger.draft.sql` in an **in-memory** D1 database. The local test code passes only fake Stripe/Resend credentials, a fictional founder-only recipient, and synthetic operator approval.
+
+`worker.local.test.mjs` now contains end-to-end test cases covering:
+
+1. A correctly HMAC-signed synthetic Stripe Checkout event recorded through the actual webhook receiver in local Workerd/D1, followed by a second signed event that preserves one paid-unfulfilled order.
+2. Separate reviewed notification preparation and atomic outbox claim, authenticated **mock Stripe Checkout and line-item** re-verification, allowlisted recipient/HMAC matching, and **mock Resend** acceptance using approved-template simulation and stable idempotency key.
+3. A second dispatch attempt returning a non-reviewed state, with **one** mock provider POST and an append-only journal recording `review_pending → review_verified → attempt_started → provider_accepted`. No `delivered` status or membership is asserted.
+4. A signed synthetic `refund.created` event recorded in the payment-change journal with **no automatic email**, followed by separately reviewed notification and independently mocked Stripe refund/Resend delivery, again verifying one mock send and original purchase still `paid_unfulfilled`.
+
+The existing branch-scoped workflow `.github/workflows/prepurchase-notification-ci.yml` was updated to install local Workerd/MSW dependencies and run `node --test worker.local.test.mjs` on the exact committed source. **CI outcome for this new test has not yet been independently inspected**. Any failures require correction before claiming integration verification.
+
+**Critical boundaries:** The test entrypoint must NEVER be deployed; its `/__test/*` routes and fictional secrets are test fixtures. All Stripe/Resend external traffic in these test cases is mocked. The remote Cloudflare Worker still has disabled payment gates, the remote notification outbox does not exist, Stripe webhook/Payment Links remain disabled, and the Resend templates remain unpublished. No real purchase, refund or email resulted from this change.
