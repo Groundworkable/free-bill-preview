@@ -28,3 +28,11 @@ The GitHub connector continued returning **no workflow runs or commit statuses**
 Keep Draft PR #17 unmerged and the checkout/notification sending gates disabled. Next validation should run the **exact committed** `notification_ledger.test.py`, `notification_sender.sandbox.test.mjs`, `notification_provider_adapters.sandbox.test.mjs`, `notification_preflight.test.py` and remaining CI matrix in the GitHub runner or authenticated checkout before deployment.
 
 **Result:** Local safety-check rehearsal passed; **CI and end-to-end sandbox integration unverified**.
+
+## Exact-source JavaScript review and branch CI route — November 15, 2026
+
+The exact committed JavaScript sender/provider-adapter source and test bodies were fetched from GitHub and executed in a restricted JS harness. **5/5 provider adapter cases** and **6/6 sender cases** passed using mock HTTP responses, an assertion shim, and synthetic cryptography. This does **not** replace native Node.js or GitHub Actions execution; the source-level tests cover the intended disabled gates, Stripe/Resend API mock behavior, published-template requirement, atomic claim ordering, receipt handling and ambiguous send denial.
+
+Added `.github/workflows/prepurchase-notification-ci.yml` as a **branch-scoped push/PR** no-secret workflow running the exact committed Python SQLite and Node mock tests. The workflow has no deploy, payment, email, remote database or provider action. It checks out the commit SHA and runs the existing test scripts. It was added on commit `4fdb02576d52510a62d4c722042d5be9b6c66a11`.
+
+At the time of the check, the GitHub connector returned **zero CI workflow runs and zero commit status checks** for that head; a passing native CI execution **remains unverified**. The connected GitHub interface has no start-workflow dispatch action, and local GitHub cloning is unavailable due to hostname resolution in the execution environment. Do **not** infer an Actions run from the existence of the workflow file.
