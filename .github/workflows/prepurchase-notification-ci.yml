@@ -99,6 +99,15 @@ jobs:
       - name: Test actual founder bundle identity checks and disabled operations
         working-directory: preorder/payment-service
         run: node founder_runtime_bundle.dry_run.test.mjs
+      - name: Verify preservation config with Wrangler version-upload dry run ONLY
+        working-directory: preorder/payment-service
+        env:
+          CLOUDFLARE_API_TOKEN: ""
+          CLOUDFLARE_ACCOUNT_ID: ""
+        run: |
+          set -eu
+          npx wrangler versions upload --config ./wrangler.founder-notification.preservation-candidate.toml --dry-run --keep-vars --strict --outdir ./.founder-version-preservation-dry-run
+          node founder_version_upload_dry_run.test.mjs
       - name: Run signed webhook, D1 ledger and mocked Resend end-to-end Workerd test
         working-directory: preorder/payment-service
         run: node --test worker.local.test.mjs
