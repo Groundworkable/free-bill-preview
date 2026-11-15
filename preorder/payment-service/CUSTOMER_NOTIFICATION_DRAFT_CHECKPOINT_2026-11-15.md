@@ -117,3 +117,22 @@ The draft adds a unique notification key and logical `(checkout_session_id, noti
 A provider request can time out after sending. The draft deliberately treats `attempt_started` with uncertain outcome as **manual review**, never an automatic retry. A robust future sender must durably claim the row before network activity, use provider-side idempotency, reconcile ambiguous outcomes by provider reference, prevent multiple workers from sending, and establish authenticated recipient, security, delivery evidence, failure handling and authorized deletion/retention rules. It must never claim exactly-once delivery from this local schema alone.
 
 **No notification ledger migration has been run, and no customer sending is authorized.**
+
+
+## Isolated founder-only sender CORE — draft-only, November 15, 2026
+
+Source: `notification_sender.sandbox.mjs` and `notification_sender.sandbox.test.mjs`. The sender is a **non-deployed JavaScript module** with no default `fetch` handler, public route, built-in Resend transport, scheduled job, durable recipient mapping, or ordinary user-accessible entry point. It was not attached to the app Worker and not deployed to the isolated payment Worker.
+
+### Double fail-closed boundary
+
+The sender refuses work unless all independent environment flags are explicitly configured, including `NOTIFICATION_SEND_MODE=sandbox_founder_test`, `NOTIFICATION_OPERATOR_RELEASE=true`, `NOTIFICATION_TEMPLATES_APPROVED=true`, test-only provider credentials and approved test recipient/HMAC secret, plus the approved payment terms/configuration. **None of these notification enablement flags or secrets was added to Cloudflare**. The current isolated Worker remains `PAYMENTS_MODE=disabled` and `TERMS_APPROVED=false`; the Resend notification templates remain draft/unpublished.
+
+### Verification and attempt lifecycle
+
+Before any send request, this draft requires trusted caller-supplied adapters to obtain an authenticated Stripe **test-mode** Checkout Session and line items; verify paid, one-time purchase, accepted terms, offer/amount/tax/links and immutable D1 order; compare customer email fields for conflicts, enforce the founder-controlled test recipient allowlist and an HMAC-only ledger fingerprint, and require separate operator approval plus published template status. A refund-initiated notice additionally requests test-mode refund evidence corroborated by the stored `refund.created` journal. Delivery updates require separately reviewed copy.
+
+The sender then calls the draft D1 adapter's atomic `UPDATE ... WHERE state='review_verified'` before invoking transport with a stable Resend idempotency key. If the atomic claim fails, **no provider send request occurs**. If the provider outcome is ambiguous or accepted receipt cannot be written, it returns a manual-reconciliation status and does not retry sending. Resend delivery status, final identity assurance, and any real customer notification remain unsupported.
+
+Tests use a synthetic Stripe Session, fake test-only IDs, mock database, mock provider and mock transport; they do not call Stripe, Resend or Cloudflare. The tests cover disabled gates, unavailable template, missing approval, identity/amount/terms conflicts, atomic claim rejection, idempotency key, provider timeout and missing acknowledgement. These tests are wired into `.github/workflows/public-site-qa.yml`; **CI result has not yet been verified**.
+
+**Remaining release blockers:** implement independently reviewed and authenticated real adapters; ensure exact Stripe-email identity verification and HMAC key management; verify and publish templates with approval; validate provider-side idempotency and reconciliation; approve a bounded test-only deployment, then conduct a separate audited signed-webhook-to-D1-to-Resend flow. No live payment or customer email path is authorized.
