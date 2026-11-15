@@ -27,6 +27,8 @@ def case(term="annual"):
     return dict(order=order,session=session,stripe_line_items=[item],
        requester_email="SYNTHETIC.BUYER@example.invalid",
        claimant_identity_verified=True,source_assertions=deepcopy(FLAGS),
+       request_classification="ordinary_voluntary_cancellation",
+       service_or_delivery_problem_reported=False,
        refunds=[],disputes=[],journal=[],charge_snapshots=[],
        request_date=date(2027,5,15),paid_access_start=date(2027,1,1),
        access_status_verified=True)
@@ -67,6 +69,23 @@ stopped(d,"prior_payment_change_requires_manual_review")
 d=case();d["access_status_verified"]=False;stopped(d,"policy_usable_access_not_verified")
 d=case();d["paid_access_start"]=date(2027,1,20);stopped(d,"policy_delayed_or_midmonth_calendar_not_approved")
 d=case();d["refunds"]="not-list";stopped(d,"invalid_financial_snapshot_collection")
+# Do not use voluntary calculations to adjudicate defective service,
+# missed activation, fraud, duplicate charges, charge disputes or statutory claims.
+for other_reason in ("service_not_delivered", "service_defect", "fraud", "duplicate_charge",
+                     "statutory_refund_right", "", None):
+    d=case()
+    d["request_classification"]=other_reason
+    stopped(d,"nonvoluntary_request_requires_manual_review")
+for issue in (True, None, "false", 0):
+    d=case()
+    d["service_or_delivery_problem_reported"]=issue
+    stopped(d,"service_or_delivery_claim_requires_manual_review")
+# Even a zero ordinary voluntary quote is NOT a refund rejection or a legal ruling.
+d=case("monthly"); d["request_date"]=date(2027,3,1)
+q=output(d)
+assert q["base_refund_quote_cents_excluding_tax"]==0
+assert q["classification"]=="base_arithmetic_for_human_review_only"
+assert q["refund_authorized"] is False
 
 for secret in ("synthetic.buyer@example.invalid","pi_Synthetic123","cs_test_Synthetic123","cus_Synthetic123"):
     assert secret not in repr(r)

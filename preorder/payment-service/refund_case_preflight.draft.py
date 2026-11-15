@@ -35,9 +35,20 @@ def _stop(*reasons):
 
 def inspect_refund_case(*,order,session,stripe_line_items,requester_email,
     claimant_identity_verified,source_assertions,refunds,disputes,journal,
-    charge_snapshots,request_date,paid_access_start,access_status_verified):
-    """Never returns PII/Stripe IDs or refund authorization; test snapshots only."""
+    charge_snapshots,request_date,paid_access_start,access_status_verified,
+    request_classification,service_or_delivery_problem_reported):
+    """Never returns PII/Stripe IDs or refund authorization; test snapshots only.
+
+    This arithmetic branch applies only to ordinary voluntary cancellations.
+    Reports of defective/unavailable delivery, statutory remedies, fraud,
+    duplicate charges, or unresolved claims require separate review.
+    Request classification is an operator assertion, never proof.
+    """
     errors=[]
+    if request_classification != "ordinary_voluntary_cancellation":
+        errors.append("nonvoluntary_request_requires_manual_review")
+    if service_or_delivery_problem_reported is not False:
+        errors.append("service_or_delivery_claim_requires_manual_review")
     asserted=(isinstance(source_assertions,dict)
       and set(source_assertions)==_REQUIRED_EVIDENCE
       and all(source_assertions[k] is True for k in _REQUIRED_EVIDENCE))
