@@ -9,6 +9,9 @@
  * independent verified order and contact evidence, a published template and an
  * atomic D1 claim are required before the sender could call transport.send().
  *
+ * Cloudflare Workerd supports redirect: "manual" (not "error"). Any 3xx
+ * response is rejected via response.ok/jsonResponse; authentication headers are
+ * never automatically forwarded to a redirect destination.
  * Network response bodies/PII/secrets are never logged.
  */
 
@@ -74,7 +77,7 @@ export function stripeTestReadAdapter(env, fetchFn = fetch) {
         Authorization: "Bearer " + env.STRIPE_TEST_SECRET_KEY,
         Accept: "application/json",
       },
-      redirect: "error",
+      redirect: "manual",
     });
     const data = await jsonResponse(response);
     if (kind === "checkout" && (
@@ -116,7 +119,7 @@ export function resendFounderTestTransport(env, fetchFn = fetch) {
       headers: { Authorization: "Bearer " + env.RESEND_API_KEY,
         "User-Agent": "Groundwork-Sandbox-Review/1.0",
         Accept: "application/json" },
-      redirect: "error",
+      redirect: "manual",
     });
     if (!response.ok) return false;
     const data = await jsonResponse(response);
@@ -152,7 +155,7 @@ export function resendFounderTestTransport(env, fetchFn = fetch) {
         to: [allowlisted],
         template: { id: templateAlias, variables },
       }),
-      redirect: "error",
+      redirect: "manual",
     });
     const data = await jsonResponse(response);
     if (typeof data.id !== "string" ||
