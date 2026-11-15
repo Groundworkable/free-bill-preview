@@ -53,6 +53,8 @@ jobs:
         run: python3 preorder/payment-service/founder_access_deployment_gate.test.py
       - name: Enforce review-only founder runtime preservation candidate
         run: python3 preorder/payment-service/founder_runtime_preservation_candidate.test.py
+      - name: Validate local-only version metadata redaction against synthetic hostile fixtures
+        run: python3 preorder/payment-service/founder_version_metadata_redact.py --self-test
       - name: Check immutable purchase and journal database
         run: python3 preorder/payment-service/schema.test.py
       - name: Check notification ledger SQL transitions
