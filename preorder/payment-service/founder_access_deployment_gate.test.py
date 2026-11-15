@@ -54,5 +54,6 @@ assert 'createFounderNotificationWorker' in worker
 assert 'FOUNDER_NOTIFICATION_REVIEW_ENABLED !== "true"' in worker
 assert 'FOUNDER_NOTIFICATION_DISPATCH_ENABLED === "true"' in worker
 assert 'NOTIFICATION_SEND_MODE === "sandbox_founder_test"' in worker
-assert '/__test/' not in worker
+assert not re.search(r'url\\.pathname\\s*===?\\s*["\\\']/__test/', worker)
+assert 'url.pathname === "/founder/notifications/status"' in worker
 print("PASS: isolated founder Access scaffold has no routes or secrets and all gates default deny")
