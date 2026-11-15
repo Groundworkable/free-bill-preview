@@ -27,3 +27,19 @@ Previously an outbox row with `review_completed_at` set and state `review_verifi
 ## Release progression
 
 **PASS** only for draft/offline code when all CI jobs are green. **Next**: add a read-only isolated-D1 inventory for new review objects; verify D1 batch transactions and outbox trigger behavior in native Workerd with synthetic data; review Cloudflare Access policy and separate Worker routing; request explicit bounded authorization before any **remote** migration or deployment. Do not merge the draft PR or enable Stripe/Resend as part of this preparation.
+
+## Native Workerd / D1 approval transaction checkpoint — November 15, 2026
+
+**PASS (locally, not remote):** GitHub Actions run [43716616316](https://github.com/Groundworkable/free-bill-preview/actions/runs/43716616316) at commit `fd9c761` passed both `notification-safe-tests` and `remote-worker-fail-closed`. The test suite includes `notification_review.workerd.local.test.mjs` using `createTestHarness`, an isolated in-memory Cloudflare D1 database, and `notification_review.workerd.local.entry.mjs` (test-only entrypoint, **NEVER DEPLOY**).
+
+Cases verified against native Workerd/D1:
+
+- A direct `review_pending → review_verified` update without signed evidence is rejected by the new draft trigger.
+- A valid isolated `db.batch([INSERT evidence, UPDATE outbox ... RETURNING])` succeeds; the proof, `review_verified` state, matching timestamp, and two-entry journal are present.
+- Repeating the same approval returns not-approved without changing its proof or audit journal.
+- An intentionally injected D1 trigger failure on the second batch statement rolls back the first evidence INSERT. The pending record and single initial journal entry remain unchanged.
+- Identity-mismatched proof is rejected; no evidence or review transition is committed.
+- Append-only evidence UPDATE and DELETE are rejected; no payment provider events are generated.
+- The test-only entrypoint returns 404 for public payment, founder-dispatch, and unrelated routes.
+
+**Boundary:** This tests local D1 SQL and the draft adapter's transaction contract with synthetic data; it does not prove real Cloudflare Access configuration, remote D1 deployment, independent real Stripe API responses, Resend delivery, or concurrent cross-isolate dispatch at scale. The reviewed `notification_review_evidence.draft.sql` remains **unmigrated** in the remote isolated database, and approval must be requested separately. The current isolated payment Worker, Stripe links/webhook, Resend templates and public website remain disabled and unchanged.
