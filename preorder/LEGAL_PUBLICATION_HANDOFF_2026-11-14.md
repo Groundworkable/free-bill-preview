@@ -35,3 +35,13 @@ These approvals concern customer-facing **wording and terms**, not final legal c
 6. Independently verify the deployed isolated Worker version and signed callback-to-remote-D1 behavior. Existing remote fail-closed smoke check does not establish either.
 
 **No new recurring subscriptions, payment activation, consumer-facing deployment, or production Groundwork app changes are part of this handoff.**
+
+
+## Read-only buyer-to-order contact preflight — staged, not operational
+
+To address the outstanding customer-contact matching gap without adding new D1 columns or integrating the Groundwork app, the draft PR contains `preorder/payment-service/purchase_contact_check.py` and a synthetic test suite. This **offline and read-only** tool compares an existing `paid_unfulfilled` isolated order with a separately authenticated **Stripe test-mode Checkout Session** snapshot. It checks Checkout/PaymentIntent/Payment Link/customer IDs, amount/currency, accepted terms, provider buyer email versus a claimant-supplied address, and conflicting/missing fields.
+
+The output includes only booleans and concern codes; it intentionally **does not** return or write contact email, send messages, initiate refunds, or grant access. Even matching emails are **not proof of mailbox control**; the operator must separately authenticate the claimant and verify that the supplied Stripe object was retrieved through the authenticated Stripe API. The `provider_verified` argument is a caller assertion and is not evidence by itself.
+
+The previous published Privacy Policy `privacy-v1` remains unchanged, and privacy-v2 accurately discloses that isolated D1 doesn't yet retain email/app-user linkage. **Actual customer confirmation, support case management, email delivery, activation, retention and authorized refund processing remain implementation gates**, not completed services. The isolated Worker and Stripe Payment Links remain disabled.
+
