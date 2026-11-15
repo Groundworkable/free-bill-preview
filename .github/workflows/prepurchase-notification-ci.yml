@@ -90,6 +90,13 @@ jobs:
       - name: Install isolated Workerd and mock-provider dependencies
         working-directory: preorder/payment-service
         run: npm install --no-save --no-package-lock --ignore-scripts wrangler@4 msw@2
+      - name: Dry-run bundle founder-only runtime without deploying
+        working-directory: preorder/payment-service
+        run: |
+          npx wrangler deploy ./founder_notification_worker.draft.mjs --dry-run --outdir ./.founder-runtime-build --compatibility-date 2026-11-15
+      - name: Test actual founder bundle identity checks and disabled operations
+        working-directory: preorder/payment-service
+        run: node founder_runtime_bundle.dry_run.test.mjs
       - name: Run signed webhook, D1 ledger and mocked Resend end-to-end Workerd test
         working-directory: preorder/payment-service
         run: node --test worker.local.test.mjs
