@@ -49,6 +49,8 @@ jobs:
         run: python3 preorder/payment-service/provider_remote_readiness.test.py
       - name: Enforce isolated founder Access scaffold defaults
         run: python3 preorder/payment-service/founder_access_deployment_gate.test.py
+      - name: Enforce review-only founder runtime preservation candidate
+        run: python3 preorder/payment-service/founder_runtime_preservation_candidate.test.py
       - name: Check immutable purchase and journal database
         run: python3 preorder/payment-service/schema.test.py
       - name: Check notification ledger SQL transitions
