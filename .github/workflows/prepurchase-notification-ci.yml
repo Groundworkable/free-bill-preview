@@ -45,6 +45,8 @@ jobs:
           git status --short
       - name: Check disabled website and legal publication gates
         run: python3 scripts/preorder_legal_release_gate.py
+      - name: Enforce sandbox provider and deployable Worker isolation
+        run: python3 preorder/payment-service/provider_remote_readiness.test.py
       - name: Check immutable purchase and journal database
         run: python3 preorder/payment-service/schema.test.py
       - name: Check notification ledger SQL transitions
