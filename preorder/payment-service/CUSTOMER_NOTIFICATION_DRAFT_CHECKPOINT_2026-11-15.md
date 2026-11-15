@@ -90,3 +90,17 @@ The founder supplied seven Gmail screenshots showing the **second**, Georgia-sty
 **Verification now complete:** Sending-domain SMTP delivery (Resend status), founder-confirmed Gmail inbox placement, desktop-Gmail HTML visual inspection of all three **manually hydrated** preview messages.
 
 **Not yet verified:** Branded HTML on mobile/other mail clients, approval of final transactional copy, actual Resend template publish/send-variable rendering, event-driven delivery, recipient identity controls, duplicate sends, receipt/case management, actual Stripe payment/refund webhook and D1 reconciliation. Drafts remain **unpublished** and payment gates disabled. A screenshot is **not** express founder approval of live notifications or payments.
+
+
+## Offline notification eligibility/deduplication preflight (PR #17 only)
+
+`notification_preflight.py` and its synthetic tests have been added as an additional **read-only design checkpoint**. It requires a matching isolated `paid_unfulfilled` test order, coherent externally verified Stripe/recipient evidence (as asserted by the caller), and a distinct logical notice identity:
+
+- `purchase_confirmation`: one logical confirmation per Checkout Session
+- `delivery_update`: one notice per explicit approved revision/date token and Checkout Session
+- `refund_initiated`: one notice per verified provider refund ID and Checkout Session, only when a test-mode refund has an eligible initiated/current status and a matching PaymentIntent
+
+It computes stable SHA-256-derived **review keys**, includes no contact email in results, and checks the supplied collection of already-sent keys to identify duplicate logical notices. Each output categorically sets `authorization_to_send=false`, `authorization_to_refund=false`, `authorization_to_activate_membership=false`, `identity_proven=false`, and `delivery_verified=false`. Passing a caller assertion is **not proof** of authentic Stripe records or recipient ownership.
+
+**Major remaining implementation gap:** the `previously_sent_keys` collection is in-memory caller input, **not an authoritative atomic send ledger**. A durable idempotent send log, race protection, retries after ambiguous provider timeouts, recipient verification and secure outbound orchestration must be designed and verified before any automated customer messages. No such service was deployed by this checkpoint; all Resend templates remain unpublished.
+
