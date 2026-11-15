@@ -11,7 +11,8 @@ import { createTestHarness } from "wrangler";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 
-const schema=readFileSync(new URL("./schema.sql",import.meta.url),"utf8");
+const schema=readFileSync(new URL("./schema.sql",import.meta.url),"utf8") + "\n" +
+  readFileSync(new URL("./notification_ledger.draft.sql",import.meta.url),"utf8");
 const secret="whsec_FAKE_TEST_SECRET_LOCAL_ONLY";
 const sessionId="cs_test_ABC123local";
 const paymentId="pi_ABC123local";
@@ -34,11 +35,18 @@ const server=createTestHarness({
      MONTH_LINK_ID:"plink_TEST_Month",
      MONTH_PRICE_ID:"price_TEST_Month",
      ANNUAL_LINK_ID:"plink_TEST_Annual",
-     ANNUAL_PRICE_ID:"price_TEST_Annual"
+     ANNUAL_PRICE_ID:"price_TEST_Annual",
+     NOTIFICATION_SEND_MODE:"sandbox_founder_test",
+     NOTIFICATION_OPERATOR_RELEASE:"true",
+     NOTIFICATION_TEMPLATES_APPROVED:"true",
+     NOTIFICATION_TEST_RECIPIENT:"founder-test@example.com",
+     __TEST_OPERATOR_AUTHORIZED:"true"
    },
    secrets:{
      STRIPE_WEBHOOK_SECRET:secret,
-     STRIPE_TEST_SECRET_KEY:"sk_test_FAKE_LOCAL_ONLY"
+     STRIPE_TEST_SECRET_KEY:"sk_test_FAKE_LOCAL_ONLY",
+     RESEND_API_KEY:"re_FAKE_LOCAL_ONLY",
+     NOTIFICATION_RECIPIENT_HMAC_SECRET:"synthetic-secret-minimum-32-chars-test"
    }
  }]
 });
@@ -58,7 +66,8 @@ function makeSession(){
  return {object:"checkout.session",id:sessionId,livemode:false,mode:"payment",
    payment_status:"paid",payment_link:"plink_TEST_Month",payment_intent:paymentId,consent:{terms_of_service:"accepted"},
    currency:"usd",amount_subtotal:999,amount_total:1059,
-   total_details:{amount_tax:60,amount_shipping:0,amount_discount:0}};
+   total_details:{amount_tax:60,amount_shipping:0,amount_discount:0},
+   customer:"cus_LocalSynthetic",customer_details:{email:"founder-test@example.com"},customer_email:null};
 }
 function makeEvent(id, type="checkout.session.completed", session=makeSession()){
  const body=JSON.stringify({id,livemode:false,type,data:{object:session}});
@@ -156,4 +165,76 @@ test("local D1 original purchase evidence rejects UPDATE and DELETE", async()=>{
   });
   const order=await (await server.fetch("https://example.invalid/__test/order")).json();
   assert.deepEqual(order,{status:"paid_unfulfilled",subtotal_cents:999,tax_cents:60,total_cents:1059});
+});
+
+
+test("signed checkout to local D1 to reviewed notification to mocked Resend; repeat never sends",async()=>{
+  const KEY = "gwn1_" + "c".repeat(64);
+  mockStripe();
+  const calls = {stripeCheckout:0, stripeItems:0, resendPost:0, resendGet:0};
+  network.use(
+    http.get("https://api.stripe.com/v1/checkout/sessions/:session",({params})=>{
+      calls.stripeCheckout++;
+      assert.equal(params.session,sessionId);
+      return HttpResponse.json(makeSession());
+    }),
+    http.get("https://api.stripe.com/v1/checkout/sessions/:session/line_items",()=>{
+      calls.stripeItems++;
+      return HttpResponse.json({object:"list",data:lineItems,has_more:false});
+    }),
+    http.get("https://api.resend.com/templates/:alias",({params})=>{
+      calls.resendGet++;
+      assert.equal(params.alias,"groundwork-prepurchase-confirmation-review");
+      return HttpResponse.json({
+        object:"template",alias:params.alias,status:"published",has_unpublished_versions:false
+      });
+    }),
+    http.post("https://api.resend.com/emails",async({request})=>{
+      calls.resendPost++;
+      assert.equal(request.headers.get("Idempotency-Key"),KEY);
+      assert.equal(request.headers.get("Authorization"),"Bearer re_FAKE_LOCAL_ONLY");
+      const payload=await request.json();
+      assert.deepEqual(payload.to,["founder-test@example.com"]);
+      assert.equal(payload.template.id,"groundwork-prepurchase-confirmation-review");
+      assert.equal(payload.template.variables.ORDER_REFERENCE,sessionId);
+      assert.equal(payload.template.variables.TOTAL_PAID,"$10.59");
+      return HttpResponse.json({id:"01a1de7c-664c-7a96-9e4c-f8a9589c1ee1"});
+    })
+  );
+  const duplicateCheckout=await send(makeEvent("evt_LocalNotifyDuplicate"));
+  assert.equal(duplicateCheckout.status,200,await duplicateCheckout.text());
+  assert.deepEqual(await counts(),{orders:1,events:3});
+  const prepare=await server.fetch("https://example.invalid/__test/notification/prepare",{
+    method:"POST",headers:{"content-type":"application/json"},
+    body:JSON.stringify({notificationKey:KEY,kind:"purchase_confirmation",noticeRef:"purchase"})
+  });
+  assert.equal(prepare.status,200,await prepare.text());
+  const dispatch=async()=>server.fetch("https://example.invalid/__test/notification/dispatch",{
+    method:"POST",headers:{"content-type":"application/json"},
+    body:JSON.stringify({notificationKey:KEY})
+  });
+  const first=await dispatch();
+  assert.equal(first.status,200,await first.text());
+  assert.deepEqual(await first.json(),{status:"provider_accepted_await_delivery_evidence"});
+  const again=await dispatch();
+  assert.equal(again.status,200,await again.text());
+  assert.deepEqual(await again.json(),{status:"not_reviewed_or_inconsistent"});
+  assert.equal(calls.resendPost,1,"exactly one mocked provider send");
+  assert.equal(calls.stripeCheckout,1,"repeat should not read provider");
+  const state=await (await server.fetch("https://example.invalid/__test/notification/outbox")).json();
+  const row=state.rows.find(x=>x.notification_key===KEY);
+  assert.equal(row.state,"provider_accepted");
+  assert.equal(row.attempt_token,KEY);
+  assert.equal(row.provider_message_id,"01a1de7c-664c-7a96-9e4c-f8a9589c1ee1");
+  assert.deepEqual(state.journal.filter(x=>x.notification_key===KEY).map(x=>x.new_state),
+    ["review_pending","review_verified","attempt_started","provider_accepted"]);
+  assert.equal((await (await server.fetch("https://example.invalid/__test/order")).json()).status,"paid_unfulfilled");
+});
+
+test("refund event stored in D1 does not itself send or grant access",async()=>{
+  const changes=(await (await server.fetch("https://example.invalid/__test/changes")).json());
+  assert.ok(changes.some(x=>x.event_type==="refund.created"));
+  const notifications=(await (await server.fetch("https://example.invalid/__test/notification/outbox")).json());
+  assert.equal(notifications.rows.some(x=>x.notice_type==="refund_initiated"),false);
+  assert.equal((await (await server.fetch("https://example.invalid/__test/order")).json()).status,"paid_unfulfilled");
 });
