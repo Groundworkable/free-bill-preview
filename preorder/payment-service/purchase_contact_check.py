@@ -82,7 +82,8 @@ def inspect_test_purchase_contact(
     if (type(session.get("amount_total")) is not int or
         session.get("amount_total") != order.get("total_cents")):
         concerns.append("total_mismatch")
-    if session.get("consent", {}).get("terms_of_service") != "accepted" if isinstance(session.get("consent"), dict) else True:
+    consent = session.get("consent")
+    if not isinstance(consent, dict) or consent.get("terms_of_service") != "accepted":
         concerns.append("terms_acceptance_missing")
 
     details = session.get("customer_details")
