@@ -44,6 +44,8 @@ jobs:
         run: python3 preorder/payment-service/notification_ledger.test.py
       - name: Verify founder-only sender is disabled and retries never double-send
         run: node --test preorder/payment-service/notification_sender.sandbox.test.mjs
+      - name: Verify authenticated test-only Stripe and Resend provider adapter guards
+        run: node --test preorder/payment-service/notification_provider_adapters.sandbox.test.mjs
       - name: Validate founder-approved offer calendar and no unauthorised renewals
         run: python3 preorder/payment-service/offer-calendar.contract.test.py
       - name: Confirm payment sandbox cannot deploy or route to existing app
