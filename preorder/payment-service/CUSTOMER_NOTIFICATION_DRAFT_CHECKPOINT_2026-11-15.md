@@ -66,3 +66,18 @@ The founder supplied Gmail screenshots of all three controlled emails at the `ab
 **Rendering distinction:** Tests 2/3 (delivery status) and 3/3 (refund initiated) were intentionally sent as **plain text** and consequently look unbranded in Gmail. This is not a failure of the separately saved Resend draft templates, which have branded HTML versions. The controlled sends did **not** use or publish those templates. Their actual dynamic HTML rendering and placeholder substitution, automated Stripe-to-recipient correlation, duplicate prevention and real event-triggered delivery remain unverified.
 
 All three tests are *simulations*. No actual transaction or refund occurred. No further test messages should be sent without another user direction or authorization.
+
+
+## Georgia wordmark + full HTML preview — November 15, 2026 09:32 UTC
+
+The founder requested use of the **Georgia serif typeface** for the Groundwork wordmark. The three existing Resend draft templates were updated **in place**: brand word `Groundwork` now uses `font-family:Georgia,'Times New Roman',serif` with email-safe fallback; `by Able` and the body remain readable sans serif, and the green/gold table-based email layout and business-copy variables were retained. The original three Resend template IDs and aliases remain unchanged, and each remains **unpublished**.
+
+A second founder-authorized controlled test sent the actual saved HTML layouts (read from the Resend drafts) after replacing all variables with explicitly **fictional** example fields and adding a conspicuous simulation warning. No real Stripe purchase, tax, refund, activation, or customer data was used. Messages were sent to the founder-controlled `ablejr30@gmail.com` from `billing@groundworkbyable.com`. Provider retrieval verified **delivered** for all three:
+
+| Preview | Resend email ID | Status |
+| --- | --- | --- |
+| Georgia purchase confirmation `[GROUNDWORK GEORGIA TEST 1/3]` | `01a1de8c-bfdd-7102-b68e-6af664240a3d` | delivered |
+| Georgia delivery status `[GROUNDWORK GEORGIA TEST 2/3]` | `01a1de8c-cbd8-7080-afb4-419d1a4e9b4b` | delivered |
+| Georgia refund initiated `[GROUNDWORK GEORGIA TEST 3/3]` | `01a1de8c-d2e2-7a2d-8c8d-5c9a79d71548` | delivered |
+
+Verification confirmed all three outgoing HTML bodies include Georgia font styling and zero unresolved `{{{VARIABLE}}}` placeholders. **Gmail rendering of this newer Georgia set has not yet been confirmed by founder screenshots**. Resend drafts have **not** been published; the control used API sends with hydrated HTML to avoid activating production template publication. Payment links/webhook, isolated Worker disabled flags, and public website remain unchanged.
