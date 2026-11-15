@@ -37,6 +37,10 @@ function fixture(overrides={}) {
       events.store++;
       return { async get(key) { events.lookup++; return key === KEY ? record : null; } };
     },
+    createReviewStore() {
+      return { async getEvidence() {return overrides.noEvidence?null:{authorization_seal:"test_seal"};} };
+    },
+    verifyReview: async(_env,_row,proof)=>!!proof && !overrides.rejectEvidence,
     createStripe() { events.provider++; return {}; },
     createResend() { events.transport++; return {}; },
     async sender(receivedEnv,key,adapters) {
@@ -182,4 +186,53 @@ test("sender errors are sanitized without disclosing sensitive details",async()=
   assert.equal(res.code,503);
   assert.deepEqual(res.payload,{status:"manual_reconciliation_required"});
   assert.ok(!JSON.stringify(res.payload).includes("CREDENTIAL"));
+});
+
+
+test("missing or rejected independent review evidence blocks dispatch",async()=>{
+  for(const options of [{noEvidence:true},{rejectEvidence:true}]) {
+    const {worker,events}=fixture(options);
+    const result=await outcome(worker,send());
+    assert.equal(result.code,409);
+    assert.equal(result.payload.status,"review_evidence_missing");
+    assert.equal(events.send,0);
+    assert.equal(events.transport,0);
+  }
+});
+
+test("authenticated review endpoint cannot be invoked without review gate and explicit confirmation",async()=>{
+  const worker=createFounderNotificationWorker({
+    createReviewStore:()=>({}),
+    createStripe:()=>({}),
+    async reviewer(){ throw Error("must not be invoked when review disabled"); },
+  });
+  const reply=await outcome(worker,request("/founder/notifications/review",{
+    method:"POST",headers:{"Content-Type":"application/json","X-Groundwork-Operator-Action":"founder-review"},
+    body:JSON.stringify({notificationKey:KEY,confirm:"REVIEW_FOUNDER_TEST_NOTICE"}),
+  }));
+  assert.equal(reply.code,503);
+  assert.equal(reply.payload.status,"review_disabled");
+});
+test("Access-reviewed notification calls independent verifier, not sender",async()=>{
+  let reviews=0, sends=0;
+  const worker=createFounderNotificationWorker({
+    createReviewStore:()=>({}),
+    createStripe:()=>({}),
+    async reviewer(_env,key,email) {
+      reviews++;
+      assert.equal(key,KEY);
+      assert.equal(email,env.FOUNDER_ACCESS_EMAIL);
+      return {status:"review_verified"};
+    },
+    async sender() { sends++;throw Error("Review must never send"); },
+  });
+  const req=request("/founder/notifications/review",{
+    method:"POST",headers:{"Content-Type":"application/json","X-Groundwork-Operator-Action":"founder-review"},
+    body:JSON.stringify({notificationKey:KEY,confirm:"REVIEW_FOUNDER_TEST_NOTICE"}),
+  });
+  const result=await outcome(worker,req,{...env,FOUNDER_NOTIFICATION_REVIEW_ENABLED:"true"});
+  assert.equal(result.code,200);
+  assert.equal(result.payload.status,"review_verified");
+  assert.equal(reviews,1);
+  assert.equal(sends,0);
 });
