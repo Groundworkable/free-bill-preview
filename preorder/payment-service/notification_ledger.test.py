@@ -66,6 +66,13 @@ reject("""INSERT INTO prepurchase_notification_outbox
        (KEY,"cs_test_ledger1","delivery_update","date1",EMAIL_HMAC,
         "groundwork-prepurchase-delivery-update-review"))
 
+# SQLite rowid tables can otherwise allow NULL in TEXT PRIMARY KEY columns.
+reject("""INSERT INTO prepurchase_notification_outbox
+    (notification_key,checkout_session_id,notice_type,notice_ref,recipient_hmac,template_alias)
+    VALUES (?,?,?,?,?,?)""",
+    (None,"cs_test_ledger1","delivery_update","null-key",EMAIL_HMAC,
+     "groundwork-prepurchase-delivery-update-review"))
+
 # Direct insertion in sent/claimed states and fake recipient hash are prohibited.
 reject("""INSERT INTO prepurchase_notification_outbox
     (notification_key,checkout_session_id,notice_type,notice_ref,recipient_hmac,
