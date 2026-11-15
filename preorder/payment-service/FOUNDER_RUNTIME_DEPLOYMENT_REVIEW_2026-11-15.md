@@ -29,6 +29,16 @@ The founder supplied Cloudflare dashboard screenshots of the **same Worker**, sh
 
 **Next preparation:** prepare and independently review a *candidate-only* config/command that explicitly keeps `workers_dev=true`, `preview_urls=false`, `keep_vars=true`, never introduces a route or binding, and preserves the separately managed Access policy and current identity variables. Prefer a non-live version upload followed by exact-state review, but **do not execute any Cloudflare upload or deployment** without the founder's specific approval. Record the current version ID and rollback method before authorization. A source-only check cannot establish the Cloudflare-side preservation guarantee.
 
+## Preservation candidate staged on Draft PR #17
+
+A separate **review-only** `wrangler.founder-notification.preservation-candidate.toml` is now staged. It is NOT the original pre-Access scaffold. The candidate uses the reviewed founder Worker name, `workers_dev=true` to match the visible protected production workers.dev URL, `preview_urls=false` to match the visible disabled preview URL, and `keep_vars=true` to request retention of dashboard-managed variables. All nine operational gates remain disabled, and it does not declare any Access identities, routes, custom domains, database bindings, or provider secrets.
+
+`founder_runtime_preservation_candidate.test.py` uses Python's TOML parser to assert the exact allowed configuration shape and expected settings. It runs negative mutations to reject disabling the production URL, enabling preview URLs, omitting variable preservation, targeting the payment Worker, enabling admin/notification/payment operation, or adding a D1 binding. The existing `wrangler.founder-notification.draft.toml` stays untouched because it documents the earlier no-route stage.
+
+**Review caution:** This candidate still specifies a compatibility date and nine runtime variables. Those values form part of the prospective Worker version, so the candidate is **NOT** a drop-in safe replacement until the existing deployed version's compatibility settings, complete variable inventory and Wrangler's merge behavior have been independently checked. No Cloudflare upload or deployment was attempted. A passing local test is not proof of live configuration preservation.
+
+Cloudflare documentation references: [Wrangler source of truth and keep_vars](https://developers.cloudflare.com/workers/wrangler/configuration/), [Version URLs and version upload behavior](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/). Since preview URLs remain disabled, a prospective uploaded version would not be tested by enabling a new public preview route.
+
 ## Blocker — deployment must preserve live dashboard configuration
 The existing draft `wrangler.founder-notification.draft.toml` contains `workers_dev=false` and `preview_urls=false`, reflecting its original no-route preparation phase. The current standalone Worker already has an **Access-protected workers.dev URL**. **Never deploy this draft TOML unchanged:** it may remove/disable the active protected workers.dev endpoint or overwrite dashboard-owned variables.
 
