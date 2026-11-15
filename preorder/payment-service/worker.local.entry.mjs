@@ -131,16 +131,50 @@ export default {
     }
     if (url.pathname === "/__test/notification/dispatch" && request.method === "POST") {
       const { notificationKey } = await request.json();
+      // Synthetic, local Workerd ONLY: retain a short, non-PII failure phase.
+      // The production Worker does not import this entrypoint or expose this route.
+      const outbox = isolatedD1NotificationStore(env.DB);
+      const providerTransport = resendFounderTestTransport(env);
+      let testPhase = "preflight";
+      let testFailureClass = null;
+      const store = {
+        ...outbox,
+        async claim(...args) {
+          testPhase = "claim_attempt";
+          return outbox.claim(...args);
+        },
+        async providerAccepted(...args) {
+          testPhase = "provider_acceptance_record";
+          try { return await outbox.providerAccepted(...args); }
+          catch (err) {
+            testFailureClass = "d1_record:" + String(err?.name || "Error");
+            throw err;
+          }
+        },
+      };
+      const transport = {
+        ...providerTransport,
+        async send(...args) {
+          testPhase = "provider_send_attempt";
+          try {
+            const receipt = await providerTransport.send(...args);
+            testPhase = "provider_send_returned";
+            return receipt;
+          } catch (err) {
+            testFailureClass = "provider_send:" + String(err?.name || "Error");
+            throw err;
+          }
+        },
+      };
       const result = await dispatchFounderTestNotification(env, notificationKey, {
-        store: isolatedD1NotificationStore(env.DB),
-        provider: stripeTestReadAdapter(env),
-        transport: resendFounderTestTransport(env),
+        store, provider: stripeTestReadAdapter(env), transport,
         approval: {
           async isAuthorized() { return env.__TEST_OPERATOR_AUTHORIZED === "true"; },
           async deliveryCopy() { throw new Error("Not an authorized local notification"); },
         },
       });
-      return Response.json(result);
+      return Response.json({ ...result, __test_phase: testPhase,
+        ...(testFailureClass ? { __test_failure_class: testFailureClass } : {}) });
     }
     if (url.pathname === "/__test/notification/outbox" && request.method === "GET") {
       const rows = await env.DB.prepare(
