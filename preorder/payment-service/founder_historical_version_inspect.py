@@ -65,7 +65,10 @@ def inspect(version_response, deployments_response, expected_hash=BUNDLE_SHA256)
     if version.get("id") != HISTORY:
         raise Unverified
 
-    if version.get("compatibility_date") != COMPAT_DATE:
+    # Cloudflare may serialize the compatibility date as a YYYY-MM-DD string
+    # or as midnight UTC ISO timestamp in its REST response.
+    observed_date = version.get("compatibility_date")
+    if observed_date not in (COMPAT_DATE, COMPAT_DATE + "T00:00:00Z", COMPAT_DATE + "T00:00:00.000Z"):
         raise Unverified
     if version.get("compatibility_flags", []) != []:
         raise Unverified
@@ -199,8 +202,13 @@ def self_test():
     }]}}
     import copy
     assert inspect(version, deployments, hash_value)
+    with_timestamp = copy.deepcopy(version)
+    with_timestamp["result"]["compatibility_date"] = COMPAT_DATE + "T00:00:00Z"
+    assert inspect(with_timestamp, deployments, hash_value)
     tests = []
     v=copy.deepcopy(version);v["result"]["id"]="wrong";tests.append((v, deployments))
+    v=copy.deepcopy(version);v["result"]["compatibility_date"]=COMPAT_DATE + "T12:00:00Z"
+    tests.append((v, deployments))
     v=copy.deepcopy(version);v["result"]["bindings"].append(
         {"name":"DB","type":"d1","id":"fake"});tests.append((v,deployments))
     v=copy.deepcopy(version);v["result"]["bindings"].append(
