@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
-import { independentlyReviewFounderNotice } from "./notification_reviewer.draft.mjs";
+import { independentlyReviewFounderNotice, verifyFounderReviewSeal } from "./notification_reviewer.draft.mjs";
 if(!globalThis.crypto) globalThis.crypto=webcrypto;
 
 const key="gwn1_"+"c".repeat(64);
@@ -158,4 +158,28 @@ test("refund approvals require corresponding matching verified Stripe event and 
 test("conflicting atomic claim never returns approved",async()=>{
   const {result}=await fixture({rejectClaim:true});
   assert.equal(result.status,"review_conflict");
+});
+
+
+test("dispatch seal validation accepts authentic approval and rejects identity or seal tampering",async()=>{
+  const {metrics,notice}=await fixture();
+  const proof=metrics.proof;
+  const accepted=await verifyFounderReviewSeal(env,{
+    ...notice,state:"review_verified",review_completed_at:proof.reviewed_at,
+  },proof);
+  assert.equal(accepted,true);
+  for(const change of [
+    {authorization_seal:"f".repeat(64)},
+    {reviewer_hmac:"f".repeat(64)},
+    {reviewed_at:"2027-01-01T00:00:00.000Z"},
+    {notice_ref:"fake"},
+    {provider_proof_hmac:"d".repeat(64)},
+  ]) {
+    assert.equal(await verifyFounderReviewSeal(env,{
+      ...notice,state:"review_verified",review_completed_at:proof.reviewed_at,
+    },{...proof,...change}),false,JSON.stringify(change));
+  }
+  assert.equal(await verifyFounderReviewSeal({...env,NOTIFICATION_REVIEW_SEAL_SECRET:"other-key-more-than-thirty-two-chars"},
+    {...notice,state:"review_verified",review_completed_at:proof.reviewed_at},proof),false);
+  assert.equal(await verifyFounderReviewSeal(env,{...notice,state:"review_pending"},proof),false);
 });
