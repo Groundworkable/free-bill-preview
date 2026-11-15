@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { webcrypto } from "node:crypto";
-import { dispatchFounderTestNotification } from "./notification_sender.sandbox.mjs";
+import { dispatchFounderTestNotification, isolatedD1NotificationStore } from "./notification_sender.sandbox.mjs";
 
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
 
@@ -194,4 +194,36 @@ test("sender rejects wrong notification key and a non-reviewed record", async ()
   assert.equal(result.status,"not_reviewed_or_inconsistent");
   assert.equal(metrics.claim,0);
   assert.equal(metrics.send,0);
+});
+
+test("D1 atomic claim and provider acceptance use RETURNING rather than trigger-inclusive meta.changes", async () => {
+  const queries = [];
+  const db = {
+    prepare(sql) {
+      queries.push(sql);
+      return {
+        bind(...args) {
+          return {
+            // Workerd D1 change count can include INSERTs in audit triggers.
+            // .first() on UPDATE RETURNING contains the affected OUTBOX row only.
+            async first() {
+              if (sql.includes("RETURNING notification_key")) {
+                return args.includes(NOTICE_KEY)
+                  ? {notification_key:NOTICE_KEY} : null;
+              }
+              return null;
+            },
+            async run() {throw new Error("Do not use meta.changes for outbox transitions");}
+          };
+        }
+      };
+    }
+  };
+  const store = isolatedD1NotificationStore(db);
+  assert.equal(await store.claim(NOTICE_KEY,"attempt"),true);
+  assert.equal(await store.providerAccepted(NOTICE_KEY,"attempt","msg_one"),true);
+  assert.equal(await store.claim("gwn1_"+"d".repeat(64),"attempt"),false);
+  assert.equal(queries.length,3);
+  assert.ok(queries.every(sql=>sql.includes("RETURNING notification_key")));
+  assert.ok(queries.every(sql=>sql.includes("WHERE notification_key=?") && sql.includes("state='")));
 });
