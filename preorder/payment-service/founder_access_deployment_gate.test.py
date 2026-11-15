@@ -56,4 +56,12 @@ assert 'FOUNDER_NOTIFICATION_DISPATCH_ENABLED === "true"' in worker
 assert 'NOTIFICATION_SEND_MODE === "sandbox_founder_test"' in worker
 assert not re.search(r'url\\.pathname\\s*===?\\s*["\\\']/__test/', worker)
 assert 'url.pathname === "/founder/notifications/status"' in worker
+bootstrap = (root / "founder_notification_bootstrap.disabled.mjs").read_text(encoding="utf8")
+assert 'status: 503' in bootstrap
+assert 'Founder service disabled' in bootstrap
+assert not re.search(r'^\\s*import\\s', bootstrap, re.M)
+assert 'env.DB' not in bootstrap
+assert 'fetch(' not in bootstrap
+assert '/founder/notifications/' not in bootstrap.replace(
+    'DO NOT paste founder_notification_worker.draft.mjs yet.', '')
 print("PASS: isolated founder Access scaffold has no routes or secrets and all gates default deny")
