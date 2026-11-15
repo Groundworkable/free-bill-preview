@@ -93,7 +93,7 @@ jobs:
       - name: Dry-run bundle founder-only runtime without deploying
         working-directory: preorder/payment-service
         run: |
-          npx wrangler deploy ./founder_notification_worker.draft.mjs --dry-run --outdir ./.founder-runtime-build --compatibility-date 2026-11-15
+          npx wrangler deploy ./founder_notification_worker.draft.mjs --name groundwork-founder-notifications-isolated --dry-run --outdir ./.founder-runtime-build --compatibility-date 2026-11-15
       - name: Test actual founder bundle identity checks and disabled operations
         working-directory: preorder/payment-service
         run: node founder_runtime_bundle.dry_run.test.mjs
