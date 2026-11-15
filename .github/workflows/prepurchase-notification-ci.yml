@@ -70,6 +70,8 @@ jobs:
           node --test \
             preorder/payment-service/notification_sender.sandbox.test.mjs \
             preorder/payment-service/notification_provider_adapters.sandbox.test.mjs
+      - name: Test founder-only Access authentication and notification dispatch gates
+        run: node --test preorder/payment-service/founder_notification_worker.draft.test.mjs
       - name: Verify webhook signature and financial notifications with mocks
         run: |
           node --test \
