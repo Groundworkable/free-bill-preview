@@ -1,5 +1,27 @@
 # Groundwork isolated sandbox payment receiver
 
+## CURRENT STATUS — November 16, 2026 (supersedes historical setup steps below)
+
+**Working branch:** `site/prepurchase-checkout-gate-2026-11-13`, Draft [PR #17](https://github.com/Groundworkable/free-bill-preview/pull/17). **No live paid checkout, customer email sending, review/dispatch permission, or membership activation is authorized.** The rest of this README records a November 13 setup sequence and MUST NOT be used as a fresh to-do list. Refer to `FOUNDER_NEXT_RELEASE_GATE_2026-11-15.md` for subsequent source-backed checkpoints; prioritize this status where older text conflicts.
+
+| Area | Established status / remaining gate |
+| --- | --- |
+| Cloudflare founder notification service | **Completed previously:** independently verified source/version `22367a82-2713-4f1f-b927-65301fe75a17` was founder-promoted to **100% production traffic on Nov 16**; Cloudflare Access owner challenge and **read-only** synthetic D1 status were verified. Founder Worker is **not** a customer email dispatcher or the payment receiver. Do not ask for another deployment, Access test, D1 migration or synthetic fixture. |
+| Isolated payment receiver | Existing separate `groundwork-payment-sandbox-isolated` Worker/D1; webhook purchase-to-`paid_unfulfilled` and pending-only notification integration are **tested in native Workerd/D1 CI**, not proven by an actual Stripe Checkout. Draft PR source modifications are **not deployed** to that Worker. No paid entitlement or recipient email in its purchase ledger. |
+| Native CI | Both `notification-safe-tests` and `remote-worker-fail-closed` **passed** on [run 43858958457](https://github.com/Groundworkable/free-bill-preview/actions/runs/43858958457), commit `527aa60604c721a95e7165ec3d45d7e55186b307`. Later documentation changes do not turn that pass into live payment evidence. |
+| Stripe TEST | Able Systems LLC `acct_1TwotnJK9stEim4w`. Two existing one-time $9.99 / $96 links, **inactive** and `consent_collection=null` on latest Nov 16 read. TEST webhook destination is registered but **disabled**. No genuine paid TEST Checkout Session has been verified. Keep links inactive. |
+| Stripe Tax | TEST settings previously verified **active with head-office information**, not “head-office missing.” **Zero tax registrations** were found in prior read-only inventory. This does not prove taxable sales may proceed or that tax is being collected. |
+| SC Retail License | Founder **already submitted the application and paid $50 on November 13, 2026**; payment approved. Only **issuance and effective date** remain unverified. **Never ask to apply or pay again.** |
+| Legal documents | Founder-approved wording for pre-purchase Terms and Privacy V2 staged in **nonpublic** review artifacts; legally effective publication/Terms version/URL **not authorized**, public `privacy-v1` remains in place. Checkout config stays fail-closed. |
+| Purchaser identity and paid access | Existing authenticated app has sign-in/private-beta invitations, **not** a secure Stripe purchase-to-Supabase account claim or deployed paid entitlement. Invitation-by-email approach approved **as design only**. Exact delayed/midmonth bonus/calendar remains **unapproved**; the test-only alternative is not binding. |
+| Support/refunds | Offline TEST-only reconciliation, refund quote and deadline helpers and a review-only intake runbook exist; **no deployed customer case/refund workflow**. Resend templates remain unpublished; no customer emails sent. |
+
+**Next real release-critical prerequisites, not an invitation to act without approval:** specific legal review and publication authorization (including delayed-activation/calendar and customer support truthfulness); a valid public Terms URL in Stripe public details; separate authorization for **inactive TEST-link Terms consent update** and later genuine TEST checkout; purchaser verification/entitlement/refund operational design and separately authorized implementation; confirmation of already-applied SC license issuance/tax treatment before real sales. The existing inactive TEST links should **not** be recreated by default: Stripe's current API schema supports editing consent, subject to verified public Terms URL and separate authorization.
+
+**Protect completed work:** do not rerun setup/migrations/deployment or suggest resubmitting the state license, do not infer legal clearance from CI, and do not substitute synthetic Stripe events or email drafts for functioning customer operations. No application/Stripe/Supabase/Cloudflare/D1/Resend mutation follows from this README.
+
+---
+
 **Status (November 13, 2026):** The founder created a separate Cloudflare Worker named `groundwork-payment-sandbox-isolated`, bound a new isolated D1 database as `DB`, ran the schema SQL in the D1 Console (Cloudflare reported success), and uploaded the reviewed `worker.mjs` to that isolated Worker. The root request displayed the expected `Not found`. These observations come from founder-provided screenshots; **remote webhook delivery and the live deployed code/version have not been independently verified**. This PR remains **draft**, public checkout is **disabled**, and the Stripe test links are **inactive**.
 
 ## Safeguards
