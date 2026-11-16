@@ -31,7 +31,7 @@ async function hmac(secret, text) {
 function enabled(env) {
   return env?.FOUNDER_NOTIFICATION_REVIEW_ENABLED === "true" &&
     env?.FOUNDER_NOTIFICATION_ADMIN_MODE === "sandbox_access_only" &&
-    env?.NOTIFICATION_SEND_MODE === "sandbox_founder_test" &&
+    // Review is independent of transport release: no send-mode enablement is required.
     env?.PAYMENTS_MODE === "sandbox" && env?.TERMS_APPROVED === "true" &&
     /^prepurchase-v\d{4}-\d{2}-\d{2}$/.test(env.TERMS_VERSION || "") &&
     env?.STRIPE_TEST_SECRET_KEY?.startsWith("sk_test_") &&
