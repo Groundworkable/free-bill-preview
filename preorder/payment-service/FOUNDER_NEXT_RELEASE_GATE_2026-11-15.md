@@ -11,6 +11,14 @@
 5. **First live authenticated D1 status lookup PASSED:** Existing synthetic `gwn1_` + 64 `9` characters returned exact JSON `{"status":"found","noticeType":"purchase_confirmation","state":"review_pending","reviewed":false}`. This was **read-only**; no review approval or sending occurred. Browser screenshot verifies body but not an independent HTTP status code for this read. See final November 16 PR comments for screenshot-based checkpoints.
 6. **Payment receiver/source/DB guard checks:** Previously completed and recorded in PR comments. `groundwork-payment-sandbox-isolated` payment receiver is a separate Worker and was not changed by the founder notification deployment.
 
+## Newly staged opt-in payment-to-review handoff (November 16, 2026)
+
+Draft PR #17 now includes `notification_outbox_enqueue.draft.mjs`, `notification_outbox_enqueue.draft.test.mjs` and an import/conditional database-batch append in `worker.mjs`. This is **not the deployed payment Worker's source**. It changes no current Cloudflare service. The new feature does nothing unless a separately authorized environment variable `FOUNDER_NOTIFICATION_OUTBOX_MODE=sandbox_founder_only` is deliberately configured on the **isolated payment receiver**.
+
+When that opt-in is present, the draft code requires all of: Stripe TEST credentials, sandbox payment mode, previously approved terms/version, a paid TEST Checkout session, Stripe-hosted accepted terms, exact allowlisted founder recipient, long HMAC secret, `NOTIFICATION_SEND_MODE=disabled`, dispatch not enabled, and operator release not enabled. The new record uses deterministic HMAC ID/recipient fingerprint and is inserted as **review_pending only** inside the existing purchase event/order D1 batch, so failure rolls the whole batch back. A duplicate event on a previously stored purchase does not enqueue a new notice. No plaintext email is stored, no delivery/review authorization is created, and no membership becomes active.
+
+**Not yet verified:** new native CI outcome and end-to-end isolated D1/Workerd integration with the new opt-in enabled. Existing synthetic Workerd tests tested prior behavior; do not call this feature remotely tested. No production/test Cloudflare variable was added. Do not enable the new gate or activate test payment webhook/Stripe links before separately approved terms and real test-purchase readiness.
+
 ## Current implementation — draft code only
 
 Review/dispatch are **not** authorized or enabled. At PR head `a30c88eb8ee78d0ecf3de62bbf3874dda98ab2f0`, the founder's review verifier and Stripe TEST read adapter have been separated from the notification send-mode gate so independently verified review could eventually run with `NOTIFICATION_SEND_MODE=disabled`. New regression tests cover this separation, disabled sending, and closed review/admin/terms/payment gates.
