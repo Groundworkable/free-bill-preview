@@ -90,6 +90,10 @@ Read-only connected GitHub verification of that historical release commit confir
 
 Do **not** request abandoned-prototype platform access, rerun prior Cloudflare payment Worker tests, or re-investigate app host from scratch. Source/release provenance is established to the above attested level. The next **separate design gate** is a secure one-purchase-to-one-auth-user claim, verified access readiness, nonrecurring monthly/annual entitlement ledger with refund/revocation and delayed/February bonus calendar. Separate founder implementation authorization required; no app/auth/DB/Cloudflare mutation approved.
 
+## Retail License application ALREADY FILED and paid — founder correction November 16, 2026
+
+**Do not ask again to apply or pay.** The founder completed the South Carolina Retail License application on **November 13, 2026** and paid the **$50 fee**, with the payment reported approved. On November 14, final license issuance had **not yet been confirmed**; that is the only licensing-status verification remaining. Payment approval is not license issuance. Do **not** submit another application, charge the founder again, recommend another $50 fee, or suggest the founder has not applied. Refer to `preorder/SC_SAAS_PREPURCHASE_SALES_TAX_RELEASE_REVIEW_2026-11-16.md` (corrected Nov 16). The remaining release gate is **evidence of SCDOR approval/effective date**, plus product-specific taxability/prepayment treatment and the separate legal/Stripe gates. Avoid duplicating historical work in subsequent sessions.
+
 ## Next real milestone: isolated, consent-aware Stripe TEST purchase evidence
 
 1. **Confirm native CI of the changed PR head**; do not rerun previous D1/protection/deployment tests manually. Correct only demonstrated regressions.
