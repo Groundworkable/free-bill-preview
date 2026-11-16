@@ -80,6 +80,10 @@ Stripe processes hosted checkout payments. Able Systems may retain limited purch
 
 This pre-purchase is for an informational personal planning service, not an investment or donation, and not an offer of personalized financial, tax, legal, or investment advice. Separate free Founding Access reservations, organizations, and future products have different terms. Nothing here waives non-waivable customer rights.
 
+## 7. Changes to these terms
+
+We may update these terms from time to time to reflect changes in Groundwork, its services, or applicable law. We will post the updated version and its effective date, and provide additional notice or seek agreement where required by law. Updated terms generally apply to future purchases. For a completed pre-purchase, the terms accepted at checkout continue to govern that purchase unless the customer affirmatively agrees to a change or applicable law requires otherwise. An update does not automatically reduce purchased access, complimentary time, or refund rights already promised to a customer.
+
 ---
 
 ## Stripe-hosted acceptance and release instructions — INTERNAL ONLY
