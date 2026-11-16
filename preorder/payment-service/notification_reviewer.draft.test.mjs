@@ -100,6 +100,26 @@ test("disabled review modes and wrong verified reviewer never query provider",as
   }
 });
 
+test("founder-only review verifies test evidence without releasing notification sending",async()=>{
+  const {result,metrics}=await fixture({env:{NOTIFICATION_SEND_MODE:"disabled",
+    NOTIFICATION_OPERATOR_RELEASE:"false",NOTIFICATION_TEMPLATES_APPROVED:"false",
+    FOUNDER_NOTIFICATION_DISPATCH_ENABLED:"false"}});
+  assert.equal(result.status,"review_verified");
+  assert.equal(metrics.checkout,1);
+  assert.equal(metrics.approve,1);
+  for (const change of [
+    {FOUNDER_NOTIFICATION_REVIEW_ENABLED:"false"},
+    {FOUNDER_NOTIFICATION_ADMIN_MODE:"disabled"},
+    {PAYMENTS_MODE:"disabled"},
+    {TERMS_APPROVED:"false"},
+  ]) {
+    const blocked=await fixture({env:{NOTIFICATION_SEND_MODE:"disabled",...change}});
+    assert.equal(blocked.result.status,"review_disabled");
+    assert.equal(blocked.metrics.checkout,0);
+    assert.equal(blocked.metrics.approve,0);
+  }
+});
+
 test("unreviewable notice states/types and payment mismatches never approve",async()=>{
   for (const change of [
     {notice:{state:"manual_review"}},
