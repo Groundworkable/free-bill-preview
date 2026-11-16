@@ -82,6 +82,14 @@ Following founder approval of invitation-based onboarding, reviewed `Groundworka
 
 No app code, Supabase schema/auth/project state, Cloudflare/D1, Stripe, Resend or customer site configuration touched. Existing completed tests and founder worker checks remain completed, do not repeat.
 
+## App production deployment provenance confirmed from prior founder attestations (November 16, 2026)
+
+**Correction to the older "deployed app unknown" notes:** Founder has already documented that **ChatGPT and Codex** build Groundwork and its authenticated app is hosted as Cloudflare Worker **`groundworkable-groundwork-life`** at `app.groundworkbyable.online`, with source branch `Groundworkable/groundwork-life:codex/micah-production-import`. Last founder-attested production version `7b457b20-770c-47c1-9558-3bb3253f362c`, last attested release merge commit `6f6868e6dae45f44848684eab5f20c4b7b4882e4` (October 23, 2026; merged PR #36). These are **historical attestations** rather than a new read of Cloudflare deployment status; do not assert that this version is still live today without fresh evidence.
+
+Read-only connected GitHub verification of that historical release commit confirms `wrangler.json` sets `name=groundworkable-groundwork-life`, the custom `app.groundworkbyable.online` route and `SUPABASE_URL=https://vmoerivhazwyddsnnqxj.supabase.co` (Groundwork Production). Earlier release report `docs/ai/v1.1-production-deployment.md` documents the same Worker and runtime bindings. The distinct `xekbgfotzzsgnortditd` in `supabase/config.toml` is **not** the production runtime's recorded endpoint. Connected Supabase plugin now marks `vmoerivhazwyddsnnqxj` INACTIVE, which does **not by itself** establish the live app's current backend status; do not resume or change it without independent verification. The last attested release branch Auth and generated Supabase types were inspected read-only: sign-in/MFA/private-beta invitation exist; no Stripe purchase claim or paid entitlement is exposed by the inspected schema/routes. Do not confuse unrelated financial `payment_events` or Wants claims with commercial subscription entitlements.
+
+Do **not** request Lovable access, rerun prior Cloudflare payment Worker tests, or re-investigate app host from scratch. Source/release provenance is established to the above attested level. The next **separate design gate** is a secure one-purchase-to-one-auth-user claim, verified access readiness, nonrecurring monthly/annual entitlement ledger with refund/revocation and delayed/February bonus calendar. Separate founder implementation authorization required; no app/auth/DB/Cloudflare mutation approved.
+
 ## Next real milestone: isolated, consent-aware Stripe TEST purchase evidence
 
 1. **Confirm native CI of the changed PR head**; do not rerun previous D1/protection/deployment tests manually. Correct only demonstrated regressions.
