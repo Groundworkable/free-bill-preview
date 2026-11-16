@@ -29,7 +29,7 @@ jobs:
                  'privacy.html','beta-terms.html']
           for name in pages:
               shutil.copy2(name,root/name)
-          for folder in ['media','assets','tour','free-tools','organizations',
+          for folder in ['media','assets','tour','preorder','free-tools','organizations',
                          'about','faqs','contact','careers','legal']:
               shutil.copytree(folder,root/folder,dirs_exist_ok=True)
           for name in ['favicon.ico','apple-touch-icon.png','robots.txt','sitemap.xml']:
