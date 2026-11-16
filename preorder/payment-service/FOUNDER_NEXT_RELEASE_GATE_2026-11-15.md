@@ -72,6 +72,16 @@ Source-verified `Groundworkable/groundwork-life` main at `52001fad919b91e1b7fdbf
 
 **Only a design review was approved**: email invitation to sign in/create account, access only after verified readiness. No purchase claim or entitlement code, Supabase SQL, app settings, Cloudflare, Stripe, D1, email or legal Terms publication was authorized or changed. Actual deployed app version and Supabase backend identity have **not** been independently verified, so do not claim repo main is the live app. Connected Supabase project listing showed three projects including one labeled `Groundwork Production`, all status `INACTIVE`; do not infer which instance the app currently uses. No project was reactivated or data queried. The next step is **read-only actual app deployment/identity reconciliation and secure claim/entitlement design**, not payment activation.
 
+## Purchase-to-app entitlement contract specified — November 16, 2026
+
+Following founder approval of invitation-based onboarding, reviewed `Groundworkable/groundwork-life` Auth routes, `auth.users`/profile and private-beta acceptance schema, middleware, account-deletion flow, and generated types, and read-only connected Supabase project metadata. The source-level reconciliation remains in `preorder/APP_AUTH_PURCHASE_ACTIVATION_RECONCILIATION_2026-11-16.md`.
+
+**New planning-only contract:** `preorder/PURCHASE_ACCOUNT_CLAIM_CONTRACT_REVIEW_ONLY_2026-11-16.md` (commit `c7f3f64b0f0e0fbeefb671ff2e074d17fc529b8f`) specifies distinct provider payment verification, isolated D1 purchase, trusted single-use account claim and delayed paid entitlement. It includes four identity/ownership boundaries, proposed claim/activation/refund operations, replay/transfer/RLS/privacy failure tests, service clock and prepayment calendar, account deletion/retention and gated release sequence. This is **a design proposal, not an implementation authorization**; no new approved product feature or change to existing beta Auth.
+
+**Live app identification still unresolved:** Github app source main is `52001fad919b91e1b7fdbf28d228f96ec8523f37` but no evidence that it equals the running deployed revision. GitHub repository deployment-list endpoint was not available through connected GitHub API. Connected Supabase projects named `Groundwork Production`, `groundwork-p1b-sql-sandbox`, `groundwork-held-money-final-validation` all report `INACTIVE` via read-only metadata, which does **not** establish the Lovable app's active backend issuer/project; do not start/resume or query customer data based on their names. External app fetch did not provide independent deploy info. Next bounded requirement: read-only deployed app build/version and actual authentication issuer/project evidence, **without asking for secrets or changing app/runtime state**.
+
+No app code, Supabase schema/auth/project state, Cloudflare/D1, Stripe, Resend or customer site configuration touched. Existing completed tests and founder worker checks remain completed, do not repeat.
+
 ## Next real milestone: isolated, consent-aware Stripe TEST purchase evidence
 
 1. **Confirm native CI of the changed PR head**; do not rerun previous D1/protection/deployment tests manually. Correct only demonstrated regressions.
