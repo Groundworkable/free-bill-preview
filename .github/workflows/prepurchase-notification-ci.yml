@@ -8,6 +8,8 @@ on:
       - "preorder/payment-service/**"
       - "preorder/checkout-config.json"
       - "scripts/preorder_legal_release_gate.py"
+      - "scripts/privacy_v2_preview_parity.test.py"
+      - ".github/internal-legal-review/privacy-policy-v2.review-only.html"
       - "preorder/PRIVACY_POLICY_V2_COMPLETE_CANDIDATE_2026-11-14.md"
       - "preorder/PRIVACY_V2_PREPURCHASE_REVIEW_2026-11-14.md"
       - "preorder/CUSTOMER_TERMS_RELEASE_COPY_DRAFT_2026-11-14.md"
@@ -49,6 +51,8 @@ jobs:
         run: python3 preorder/payment-service/founder_ci_no_deploy_guard.py
       - name: Check disabled website and legal publication gates
         run: python3 scripts/preorder_legal_release_gate.py
+      - name: Confirm internal Privacy V2 preview matches approved founder text and cannot publish
+        run: python3 scripts/privacy_v2_preview_parity.test.py
       - name: Enforce sandbox provider and deployable Worker isolation
         run: python3 preorder/payment-service/provider_remote_readiness.test.py
       - name: Enforce isolated founder Access scaffold defaults
