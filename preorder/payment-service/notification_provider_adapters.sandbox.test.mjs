@@ -40,6 +40,29 @@ test("Stripe GETs require test-only flags and strict path IDs", async ()=>{
   await assert.rejects(stripeTestReadAdapter({...env,PAYMENTS_MODE:"disabled"},fake).checkout(sessionId));
   assert.equal(count,3);
 });
+test("Stripe test reads for founder review do not require or authorize Resend sending", async ()=>{
+  let reads=0;
+  const reviewOnly={...env,NOTIFICATION_SEND_MODE:"disabled",
+    NOTIFICATION_OPERATOR_RELEASE:"false",NOTIFICATION_TEMPLATES_APPROVED:"false",
+    FOUNDER_NOTIFICATION_ADMIN_MODE:"sandbox_access_only",
+    FOUNDER_NOTIFICATION_REVIEW_ENABLED:"true"};
+  const fake=async(_url,options)=>{
+    reads++;
+    assert.equal(options.method,"GET");
+    return respond(checkout);
+  };
+  assert.equal((await stripeTestReadAdapter(reviewOnly,fake).checkout(sessionId)).id,sessionId);
+  assert.equal(reads,1);
+  assert.equal(await resendFounderTestTransport(reviewOnly,fake).templateIsPublished(alias),false);
+  assert.equal(reads,1);
+  for(const change of [
+    {FOUNDER_NOTIFICATION_REVIEW_ENABLED:"false"},
+    {FOUNDER_NOTIFICATION_ADMIN_MODE:"disabled"},
+    {PAYMENTS_MODE:"disabled"},
+    {STRIPE_TEST_SECRET_KEY:"sk_live_not_allowed"},
+  ]) await assert.rejects(stripeTestReadAdapter({...reviewOnly,...change},fake).checkout(sessionId));
+  assert.equal(reads,1);
+});
 test("Stripe rejects mismatched provider object and pagination", async ()=>{
   await assert.rejects(stripeTestReadAdapter(env,async()=>respond({...checkout,livemode:true})).checkout(sessionId));
   await assert.rejects(stripeTestReadAdapter(env,async()=>respond({...checkout,id:"cs_test_Other"})).checkout(sessionId));
