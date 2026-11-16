@@ -51,6 +51,7 @@ test("any missing independent safety gate rejects before producing an outbox ent
     {PAYMENTS_MODE:"disabled"},{TERMS_APPROVED:"false"},
     {TERMS_VERSION:"UNAPPROVED"},{STRIPE_TEST_SECRET_KEY:"sk_live_unacceptable"},
     {NOTIFICATION_SEND_MODE:"sandbox_founder_test"},
+    {NOTIFICATION_SEND_MODE:undefined},
     {FOUNDER_NOTIFICATION_DISPATCH_ENABLED:"true"},
     {NOTIFICATION_OPERATOR_RELEASE:"true"},
     {NOTIFICATION_RECIPIENT_HMAC_SECRET:"short"},
