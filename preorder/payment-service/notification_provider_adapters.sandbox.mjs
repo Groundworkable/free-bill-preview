@@ -33,7 +33,10 @@ function validEmail(value) {
 }
 
 function readyStripe(env) {
-  return env?.NOTIFICATION_SEND_MODE === "sandbox_founder_test" &&
+  // Review may read Stripe TEST evidence independently of notification transport.
+  return (env?.NOTIFICATION_SEND_MODE === "sandbox_founder_test" ||
+    (env?.FOUNDER_NOTIFICATION_REVIEW_ENABLED === "true" &&
+     env?.FOUNDER_NOTIFICATION_ADMIN_MODE === "sandbox_access_only")) &&
     env?.STRIPE_TEST_SECRET_KEY?.startsWith("sk_test_") &&
     env?.PAYMENTS_MODE === "sandbox" && env?.TERMS_APPROVED === "true";
 }
