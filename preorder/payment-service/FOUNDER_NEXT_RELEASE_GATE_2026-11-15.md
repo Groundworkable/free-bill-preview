@@ -60,6 +60,12 @@ Using the connected **Able Systems LLC test-mode** Stripe account:
 
 **Access/deployment boundary:** No Cloudflare/Stripe/D1/Resend/customer checkout changes were made; no license application, tax registration, provider charges, Terms publication, or PR merge.
 
+## Founder-approved activation delivery direction — November 16, 2026
+
+Founder specifically **APPROVED THE DESIGN APPROACH**: upon verified app readiness, send each independently verified pre-purchaser an email invitation directing them to sign in or create a Groundwork account; apply purchased access **only when the application is verified usable/ready**. Source of truth: `preorder/ACTIVATION_DELIVERY_APPROVED_APPROACH_2026-11-16.md`, added at `c47806ad6de824bd078d0f2e5ae921746d638df1`. This resolves the high-level **choice of delivery method**, not the actual implementation, publication or financial release. **Do not ask the founder to approve this approach again.**
+
+Exact secure Stripe purchaser → authenticated app account claim, proof of mailbox/account control, duplicate prevention, correct paid-start clock, complimentary February/month preservation, delayed launch, unclaimed invitations, refunds/chargebacks, and delivery evidence remain engineering/legal review gates. **Sending an invitation or entering a target date does not itself grant paid service or start the refund clock.** Existing signed purchase/receipt/test notices do not confer app membership. Do not change customer terms wording without separate review/approval; still `UNAPPROVED` and unpublished. No new Resend sends, app auth/entitlement changes, email templates, site publication, tax or Stripe configuration, Cloudflare/D1 modifications, or payment activation authorized by this one approval.
+
 ## Next real milestone: isolated, consent-aware Stripe TEST purchase evidence
 
 1. **Confirm native CI of the changed PR head**; do not rerun previous D1/protection/deployment tests manually. Correct only demonstrated regressions.
