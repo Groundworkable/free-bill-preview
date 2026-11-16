@@ -26,7 +26,7 @@ export async function prepareFounderTestPurchaseOutbox(env,session,verifiedOrder
   if(env.PAYMENTS_MODE!=="sandbox" || env.TERMS_APPROVED!=="true" ||
      !/^prepurchase-v\d{4}-\d{2}-\d{2}$/.test(env.TERMS_VERSION||"") ||
      !env.STRIPE_TEST_SECRET_KEY?.startsWith("sk_test_") ||
-     env.NOTIFICATION_SEND_MODE==="sandbox_founder_test" ||
+     env.NOTIFICATION_SEND_MODE!=="disabled" ||
      env.FOUNDER_NOTIFICATION_DISPATCH_ENABLED==="true" ||
      env.NOTIFICATION_OPERATOR_RELEASE==="true" ||
      !SESSION.test(verifiedOrder?.id||"") ||
