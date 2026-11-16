@@ -56,6 +56,68 @@ for disclosure in (
     assert disclosure in privacy_candidate, disclosure
 
 
+
+# The styled customer terms page is a NONPUBLIC review artifact kept out of the
+# normal website document tree. Never use it as the Stripe terms URL.
+from html.parser import HTMLParser
+import html as html_module
+
+review_html_path = root / ".github/internal-legal-review/customer-prepurchase-terms.html"
+assert review_html_path.is_file(), "Missing founder legal review artifact"
+assert not (root / "preorder/review-only/customer-prepurchase-terms.html").exists(), (
+    "Unpublished review copy is inside the public preorder tree"
+)
+review_html = review_html_path.read_text(encoding="utf-8")
+assert 'name="robots" content="noindex,nofollow,noarchive"' in review_html
+assert "NOT LEGAL PUBLICATION" in review_html
+assert "Review copy only." in review_html
+assert "Stripe-hosted acceptance and release instructions — INTERNAL ONLY" not in review_html
+assert "https://buy.stripe.com" not in review_html
+
+# Match substantive wording against the approved Markdown draft, ignoring only
+# headings, Markdown emphasis/table syntax, HTML tags and whitespace.
+class TermsText(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.capture = False
+        self.parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "article":
+            self.capture = True
+
+    def handle_endtag(self, tag):
+        if tag == "article":
+            self.capture = False
+        if self.capture and tag in {"p", "h1", "h2", "li", "td", "th", "tr"}:
+            self.parts.append(" ")
+
+    def handle_data(self, data):
+        if self.capture:
+            self.parts.append(data)
+
+def words(value):
+    return re.sub(r"\\s+", " ", value).strip()
+
+approved_customer_text = terms_review.split(
+    "\\n## Stripe-hosted acceptance and release instructions — INTERNAL ONLY", 1
+)[0]
+approved_rows = []
+for line in approved_customer_text.splitlines():
+    line = line.strip()
+    if not line or line == "---" or re.fullmatch(r"\\|[\\s:|\\-]+\\|", line):
+        continue
+    line = re.sub(r"^#{1,3}\\s+|^-\\s+", "", line)
+    line = line.strip("|").replace("|", " ")
+    line = line.replace("**", "")
+    line = re.sub(r"\\*([^*]+)\\*", r"\\1", line)
+    approved_rows.append(line)
+parser = TermsText()
+parser.feed(review_html)
+assert words(" ".join(approved_rows)) == words(" ".join(parser.parts)), (
+    "HTML review artifact has drifted from founder-approved customer wording"
+)
+
 # Explicit fail-closed checkout is independent of the existence of review drafts.
 assert gate["enabled"] is False and gate["termsApproved"] is False
 assert gate["termsUrl"] is None and gate["refundPolicyUrl"] is None
