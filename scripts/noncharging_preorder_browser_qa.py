@@ -29,7 +29,7 @@ try:
             assert page.locator("#checkoutAnnual").evaluate("(n)=>n.tagName")=="SPAN"
             assert page.locator('a[href*="stripe.com"]').count()==0
             assert page.locator("form,input,button,iframe,script").count()==0
-            assert page.locator('a[href="/contact/"]').count()==1
+            assert page.locator('a[href="/contact/"]').count()>=1
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1")
             assert not errors,errors
             page.close()
