@@ -113,7 +113,7 @@ for line in approved_customer_text.splitlines():
     approved_rows.append(line)
 parser = TermsText()
 parser.feed(review_html)
-assert words(" ".join(approved_rows)) == words(" ".join(parser.parts)), (
+assert words(" ".join(approved_rows)) == words("".join(parser.parts)), (
     "HTML review artifact has drifted from founder-approved customer wording"
 )
 
