@@ -1,6 +1,8 @@
 """Offline negative and positive checks for NONBINDING proposed late-start calendar."""
 from datetime import date, timedelta
-from delayed_access_calendar_proposal import illustrative_late_calendar as scenario
+from pathlib import Path
+from runpy import run_path
+scenario = run_path(str(Path(__file__).with_name("delayed_access_calendar_proposal.draft.py")))["illustrative_late_calendar"]
 
 for offer,paid,total in (("monthly",1,2),("annual",12,13)):
     on_time=scenario(hypothetical_usable_start=date(2027,1,1),offer=offer)
