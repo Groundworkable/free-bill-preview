@@ -61,6 +61,8 @@ We use other services to operate Groundwork. Depending on the service, those pro
 
 **Stripe** would be used for hosted checkout, payment processing and, where configured and applicable, tax calculation, refunds and payment-dispute information. Stripe may receive payment/billing details directly from the purchaser. We share or make available information to providers as needed for their contracted functions; providing a policy does not mean an unfinished integration is in operation.
 
+**Plaid** is planned for optional financial-account connections. If this feature is introduced, Plaid would help customers authorize access to information from connected financial institutions. Plaid handles information under its own privacy policy, and Groundwork may receive and securely retain authorized account, balance, and transaction information needed for the connected features. Plaid connections are not currently available; the final categories of information, connection controls, and storage practices must be verified and disclosed before launch.
+
 ### 5. Analytics, cookies, and similar technologies
 
 The public site currently uses Google Analytics to understand general visitor activity. Analytics services may use cookies, IP addresses, browser/device information and similar identifiers. You can use supported browser or device controls to limit cookies. We do not use this statement to authorize the sale of your personal information or create new advertising data uses; practices must be reassessed if analytics or advertising tools change.
