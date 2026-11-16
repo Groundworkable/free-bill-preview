@@ -10,6 +10,7 @@ on:
       - "robots.txt"
       - "scripts/public_site_qa.py"
       - "scripts/noncharging_preorder_qa.py"
+      - "scripts/noncharging_preorder_browser_qa.py"
       - "preorder/index.html"
       - "scripts/organizations_browser_qa.py"
       - "scripts/clean_url_browser_qa.py"
@@ -35,3 +36,4 @@ jobs:
         run: |
           python3 scripts/organizations_browser_qa.py
           python3 scripts/clean_url_browser_qa.py
+          python3 scripts/noncharging_preorder_browser_qa.py
