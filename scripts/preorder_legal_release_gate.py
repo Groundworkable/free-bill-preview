@@ -60,7 +60,6 @@ for disclosure in (
 # The styled customer terms page is a NONPUBLIC review artifact kept out of the
 # normal website document tree. Never use it as the Stripe terms URL.
 from html.parser import HTMLParser
-import html as html_module
 
 review_html_path = root / ".github/internal-legal-review/customer-prepurchase-terms.html"
 assert review_html_path.is_file(), "Missing founder legal review artifact"
@@ -97,20 +96,20 @@ class TermsText(HTMLParser):
             self.parts.append(data)
 
 def words(value):
-    return re.sub(r"\\s+", " ", value).strip()
+    return re.sub(r"\s+", " ", value).strip()
 
 approved_customer_text = terms_review.split(
-    "\\n## Stripe-hosted acceptance and release instructions — INTERNAL ONLY", 1
+    "\n## Stripe-hosted acceptance and release instructions — INTERNAL ONLY", 1
 )[0]
 approved_rows = []
 for line in approved_customer_text.splitlines():
     line = line.strip()
-    if not line or line == "---" or re.fullmatch(r"\\|[\\s:|\\-]+\\|", line):
+    if not line or line == "---" or re.fullmatch(r"\|[\s:|\-]+\|", line):
         continue
-    line = re.sub(r"^#{1,3}\\s+|^-\\s+", "", line)
+    line = re.sub(r"^#{1,3}\s+|^-\s+", "", line)
     line = line.strip("|").replace("|", " ")
     line = line.replace("**", "")
-    line = re.sub(r"\\*([^*]+)\\*", r"\\1", line)
+    line = re.sub(r"\*([^*]+)\*", r"\1", line)
     approved_rows.append(line)
 parser = TermsText()
 parser.feed(review_html)
