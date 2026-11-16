@@ -3,6 +3,8 @@
  * Standalone Cloudflare Worker with its OWN D1 binding; never attach to the live app Worker.
  * No card details or customer email are stored. No membership entitlement is ever granted.
  */
+import { prepareFounderTestPurchaseOutbox } from "./notification_outbox_enqueue.draft.mjs";
+
 const textEncoder = new TextEncoder();
 const ageLimitSeconds = 300;
 
@@ -228,7 +230,11 @@ export default {
       }
       // D1 batch is atomic. Duplicate races fail uniqueness and are retried by Stripe.
       // Retry sees the matching existing order; conflicting purchase data always fails.
-      await env.DB.batch([
+      // Optional future founder TEST-only handoff. The default/disabled mode
+      // returns null and preserves the original two-write transaction exactly.
+      // Never create a sent/reviewed notice or an active entitlement.
+      const notice = await prepareFounderTestPurchaseOutbox(env, session, order);
+      const writes = [
         env.DB.prepare(
           "INSERT INTO stripe_processed_events(event_id, event_type, checkout_session_id) VALUES (?, ?, ?)"
         ).bind(event.id, event.type, order.id),
@@ -238,8 +244,21 @@ export default {
             stripe_price_id, term, terms_version, subtotal_cents, tax_cents, total_cents, currency, status
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         ).bind(order.id, order.paymentIntent, order.customer, order.link, order.price,
-          order.term, order.termsVersion, order.subtotal, order.tax, order.total, order.currency, order.status)
-      ]);
+          order.term, order.termsVersion, order.subtotal, order.tax, order.total, order.currency, order.status),
+      ];
+      if (notice) {
+        // The existing remote outbox trigger enforces review_pending defaults,
+        // an append-only audit journal, and unique logical notification identity.
+        // Inserting in the same D1 batch ties the notice atomically to the order.
+        writes.push(env.DB.prepare(
+          `INSERT INTO prepurchase_notification_outbox(
+             notification_key,checkout_session_id,notice_type,notice_ref,
+             recipient_hmac,template_alias
+           ) VALUES (?,?,?,?,?,?)`
+        ).bind(notice.notificationKey,notice.checkoutSessionId,notice.noticeType,
+          notice.noticeRef,notice.recipientHmac,notice.templateAlias));
+      }
+      await env.DB.batch(writes);
       return new Response("Order recorded; access remains inactive", { status: 200 });
     } catch {
       // Never acknowledge failed validation/storage as success. Stripe retries 5xx.
