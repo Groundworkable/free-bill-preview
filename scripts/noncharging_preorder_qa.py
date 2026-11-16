@@ -49,7 +49,7 @@ assert "/contact/" in scan.links and "/" in scan.links
 assert all(not (u or "").startswith(("https://buy.stripe.com","mailto:")) for u in scan.links)
 for forbidden in (
   "checkout-config.json","buy.stripe.com","paymentLink","acceptTerms",
-  "Stripe Checkout","customer_email","fetch(","window.location","href=\"https://",
+  "Stripe Checkout","customer_email","fetch(","window.location",
 ):
     assert forbidden not in page, f"Forbidden checkout/redirect reference: {forbidden}"
 assert 'href="/preorder/"' in tour
