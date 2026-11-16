@@ -31,7 +31,7 @@ public_start = privacy.index(MARKER)
 public_end = privacy.index('<div class="legal-links">', public_start)
 dialog_start = company.index('<dialog id="gwPolicyDialog"')
 embedded_start = company.index(MARKER, dialog_start)
-embedded_end = company.index("\n</section>", embedded_start) + len("\n</section>")
+embedded_end = company.index("\n</section>", embedded_start)  # preserve the outer modal section
 assert privacy.count(MARKER) == 1
 assert company.count(MARKER) == 1
 assert "Version: privacy-v1" in privacy[public_start:public_end]
