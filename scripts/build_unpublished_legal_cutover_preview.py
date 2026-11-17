@@ -44,7 +44,7 @@ def stamp(content):
     content = replacement(content, "<!DOCTYPE html>",
         "<!DOCTYPE html>\n<!-- INTERNAL PREVIEW ONLY. NOT LEGALLY EFFECTIVE. NOT DEPLOYABLE. -->")
     content = replacement(content, "<head>", '<head>\n<meta name="robots" content="noindex,nofollow,noarchive">')
-    content = replacement(content, "<body>", "<body>\n" + banner)
+    body_tags = list(re.finditer(r"<body(?:\\s[^>]*)?>", content, flags=re.IGNORECASE))\n    assert len(body_tags) == 1, "Missing or ambiguous HTML body opening tag"\n    m = body_tags[0]\n    content = content[:m.end()] + "\\n" + banner + content[m.end():]
     return content
 
 def apply_proposal(content):
