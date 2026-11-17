@@ -1,0 +1,185 @@
+name: Groundwork pre-purchase notification test gate
+
+on:
+  push:
+    branches:
+      - site/prepurchase-checkout-gate-2026-11-13
+    paths:
+      - "preorder/payment-service/**"
+      - "preorder/checkout-config.json"
+      - "scripts/preorder_legal_release_gate.py"
+      - "scripts/privacy_v2_preview_parity.test.py"
+      - "scripts/privacy_v2_two_surface_publication_dry_run.py"
+      - ".github/internal-legal-review/privacy-policy-v2.review-only.html"
+      - "preorder/PRIVACY_POLICY_V2_COMPLETE_CANDIDATE_2026-11-14.md"
+      - "preorder/PRIVACY_V2_PREPURCHASE_REVIEW_2026-11-14.md"
+      - "preorder/CUSTOMER_TERMS_RELEASE_COPY_DRAFT_2026-11-14.md"
+      - ".github/workflows/prepurchase-notification-ci.yml"
+  pull_request:
+    paths:
+      - "preorder/payment-service/**"
+      - ".github/workflows/prepurchase-notification-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: groundwork-notify-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  remote-worker-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm remote isolated Worker remains disabled and hides test-only routes
+        run: python3 preorder/payment-service/remote_fail_closed_smoke.py
+      - name: Confirm founder Worker challenges an unauthenticated GET
+        run: python3 preorder/payment-service/founder_access_unauthenticated_smoke.py
+
+  notification-safe-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact checkout SHA and branch
+        run: |
+          git rev-parse HEAD
+          git status --short
+      - name: Reject any live deploy path or credential access in review-only CI
+        run: python3 preorder/payment-service/founder_ci_no_deploy_guard.py
+      - name: Check disabled website and legal publication gates
+        run: python3 scripts/preorder_legal_release_gate.py
+      - name: Confirm internal Privacy V2 preview matches approved founder text and cannot publish
+        run: python3 scripts/privacy_v2_preview_parity.test.py
+      - name: Rehearse synchronized two-surface Privacy V2 publication without file writes
+        run: python3 scripts/privacy_v2_two_surface_publication_dry_run.py
+      - name: Enforce sandbox provider and deployable Worker isolation
+        run: python3 preorder/payment-service/provider_remote_readiness.test.py
+      - name: Enforce isolated founder Access scaffold defaults
+        run: python3 preorder/payment-service/founder_access_deployment_gate.test.py
+      - name: Enforce review-only founder runtime preservation candidate
+        run: python3 preorder/payment-service/founder_runtime_preservation_candidate.test.py
+      - name: Validate local-only version metadata redaction against synthetic hostile fixtures
+        run: python3 preorder/payment-service/founder_version_metadata_redact.py --self-test
+      - name: Validate historical founder Worker version inspector with synthetic API responses
+        run: python3 preorder/payment-service/founder_historical_version_inspect.py --self-test
+      - name: Validate founder remote read-only preflight with synthetic metadata
+        run: python3 preorder/payment-service/founder_cloudflare_readonly_preflight.py --self-test
+      - name: Check immutable purchase and journal database
+        run: python3 preorder/payment-service/schema.test.py
+      - name: Check notification ledger SQL transitions
+        run: python3 preorder/payment-service/notification_ledger.test.py
+      - name: Verify immutable, signed review evidence schema in ephemeral SQLite
+        run: python3 preorder/payment-service/notification_review_evidence.test.py
+      - name: Verify approved remote-only review evidence migration remains additive
+        run: python3 preorder/payment-service/remote_d1_review_evidence_migration.test.py
+      - name: Rehearse isolated D1 review-evidence synthetic negative tests offline
+        run: python3 preorder/payment-service/remote_d1_review_guard_synthetic.test.py
+      - name: Verify isolated notification migration parity and preservation
+        run: python3 preorder/payment-service/remote_d1_notification_migration.test.py
+      - name: Rehearse founder-approved remote D1 synthetic guard scripts in memory
+        run: python3 preorder/payment-service/remote_d1_guard_synthetic.test.py
+      - name: Check refund and dispute read-only reconciliation
+        run: python3 preorder/payment-service/refund_reconciliation.test.py
+      - name: Check proposed purchase-account claim and usable paid-access gates without any writes
+        run: node --test preorder/payment-service/purchase_claim_activation_boundary.contract.test.mjs
+      - name: Test disabled Stripe TEST buyer-proof attestation producer against app contract
+        run: node --test preorder/payment-service/purchase_attestation_producer.draft.test.mjs
+      - name: Verify reviewed activation invitation is never releasable without identity and paid access readiness
+        run: node --test preorder/payment-service/activation_invitation.release_gate.test.mjs
+      - name: Check Stripe purchase-to-recipient consistency
+        run: python3 preorder/payment-service/purchase_contact_check.test.py
+      - name: Check offline notification preflight
+        run: python3 preorder/payment-service/notification_preflight.test.py
+      - name: Check offer and free-month calendar
+        run: python3 preorder/payment-service/offer-calendar.contract.test.py
+      - name: Compare proposed late/midmonth calendars without authorizing access or renewals
+        run: python3 preorder/payment-service/delayed_access_calendar_proposal.draft.test.py
+      - name: Rehearse prepay refund policy arithmetic offline (never issue a refund)
+        run: python3 preorder/payment-service/refund_policy_quote.draft.test.py
+      - name: Check offline Stripe test refund case preflight and safety holds
+        run: python3 preorder/payment-service/refund_case_preflight.draft.test.py
+      - name: Check refund request and January 15 deadline planning only
+        run: python3 preorder/payment-service/refund_deadline_preflight.draft.test.py
+      - name: Check staged service isolation
+        run: python3 preorder/payment-service/isolation.test.py
+      - name: Check isolated sender/Stripe/Resend adapters with mocks
+        run: |
+          node --test \
+            preorder/payment-service/notification_sender.sandbox.test.mjs \
+            preorder/payment-service/notification_provider_adapters.sandbox.test.mjs
+      - name: Verify opt-in founder TEST purchase queues only pending review and never sends
+        run: node --test preorder/payment-service/notification_outbox_enqueue.draft.test.mjs
+      - name: Test founder-only Access authentication and notification dispatch gates
+        run: node --test preorder/payment-service/founder_notification_worker.draft.test.mjs
+      - name: Test independent founder review and signed provider evidence
+        run: node --test preorder/payment-service/notification_reviewer.draft.test.mjs
+      - name: Verify webhook signature and financial notifications with mocks
+        run: |
+          node --test \
+            preorder/payment-service/worker.test.mjs \
+            preorder/payment-service/payment-changes.test.mjs
+      - name: Install isolated Workerd and mock-provider dependencies
+        working-directory: preorder/payment-service
+        run: npm install --no-save --no-package-lock --ignore-scripts wrangler@4.162.0 msw@2
+      - name: Dry-run bundle founder-only runtime without deploying
+        working-directory: preorder/payment-service
+        run: |
+          npx wrangler deploy ./founder_notification_worker.draft.mjs --name groundwork-founder-notifications-isolated --dry-run --outdir ./.founder-runtime-build --compatibility-date 2026-11-15
+      - name: Test actual founder bundle identity checks and disabled operations
+        working-directory: preorder/payment-service
+        run: node founder_runtime_bundle.dry_run.test.mjs
+      - name: Verify preservation config with Wrangler version-upload dry run ONLY
+        working-directory: preorder/payment-service
+        env:
+          CLOUDFLARE_API_TOKEN: ""
+          CLOUDFLARE_ACCOUNT_ID: ""
+        run: |
+          set -euo pipefail
+          npx wrangler versions upload --config ./wrangler.founder-notification.preservation-candidate.toml --dry-run --keep-vars --strict --outdir ./.founder-version-preservation-dry-run 2>&1 | tee .founder-version-upload-dry-run.log
+          python3 founder_version_binding_output_gate.py
+          node founder_version_upload_dry_run.test.mjs
+      - name: Require exact source parity between tested and version-upload dry-run bundles
+        working-directory: preorder/payment-service
+        run: node founder_bundle_parity_gate.test.mjs
+      - name: Run signed webhook, D1 ledger and mocked Resend end-to-end Workerd test
+        working-directory: preorder/payment-service
+        run: node --test worker.local.test.mjs
+      - name: Verify native Workerd signed TEST checkout to pending-only D1 outbox and rollback
+        working-directory: preorder/payment-service
+        run: node --test notification_enqueue.workerd.local.test.mjs
+      - name: Verify native Workerd D1 review approval transaction and rollback
+        working-directory: preorder/payment-service
+        run: node --test notification_review.workerd.local.test.mjs
+      - name: Package verified founder runtime for review only — never deploy
+        working-directory: preorder/payment-service
+        run: |
+          set -eu
+          mkdir -p founder-runtime-release
+          find .founder-version-preservation-dry-run -maxdepth 1 -type f | grep -E '\.(m?js)$' > founder-runtime-release/bundle-files.txt
+          test "$(wc -l < founder-runtime-release/bundle-files.txt)" -eq 1
+          BUNDLE="$(cat founder-runtime-release/bundle-files.txt)"
+          cp "$BUNDLE" founder-runtime-release/founder_notification_worker.bundle.mjs
+          cp founder_notification_bootstrap.disabled.mjs founder-runtime-release/rollback_bootstrap.disabled.mjs
+          cp wrangler.founder-notification.preservation-candidate.toml founder-runtime-release/preservation_candidate.REVIEW_ONLY.toml
+          (
+            cd founder-runtime-release
+            sha256sum founder_notification_worker.bundle.mjs rollback_bootstrap.disabled.mjs preservation_candidate.REVIEW_ONLY.toml > SHA256SUMS
+            printf 'Groundwork founder-notifications runtime REVIEW candidate only\\n'
+            printf 'Source commit: %s\\n' "$GITHUB_SHA"
+            printf 'This ZIP is NOT a deployment authorization.\\n'
+            printf 'DO NOT replace the live 503 bootstrap, run wrangler deploy, or enable send/review/payment flags.\\n'
+            printf 'No Cloudflare routing, Access, DB, provider, or secret configuration is included.\\n'
+            printf 'Read preorder/payment-service/FOUNDER_RUNTIME_DEPLOYMENT_REVIEW_2026-11-15.md in Draft PR #17.\\n'
+          ) > founder-runtime-release/READ_BEFORE_USE.txt
+          rm founder-runtime-release/bundle-files.txt
+      - name: Publish review-only bundled release candidate as CI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: founder-runtime-review-${{ github.sha }}
+          path: preorder/payment-service/founder-runtime-release/
+          if-no-files-found: error
+          retention-days: 7

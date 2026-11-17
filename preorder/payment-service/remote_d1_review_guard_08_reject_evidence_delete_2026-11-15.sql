@@ -1,0 +1,2 @@
+DELETE FROM prepurchase_notification_review_evidence
+ WHERE notification_key='gwn1_9999999999999999999999999999999999999999999999999999999999999999';

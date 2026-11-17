@@ -1,0 +1,215 @@
+"""Run the isolated D1-compatible SQLite schema through real constraint/rollback checks."""
+import sqlite3
+from pathlib import Path
+
+path = Path(__file__).with_name("schema.sql")
+connection = sqlite3.connect(":memory:")
+connection.executescript(path.read_text(encoding="utf-8"))
+columns = [r[1] for r in connection.execute("PRAGMA table_info(prepurchase_orders)")]
+assert "status" in columns
+assert "entitlement_status" not in columns
+assert "user_id" not in columns
+
+def add(session, intent, amount, tax, total, status="paid_unfulfilled"):
+    connection.execute(
+        """INSERT INTO prepurchase_orders(
+           checkout_session_id,payment_intent_id,stripe_customer_id,payment_link_id,
+           stripe_price_id,term,terms_version,subtotal_cents,tax_cents,total_cents,currency,status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (session,intent,None,"plink_test","price_test","monthly","prepurchase-v2026-11-13",amount,tax,total,"usd",status)
+    )
+
+with connection:
+    connection.execute("INSERT INTO stripe_processed_events(event_id,event_type,checkout_session_id) VALUES(?,?,?)",
+                       ("evt_one","checkout.session.completed","cs_test_one"))
+    add("cs_test_one","pi_one",999,60,1059)
+assert connection.execute("SELECT COUNT(*) FROM prepurchase_orders").fetchone()[0] == 1
+
+for args in [
+    ("cs_test_one","pi_other",999,0,999), # duplicate session
+    ("cs_test_two","pi_one",999,0,999), # reused payment intent
+    ("cs_test_bad","pi_bad",999,40,999), # bad tax/total
+    ("cs_test_active","pi_active",999,0,999,"active_membership"), # access must not be granted
+]:
+    try:
+        with connection:
+            add(*args)
+        raise AssertionError("Invalid or duplicate purchase was accepted")
+    except sqlite3.IntegrityError:
+        pass
+
+# An atomic event/order batch must roll back when the order insert fails.
+try:
+    with connection:
+        connection.execute("INSERT INTO stripe_processed_events(event_id,event_type,checkout_session_id) VALUES(?,?,?)",
+                           ("evt_rollback","checkout.session.completed","cs_test_bad"))
+        add("cs_test_bad","pi_bad",999,40,999)
+    raise AssertionError("Expected constraint failure")
+except sqlite3.IntegrityError:
+    pass
+assert connection.execute("SELECT COUNT(*) FROM stripe_processed_events WHERE event_id='evt_rollback'").fetchone()[0] == 0
+
+assert connection.execute("SELECT status FROM prepurchase_orders").fetchone()[0] == "paid_unfulfilled"
+print("PASS: isolated schema, tax totals, duplicate order/payment IDs, no auto-activation, atomic rollback")
+
+# Refund/dispute journal only records what Stripe reports; it never activates
+# memberships, modifies a purchase amount, or issues a refund.
+assert {"event_id", "payment_intent_id", "event_type", "financial_status"} <= {
+    r[1] for r in connection.execute("PRAGMA table_info(prepurchase_payment_changes)")
+}
+def record_change(event_id, kind, object_id, intent, amount, status):
+    connection.execute(
+        """INSERT INTO prepurchase_payment_changes(
+            event_id, event_type, object_id, charge_id, payment_intent_id,
+            amount_cents, currency, financial_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (event_id, kind, object_id, "ch_test", intent, amount, "usd", status)
+    )
+
+with connection:
+    record_change("evt_refund_1", "refund.created", "re_test", "pi_one", 300, "pending")
+    record_change("evt_refund_2", "refund.updated", "re_test", "pi_one", 300, "succeeded")
+    record_change("evt_dispute_1", "charge.dispute.created", "dp_test", "pi_one", 1059, "needs_response")
+assert connection.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 3
+for row in [
+    ("evt_refund_1", "refund.updated", "re_test", "pi_one", 300, "succeeded"),
+    ("evt_bad_amount", "refund.created", "re_bad", "pi_one", -1, "pending"),
+    ("evt_bad_type", "customer.created", "cu_bad", "pi_one", 100, "created"),
+]:
+    try:
+        with connection:
+            record_change(*row)
+        raise AssertionError("Duplicate or invalid payment change was accepted")
+    except sqlite3.IntegrityError:
+        pass
+# The ledger has not amended the original immutable paid-unfulfilled order.
+assert connection.execute("SELECT status, total_cents FROM prepurchase_orders").fetchone() == ("paid_unfulfilled", 1059)
+print("PASS: append-only refund/dispute journal, duplicate protection, no entitlement changes")
+
+# The draft D1-compatible journal must reject mutation after insertion, not only
+# invalid inserts. These checks target actual SQLite trigger behavior.
+original = connection.execute(
+    "SELECT event_type,financial_status,amount_cents FROM prepurchase_payment_changes WHERE event_id=?",
+    ("evt_refund_1",)
+).fetchone()
+for mutation in (
+    "UPDATE prepurchase_payment_changes SET financial_status='succeeded' WHERE event_id='evt_refund_1'",
+    "DELETE FROM prepurchase_payment_changes WHERE event_id='evt_refund_1'",
+):
+    try:
+        with connection:
+            connection.execute(mutation)
+        raise AssertionError("Append-only journal accepted UPDATE or DELETE")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+assert connection.execute(
+    "SELECT event_type,financial_status,amount_cents FROM prepurchase_payment_changes WHERE event_id=?",
+    ("evt_refund_1",)
+).fetchone() == original
+assert connection.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 3
+print("PASS: journal UPDATE/DELETE blocked at database level; original records preserved")
+
+
+# Immutable purchase proof: payment evidence cannot be silently changed or
+# removed, including when a future refund/dispute notification is received.
+original_order = connection.execute(
+    "SELECT checkout_session_id, payment_intent_id, status, total_cents "
+    "FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'"
+).fetchone()
+for mutation in (
+    "UPDATE prepurchase_orders SET total_cents=999 WHERE checkout_session_id='cs_test_one'",
+    "UPDATE prepurchase_orders SET status='paid_unfulfilled' WHERE checkout_session_id='cs_test_one'",
+    "DELETE FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'",
+):
+    try:
+        with connection:
+            connection.execute(mutation)
+        raise AssertionError("Original payment evidence was mutable")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+assert connection.execute(
+    "SELECT checkout_session_id, payment_intent_id, status, total_cents "
+    "FROM prepurchase_orders WHERE checkout_session_id='cs_test_one'"
+).fetchone() == original_order
+print("PASS: paid purchase rows cannot be updated or deleted")
+
+
+# Founder-audited remote D1 originally contained two tables but not the journal
+# or any append-only triggers. Simulate upgrading that state without data loss.
+migration_path = Path(__file__).with_name("remote_d1_additive_migration_2026-11-14.sql")
+migration_sql = migration_path.read_text(encoding="utf-8")
+assert "DROP TABLE" not in migration_sql.upper()
+assert "ALTER TABLE" not in migration_sql.upper()
+assert "DELETE FROM" not in migration_sql.upper()
+assert "UPDATE PREPURCHASE_ORDERS SET" not in migration_sql.upper()
+assert "CREATE TABLE IF NOT EXISTS PREPURCHASE_ORDERS" not in migration_sql.upper()
+assert "CREATE TABLE IF NOT EXISTS STRIPE_PROCESSED_EVENTS" not in migration_sql.upper()
+legacy_sql = path.read_text(encoding="utf-8").split(
+    "-- Append-only journal of sandbox refund/dispute notifications."
+)[0]
+legacy = sqlite3.connect(":memory:")
+legacy.executescript(legacy_sql)
+legacy.execute(
+    "INSERT INTO stripe_processed_events(event_id,event_type,checkout_session_id) VALUES (?,?,?)",
+    ("evt_legacy", "checkout.session.completed", "cs_test_legacy")
+)
+legacy.execute(
+    """INSERT INTO prepurchase_orders(
+        checkout_session_id,payment_intent_id,stripe_customer_id,payment_link_id,
+        stripe_price_id,term,terms_version,subtotal_cents,tax_cents,total_cents,currency,status
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+    ("cs_test_legacy", "pi_legacy", None, "plink_legacy", "price_legacy",
+     "monthly", "prepurchase-v2026-11-13", 999, 60, 1059, "usd", "paid_unfulfilled")
+)
+legacy.commit()
+order_before = legacy.execute("SELECT * FROM prepurchase_orders").fetchall()
+event_before = legacy.execute("SELECT * FROM stripe_processed_events").fetchall()
+for _ in range(2):  # idempotency: rerunning must not change prior data
+    legacy.executescript(migration_sql)
+    assert legacy.execute("SELECT * FROM prepurchase_orders").fetchall() == order_before
+    assert legacy.execute("SELECT * FROM stripe_processed_events").fetchall() == event_before
+expected = {
+    ("table", "stripe_processed_events"),
+    ("table", "prepurchase_orders"),
+    ("table", "prepurchase_payment_changes"),
+    ("trigger", "prepurchase_changes_block_update"),
+    ("trigger", "prepurchase_changes_block_delete"),
+    ("trigger", "prepurchase_orders_block_update"),
+    ("trigger", "prepurchase_orders_block_delete"),
+}
+actual = set(legacy.execute(
+    "SELECT type,name FROM sqlite_master WHERE type IN ('table','trigger')"
+).fetchall())
+assert expected <= actual
+for change in (
+    "UPDATE prepurchase_orders SET total_cents=999 WHERE checkout_session_id='cs_test_legacy'",
+    "DELETE FROM prepurchase_orders WHERE checkout_session_id='cs_test_legacy'",
+):
+    try:
+        with legacy:
+            legacy.execute(change)
+        raise AssertionError("Existing order was mutable after migration")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+legacy.execute(
+    """INSERT INTO prepurchase_payment_changes(
+       event_id,event_type,object_id,charge_id,payment_intent_id,
+       amount_cents,currency,financial_status
+    ) VALUES (?,?,?,?,?,?,?,?)""",
+    ("evt_refund_legacy", "refund.created", "re_legacy", "ch_legacy",
+     "pi_legacy", 999, "usd", "pending")
+)
+legacy.commit()
+for change in (
+    "UPDATE prepurchase_payment_changes SET amount_cents=5 WHERE event_id='evt_refund_legacy'",
+    "DELETE FROM prepurchase_payment_changes WHERE event_id='evt_refund_legacy'",
+):
+    try:
+        with legacy:
+            legacy.execute(change)
+        raise AssertionError("Refund journal was mutable after migration")
+    except sqlite3.IntegrityError as error:
+        assert "append-only" in str(error)
+assert legacy.execute("SELECT COUNT(*) FROM prepurchase_payment_changes").fetchone()[0] == 1
+assert legacy.execute("SELECT COUNT(*) FROM prepurchase_orders").fetchone()[0] == 1
+print("PASS: audited two-table D1 upgrades additively; existing rows preserved; reruns safe")

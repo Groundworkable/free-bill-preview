@@ -1,0 +1,2 @@
+DELETE FROM prepurchase_notification_outbox
+WHERE notification_key='gwn1_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';

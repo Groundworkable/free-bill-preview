@@ -1,0 +1,32 @@
+# DRAFT / NOT DEPLOYED: standalone founder-only notification Worker.
+# This is NOT the existing groundwork-payment-sandbox-isolated payment Worker.
+#
+# Safe preparation config only. No Worker URL, custom domain, route or preview
+# is exposed. Access-protected routing is a SEPARATELY APPROVED release gate.
+#
+# Cloudflare Access requirement: protect ONLY this new Worker (not all Workers),
+# select production AND previews, and allow only the exact verified founder
+# identity. Bind FOUNDER_ACCESS_AUD after independently confirming Access app.
+#
+# Do not put Stripe/Resend/API/HMAC secrets or user email into this file.
+name = "groundwork-founder-notifications-isolated"
+main = "./founder_notification_worker.draft.mjs"
+compatibility_date = "2026-11-15"
+workers_dev = false
+preview_urls = false
+
+[vars]
+FOUNDER_NOTIFICATION_ADMIN_MODE = "disabled"
+FOUNDER_NOTIFICATION_REVIEW_ENABLED = "false"
+FOUNDER_NOTIFICATION_DISPATCH_ENABLED = "false"
+NOTIFICATION_SEND_MODE = "disabled"
+NOTIFICATION_OPERATOR_RELEASE = "false"
+NOTIFICATION_TEMPLATES_APPROVED = "false"
+PAYMENTS_MODE = "disabled"
+TERMS_APPROVED = "false"
+TERMS_VERSION = "UNAPPROVED"
+
+# Intentionally no [[d1_databases]] binding: attach ONLY the approved isolated
+# D1 after review. Default disabled Admin mode rejects even status queries.
+# Intentionally no FOUNDER_ACCESS_AUD, FOUNDER_ACCESS_EMAIL, or secrets.
+# Do NOT deploy this file until separately approved.

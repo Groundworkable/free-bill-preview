@@ -1,0 +1,6 @@
+INSERT INTO prepurchase_notification_review_evidence
+ (notification_key,checkout_session_id,notice_type,notice_ref,recipient_hmac,
+ reviewer_hmac,provider_proof_hmac,reviewed_at,authorization_seal)
+VALUES
+ ('gwn1_9999999999999999999999999999999999999999999999999999999999999999','cs_test_D1ONLY_GUARD_20261115','purchase_confirmation','SYNTHETIC_IDENTITY_MISMATCH',
+ '0000000000000000000000000000000000000000000000000000000000000000','aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb','2026-11-15T12:00:00.000Z','cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc');
