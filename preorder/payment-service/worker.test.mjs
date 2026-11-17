@@ -103,6 +103,32 @@ test("pending payment, live events and invalid price do not create orders",async
  assert.equal(invalid.response.status,503);
  assert.equal(invalid.writes.length,0);
 });
+test("a real-world standalone TEST checkout shape cannot become an approved Groundwork preorder",async()=>{
+ // Regression based on the founder's isolated November 17 sandbox checkout:
+ // one-time price $9.99 + 90 cents tax, paid through a standalone session
+ // without a Groundwork Payment Link or Terms checkbox. This does NOT
+ // contain provider IDs, card details, buyer identity or production secrets.
+ const standalone={
+  ...fixture(1089,90),id:"cs_test_StandaloneGuard123",
+  payment_intent:"pi_StandaloneGuard123",
+  payment_link:null,consent:null
+ };
+ assert.throws(
+  ()=>verifyPaidPurchase(standalone,items,offers),
+  /Unrecognized Stripe payment link/
+ );
+ const event={
+  id:"evt_StandalonePaidGuard123",livemode:false,
+  type:"checkout.session.completed",data:{object:standalone}
+ };
+ const {response,writes}=await call(event);
+ assert.equal(response.status,503);
+ assert.equal(writes.length,0);
+ assert.match(await response.text(),/verification failed/);
+ // A successful standalone Stripe TEST charge/refund is useful processor
+ // evidence but is NOT proof of Terms consent or account entitlement.
+});
+
 test("unknown routes and unsigned requests are rejected",async()=>{
  const res=await worker.fetch(new Request("https://test.example/nope"),{});
  assert.equal(res.status,404);
