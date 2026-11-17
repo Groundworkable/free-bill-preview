@@ -1,5 +1,17 @@
 # Groundwork isolated sandbox payment receiver
 
+## NOVEMBER 17 FINAL STRIPE / WEBHOOK REPLAY VERIFICATION — most recent checkpoint
+
+**Actual Stripe TEST:** Founder completed the temporary recognized Stripe Payment Link checkout with one $9.99 one-time Price + $0.90 tax = $10.89, recorded `consent.terms_of_service=accepted` and matching disposable Payment Link. Subsequently a full $10.89 **TEST refund** was created and independently re-read `status=succeeded`. The disposable link automatically became inactive after 1/1 completions. Two original Groundwork TEST Payment Links remain **inactive**. Public Terms URL was configured in Stripe and a separate unpaid TEST Session with `terms_of_service=required` succeeded. This supersedes historical claims below that public Terms URL, genuine checkout or consent is missing.
+
+**Actual Stripe TEST events read:** Stripe's events list includes `checkout.session.completed`, `payment_intent.succeeded`, `refund.created`, `refund.updated` and `charge.refund.updated` for the recognized-link checkout/refund, all TEST. These are provider evidence, **not** original webhook deliveries signed by Stripe to the Groundwork Worker.
+
+**New locally signed D1 replay:** `provider_observed_replay.workerd.local.test.mjs` uses provider-observed field shapes and totals but **synthetic IDs and local fake signatures**, testing refund-before-purchase ordering, immutable financial journal, valid `paid_unfulfilled` ledger, duplicate delivery and rejection of unrecognized link, missing Terms, wrong tax and live-mode. GitHub Actions `44180284704`: remote fail-closed and notification-safe-tests **BOTH PASS**. No secrets, emails, real payments, membership grants, Cloudflare deployments or D1 remote writes.
+
+**Still outstanding:** A signed Stripe TEST event delivered to the isolated Cloudflare payment Worker and independently verified in its *remote sandbox D1*, using an authorized original allowlisted TEST Payment Link (or a separately audited sandbox-only allowlist change). Original TEST links remain off; payment Worker is disabled; no remote webhook enabled. Separate purchaser-to-app pending entitlement testing remains isolated and draft-only. Do not confuse passing local replay with live webhook / customer membership integration. **No LIVE payment authorization has been given.**
+
+---
+
 ## NOVEMBER 17 VERIFIED STATUS — supersedes older prepublication/Stripe TEST inventory below
 
 **LEGAL DOCUMENTS PUBLISHED:** Founder expressly authorized and GitHub PR #22 merged. External GitHub Actions independent HTTPS probe verified live `https://groundworkbyable.online/privacy.html` (Privacy V2, effective November 17, 2026) and `https://groundworkbyable.online/prepurchase-terms/` (seven approved Terms, effective November 17, 2026). The Bloom is preserved; GA4 original measurement ID was founder-verified, and its consent-controlled public script is deployed. No live checkout was enabled.
