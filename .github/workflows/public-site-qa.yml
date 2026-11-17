@@ -10,6 +10,7 @@ on:
       - "robots.txt"
       - "scripts/public_site_qa.py"
       - "scripts/legal_publication_candidate_dry_run.py"
+      - "scripts/legal_publication_full_rehearsal.py"
       - "scripts/organizations_browser_qa.py"
       - "scripts/clean_url_browser_qa.py"
       - ".github/workflows/public-site-qa.yml"
@@ -22,6 +23,7 @@ jobs:
         run: |
           python3 scripts/public_site_qa.py
           python3 scripts/legal_publication_candidate_dry_run.py
+          python3 scripts/legal_publication_full_rehearsal.py
   browser-validate:
     runs-on: ubuntu-latest
     steps:
