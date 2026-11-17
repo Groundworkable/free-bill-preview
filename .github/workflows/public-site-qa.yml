@@ -29,6 +29,13 @@ jobs:
           python3 scripts/legal_publication_full_rehearsal.py
           python3 scripts/build_unpublished_legal_cutover_preview.py
           python3 scripts/live_analytics_probe.readonly.py
+      - name: Save PRIVATE REVIEW-ONLY legal cutover preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: groundwork-LEGAL-CUTOVER-PREVIEW-NOT-EFFECTIVE
+          path: groundwork-legal-cutover-PREVIEW-ONLY/
+          if-no-files-found: error
+          retention-days: 14
   browser-validate:
     runs-on: ubuntu-latest
     steps:
