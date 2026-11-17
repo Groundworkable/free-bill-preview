@@ -3,7 +3,7 @@
 Runs the existing read-only legal rehearsal and reuses its validated
 publication transforms. No GitHub/Stripe/API/deployment writes. Preview files
 are marked NOINDEX and PREVIEW ONLY; all dates are synthetic.
-Two GA sentences are *proposals only* until separately approved by the owner.
+Preserves the 13 founder-approved Privacy V2 sections, including GA4 wording.
 """
 import json
 import re
@@ -24,22 +24,12 @@ assert "SYNTHETIC" in date and "NOT-EFFECTIVE" in date
 assert g["TERMS_VERSION"] == "prepurchase-terms-v1"
 terms_approved = g["approved_terms_sections"]
 
-# These are an UNAPPROVED, narrowly scoped accuracy proposal, never an edit to
-# the original 13 approved sections. Every change is independently counted.
-ga_proposal = (
-    (
-        "The public site currently uses Google Analytics.",
-        "The public site may use Google Analytics when it is enabled.",
-    ),
-    (
-        "The public site currently uses Google Analytics to understand general visitor activity.",
-        "When enabled, Google Analytics may be used to understand general visitor activity.",
-    ),
-)
-original_policy = (ROOT / "privacy.html").read_text(encoding="utf-8")
-assert all(original_policy.count(old) == 1 for old, _ in ga_proposal)
+# Historical GA4 is now staged behind consent in the review branch.
+# The approved Privacy V2 wording is unchanged in this offline preview.
+assert (ROOT / "assets/js/ga4-consent.js").is_file()
+assert "G-KZSJ1W4PXH" in (ROOT / "assets/js/ga4-consent.js").read_text(encoding="utf-8")
 
-banner = '<div role="status" style="position:relative;background:#f4e5bd;color:#493820;padding:16px;text-align:center;font:700 16px Arial">OFFLINE LEGAL CUTOVER PREVIEW — NOT PUBLISHED OR EFFECTIVE — PROPOSED GA WORDING IS NOT APPROVED</div>'
+banner = '<div role="status" style="position:relative;background:#f4e5bd;color:#493820;padding:16px;text-align:center;font:700 16px Arial">OFFLINE LEGAL CUTOVER PREVIEW — NOT PUBLISHED OR EFFECTIVE</div>'
 def stamp(content):
     content = replacement(content, "<!DOCTYPE html>",
         "<!DOCTYPE html>\n<!-- INTERNAL PREVIEW ONLY. NOT LEGALLY EFFECTIVE. NOT DEPLOYABLE. -->")
@@ -50,14 +40,10 @@ def stamp(content):
     content = content[:m.end()] + "\n" + banner + content[m.end():]
     return content
 
-def apply_proposal(content):
-    for old, new in ga_proposal:
-        content = replacement(content, old, new)
-    return content
-
-candidate_policy = stamp(apply_proposal(g["public_policy"]))
+candidate_policy = stamp(g["public_policy"])
 assert candidate_policy.count('<section class="legal-section">') == 13
-assert "currently uses Google Analytics" not in candidate_policy
+assert "The public site currently uses Google Analytics." in candidate_policy
+assert '<script defer src="/assets/js/ga4-consent.js"></script>' in candidate_policy
 
 routes = {}
 for route in g["COMPANY_PATHS"]:
@@ -65,12 +51,13 @@ for route in g["COMPANY_PATHS"]:
     final = replacement(original, "Effective date: pending authorized publication", "Effective date: " + date)
     for old, new in g["PUBLIC_LABEL_CHANGES"]:
         final = replacement(final, old, new)
-    final = stamp(apply_proposal(final))
+    final = stamp(final)
     assert final.count('<section class="legal-section">') == 13, route
     assert "privacy-v1" not in final.lower(), route
     assert "PUBLICATION REVIEW" not in final, route
     assert "pending authorized publication" not in final, route
-    assert "currently uses Google Analytics" not in final, route
+    assert "The public site currently uses Google Analytics." in final, route
+    assert '<script defer src="/assets/js/ga4-consent.js"></script>' in final, route
     routes[route] = final
 routes["privacy.html"] = candidate_policy
 
@@ -99,8 +86,8 @@ manifest = {
     "terms_sections": 7,
     "company_route_copies": len(g["COMPANY_PATHS"]),
     "preview_file_count": len(routes),
-    "approved_legal_sections_unchanged_except_unapproved_ga_proposal": True,
-    "ga_proposal_review_required": True,
+    "approved_legal_sections_unchanged": True,
+    "historical_ga4_staged_with_consent": True,
     "public_terms_route_published": False,
     "stripe_test_link_consent_enabled": False,
     "live_payments_enabled": False,
@@ -112,13 +99,13 @@ manifest = {
     "GROUNDWORK LEGAL CUTOVER — OFFLINE REVIEW ONLY\n\n"
     "Every HTML page is labeled NOT PUBLISHED OR EFFECTIVE and has noindex.\n"
     "The date is synthetic; NEVER upload these files to production.\n"
-    "Privacy V2's two Google Analytics sentences have UNAPPROVED hypothetical\n"
-    "conditional wording in this preview; the current approved sources are untouched.\n"
+    "All 13 approved Privacy V2 sections are unchanged, including Google Analytics.\n"
+    "Original GA4 property is staged with opt-in controls in the review branch.\n"
     "All seven approved Pre-Purchase Terms sections are unchanged.\n"
     "Publishing requires separate authorization, true date, legal/operational\n"
     "review and updated final QA; Stripe and memberships remain disabled.\n",
     encoding="utf-8")
 assert all('name="robots" content="noindex,nofollow,noarchive"' in p for p in routes.values())
 print("PASS: preview-only legal release bundle created for 10 Company pages, standalone Privacy V2, and canonical Terms")
-print("PASS: 13 privacy sections on all pages; seven unchanged Terms sections; two GA wording edits proposed only")
+print("PASS: 13 approved Privacy sections unchanged, staged GA4 opt-in, seven Terms unchanged")
 print("NOT LIVE: no deployed URL, owner authorization, actual effective date, checkout or membership")
