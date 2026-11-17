@@ -79,3 +79,34 @@ In a **controlled, separately authorized TEST-only** exercise, use one independe
 - Existing Resend refund-initiated message remains **draft and unpublished**; other transactional templates likewise disabled.
 
 **No changes by this document** to hosted customer site, Stripe Payment Links, tax registration, Cloudflare/D1, Supabase, Resend, refunds, membership, case data, legal terms or existing CI. This handoff is **not founder approval** to operate a service.
+
+
+---
+
+## November 17, 2026 — founder-confirmed evidence and sole-operator TEST rehearsal (NO LIVE SERVICE)
+
+This section **supersedes earlier status-only claims in this runbook** without changing the founder-approved contractual wording or asserting that a real charge/refund exists.
+
+### New evidence, not a fresh approval request
+
+- SCDOR approval letter **dated November 16, 2026** confirms Able Systems LLC's Retail License application was approved. The founder provided the letter November 17. The founder previously applied and paid November 13: **do not file or pay again**. License issuance does not itself verify the correct Stripe LIVE tax registration, all filing/local-license obligations, or each buyer jurisdiction.
+- The founder independently **verified that billing@groundworkbyable.com and support@groundworkbyable.com receive messages** on November 17, with screenshots of successful routing. Those addresses use a different inbound mailbox path than Resend receiving, which is currently disabled. Do **not** describe the email addresses as nonfunctional merely because Resend receiving is disabled. Actual response monitoring, recordkeeping, fraud/bounce handling and refunds are separate matters.
+- Existing Stripe TEST-mode Payment Links remain inactive; **no actual verified test Checkout Session or test refund** has yet been demonstrated. Resend transactional templates remain in DRAFT; no merchant payment confirmation or refund email was sent.
+- Founder confirms previous **customer wording** approval. **Do not repeat section-by-section content approval.** Technical/operational readiness, legal compliance and exact public release authorization are separate gates.
+
+### Smallest workable manual support and refund process for one founder (pre-live rehearsal)
+
+An elaborate case-management SaaS, second paid support worker, or new subscription is **not required solely to run a supervised Stripe TEST refund rehearsal**. The founder can use a securely stored *private* case ledger and Stripe Dashboard/verified API readback, provided a durable audit trail and customer-response coverage are established. Never store customer identities, Stripe customer IDs, payment links, case records or email content in this GitHub repository, CI output, or public-facing analytics.
+
+1. **Intake:** Record a fictional TEST inquiry through the existing working billing address. Capture privately the received timestamp/timezone, private case ID, issue/request, and owner. Record which mailbox was checked and when. Confirm the reply can be received and sent; use TEST identifiers, not real sensitive card data.
+2. **Provider lookup:** In the **TEST account only**, independently retrieve the exact Stripe Checkout Session, PaymentIntent/charge, price, tax, paid/refunded/disputed state, customer contact and recorded terms-consent state; reconcile to the same isolated payment D1 order/notification evidence. A screenshot, redirect URL, customer-supplied ID, or locally forged event is not provider confirmation. Confirm the correct Stripe environment and owner account.
+3. **Verify requester:** Contact the purchase's verified channel without disclosing confidential transaction information to an unverified requester. Escalate mismatched/forwarded emails, unclaimed invitations, duplicate IDs and charge disputes. A matching typed email string is insufficient proof of account entitlement.
+4. **Entitlement/clock check:** Determine whether actual usable purchased paid access began for this buyer. Do not treat a receipt, founder preview, sign-up, sent invitation or scheduled date as evidence of activation. Until usable paid access, the founder-approved full pre-activation refund rule controls.
+5. **Calculate and independently re-check:** Compare request date with the applicable approved Terms version and applicable law, full amount, tax paid/refundable, historical refunds, chargebacks and other constraints. For a sole operator, record an explicit **second, separated self-check** of the Stripe object, amount and tax before clicking Refund; do not falsely claim an independent second person approved it.
+6. **Authorize/test:** Only after a separately scoped **TEST-only** founder authorization, initiate a **test-mode** refund of an authenticated real Stripe TEST charge from the Stripe Dashboard or approved API action. Never call Stripe LIVE, activate links, alter tax settings, change D1 Production, deploy Workers or send real customer mail under this runbook.
+7. **Evidence and reconciliation:** Record provider-returned refund ID/status/amount, test mode, initiation timestamp, underlying payment, any tax effect and internal case status in private records. Re-read provider state rather than relying on an optimistic "success" page. **initiated / pending / succeeded are not interchangeable**. Do not promise bank receipt until confirmed; test mode never moves real funds.
+8. **Closure and failure paths:** Record the response/closure timestamps, whether the request met the applicable five-business-day initiation obligation, and follow-up. Rehearse a wrong account, refund already issued, missing order/consent, tax mismatch, insufficient-balance/pending refund, disputed payment, and undelivered January 15 cohort **without initiating any other refund**. Record each negative result without leaking identifiers.
+
+**Manual ledger fields (keep only in private authorized storage):** case reference; channel; UTC received-at and verified-at; request category; privacy-safe purchaser contact reference; authenticated Stripe object references; test/live distinction; paid amount/tax; terms version; actual service-start evidence; policy basis; requested remedy; operator check and second-check time; authorized action; Stripe refund ID/status/timestamps; customer response; follow-up; closed-at.
+
+**Current readiness:** This is an actionable **TEST rehearsal plan**, not proof it has run. Support mailboxes and retail-license approval are verified by the founder; refund execution and customer entitlements are **not** demonstrated. Real-money checkout remains a separate NO-GO pending final public terms/consent, verified fulfillment/refund operations, tax setup review and explicit founder launch approval.
