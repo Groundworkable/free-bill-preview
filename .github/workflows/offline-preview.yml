@@ -43,8 +43,8 @@ jobs:
               'Email drafts need to be reviewed and sent by the visitor.\n'
               'This is a preview, not proof that the live website has passed launch checks.\n',
               encoding='utf-8')
-          assert (root/'media/bloom-orbit.mp4').stat().st_size > 1_000_000
-          assert (root/'media/bloom-poster.jpg').exists()
+          assert (root/'media/groundwork-bloom-loop.mp4').stat().st_size > 1_000_000
+          assert (root/'media/groundwork-bloom-backdrop.png').exists()
           PY
       - uses: actions/upload-artifact@v4
         with:
@@ -60,10 +60,10 @@ jobs:
           import base64
           root=Path.cwd()
           text=(root/'index.html').read_text(encoding='utf-8')
-          video=base64.b64encode((root/'media/bloom-orbit.mp4').read_bytes()).decode('ascii')
-          poster=base64.b64encode((root/'media/bloom-poster.jpg').read_bytes()).decode('ascii')
-          text=text.replace('./media/bloom-orbit.mp4','data:video/mp4;base64,'+video)
-          text=text.replace('./media/bloom-poster.jpg','data:image/jpeg;base64,'+poster)
+          video=base64.b64encode((root/'media/groundwork-bloom-loop.mp4').read_bytes()).decode('ascii')
+          poster=base64.b64encode((root/'media/groundwork-bloom-backdrop.png').read_bytes()).decode('ascii')
+          text=text.replace('./media/groundwork-bloom-loop.mp4','data:video/mp4;base64,'+video)
+          text=text.replace('./media/groundwork-bloom-backdrop.png','data:image/png;base64,'+poster)
           text=text.replace('<title>','<title>[OFFLINE PREVIEW] ',1)
           notice='<div style="position:fixed;z-index:99999;top:0;left:0;right:0;background:#d9b45b;color:#06362b;padding:7px;text-align:center;font:700 12px Arial,sans-serif">OFFLINE PREVIEW — NOT THE LIVE SITE</div>'
           text=text.replace('<body>', '<body>'+notice,1)
@@ -73,7 +73,7 @@ jobs:
           (out/'README.txt').write_text(
               'Open the HTML locally to review the approved entrance and Bloom. Other pages require the complete review copy. This does not activate customer accounts, billing or a live deployment.\n',
               encoding='utf-8')
-          assert 'data:video/mp4;base64,' in text and 'data:image/jpeg;base64,' in text
+          assert 'data:video/mp4;base64,' in text and 'data:image/png;base64,' in text
           assert '<style>' in text
           PY
       - uses: actions/upload-artifact@v4

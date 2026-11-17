@@ -134,16 +134,20 @@ for js in preorder_page.script_body:
             f.write(js)
             f.flush()
             subprocess.run(["node", "--check", f.name], check=True)
-assert "Life doesn't" in (ROOT/"index.html").read_text()
-assert "bloom-orbit.mp4" in (ROOT/"index.html").read_text()
+home = (ROOT/"index.html").read_text(encoding="utf-8")
+assert "Life doesn’t" in home
+assert 'data-nav="/tour/"' in home and 'data-nav="/free-tools/"' in home and 'data-nav="/organizations/"' in home
+assert "./media/groundwork-bloom-loop.mp4" in home
+assert "./media/groundwork-bloom-backdrop.png" in home
+assert 'autoplay muted loop playsinline' in home
 free_page = Page()
 free_page.feed((ROOT/"free-tools.html").read_text(encoding="utf-8"))
 assert {"tab-rate", "tab-purchase", "tab-subscription", "tab-variable"} <= free_page.ids
-assert (ROOT/"media/bloom-orbit.mp4").read_bytes()[4:8] == b"ftyp"
-assert (ROOT/"media/bloom-poster.jpg").read_bytes()[:2] == bytes([255, 216])
-assert (ROOT/"media/bloom-orbit.mp4").stat().st_size > 1_000_000
+assert (ROOT/"media/groundwork-bloom-loop.mp4").read_bytes()[4:8] == b"ftyp"
+assert (ROOT/"media/groundwork-bloom-backdrop.png").read_bytes()[:8] == bytes([137, 80, 78, 71, 13, 10, 26, 10])
+assert (ROOT/"media/groundwork-bloom-loop.mp4").stat().st_size > 1_000_000
 assert "groundworkbyable.online" in (ROOT/"CNAME").read_text()
 for path in ("privacy.html", "beta-terms.html"):
     assert (ROOT/path).exists(), "Preserve published policy: "+path
 ET.parse(ROOT/"sitemap.xml")
-print("PASS: all nine pages, original Bloom video/poster, four calculators, links, JS syntax, current pricing and published legal sources")
+print("PASS: all nine pages, approved new Bloom video/backdrop, four calculators, links, JS syntax, current pricing and published legal sources")
