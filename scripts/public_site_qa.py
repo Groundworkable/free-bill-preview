@@ -123,3 +123,47 @@ for path in ("privacy.html", "beta-terms.html"):
     assert (ROOT/path).exists(), "Preserve published policy: "+path
 ET.parse(ROOT/"sitemap.xml")
 print("PASS: all nine pages, approved new Bloom video/backdrop, four calculators, links, JS syntax, current pricing and published legal sources")
+
+
+# Legal publication mirrors must match the canonical Company reader. This catches
+# routes with independently stored copies when a future approved policy is cut over.
+import re as _legal_re
+_LEGAL_MARKER = '<div class="kicker">Groundwork · Privacy</div>'
+def _legal_segment(body, start, end):
+    assert body.count(start) == 1, f"Missing/duplicate legal marker: {start}"
+    a = body.index(start)
+    b = body.index(end, a + len(start))
+    return body[a:b+len(end)]
+
+_LEGAL_CLONES = [
+    "contact/index.html", "contact.html", "about/index.html", "about.html",
+    "faqs/index.html", "faqs.html", "legal/index.html", "legal.html",
+    "careers/index.html", "careers.html",
+]
+_LEGAL_PARTS = [
+    ('<p hidden="">That depends on whether you are using the public tools', '</p>'),
+    ('<div class="trust-v22" id="trustV22">', '<p aria-live="polite" class="trust-feedback" id="trustCopyFeedback" role="status"></p>'),
+    ('const trustData=', "; let trustActive='privacy';"),
+    ("if(key==='privacy'){source.textContent=", "}"),
+    ('<p class="gw-policy-source">', '</p>'),
+    (_LEGAL_MARKER, '\n\n </div></dialog>'),
+    ('<a href="https://groundworkbyable.online/privacy.html" rel="noopener noreferrer" target="_blank">', '</a>'),
+]
+_reader = (ROOT / "contact/index.html").read_text(encoding="utf-8")
+_public = (ROOT / "privacy.html").read_text(encoding="utf-8")
+_standalone = _legal_segment(_public, _LEGAL_MARKER, '<div class="legal-links">').split('<div class="legal-links">')[0]
+_embedded = _legal_segment(_reader, _LEGAL_MARKER, '\n\n </div></dialog>').split('\n\n </div></dialog>')[0]
+_normalize = lambda s: _legal_re.sub(r"\s+", " ", s).strip()
+assert _normalize(_standalone) == _normalize(_embedded), "Standalone Privacy and Company reader differ"
+assert _embedded.count('<section class="legal-section">') == 13
+for _clone_path in _LEGAL_CLONES:
+    _html = (ROOT / _clone_path).read_text(encoding="utf-8")
+    assert "privacy-v1" not in _html.lower(), f"Stale Privacy V1 label in {_clone_path}"
+    for _start, _end in _LEGAL_PARTS:
+        assert _legal_segment(_html, _start, _end) == _legal_segment(_reader, _start, _end), (
+            f"Privacy reader drift in {_clone_path}: {_start}"
+        )
+    if "pending authorized publication" in _public:
+        assert "PRIVACY V2 · PUBLICATION REVIEW" in _html, f"Premature effective claim in {_clone_path}"
+        assert "Privacy V2 is prepared but not yet effective" in _html, f"Missing prepublication notice in {_clone_path}"
+print("PASS: all 10 Company route mirrors match the 13-section Privacy reader and approved standalone policy")
