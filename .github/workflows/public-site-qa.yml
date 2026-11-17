@@ -12,6 +12,7 @@ on:
       - "scripts/legal_publication_candidate_dry_run.py"
       - "scripts/legal_publication_full_rehearsal.py"
       - "scripts/build_unpublished_legal_cutover_preview.py"
+      - "scripts/assemble_authorized_legal_publication.py"
       - "scripts/live_analytics_probe.readonly.py"
       - "scripts/live_analytics_browser_probe.readonly.py"
       - "scripts/ga4_consent_browser_qa.py"
@@ -29,6 +30,7 @@ jobs:
           python3 scripts/legal_publication_candidate_dry_run.py
           python3 scripts/legal_publication_full_rehearsal.py
           python3 scripts/build_unpublished_legal_cutover_preview.py
+          python3 scripts/assemble_authorized_legal_publication.py --dry-run
           python3 scripts/live_analytics_probe.readonly.py
       - name: Save PRIVATE REVIEW-ONLY legal cutover preview artifact
         uses: actions/upload-artifact@v4
