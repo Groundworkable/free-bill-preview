@@ -40,7 +40,7 @@ assert "https://groundworkbyable.online/prepurchase-terms/" in terms
 assert 'name="robots" content="index,follow"' in terms
 assert "Pre-purchase checkout remains unavailable" in terms
 assert "/prepurchase-terms/" in privacy
-assert sha(extract(privacy,'<section class="legal-section">','<div class="legal-links">'))==PRIVACY_HASH,"Approved Privacy sections differ"
+assert sha(privacy[privacy.index('<section class="legal-section">'):privacy.rindex("</section>")+len("</section>")])==PRIVACY_HASH,"Approved Privacy sections differ"
 assert sha(extract(terms,'<h2>1. What you are buying</h2>','</article>'))==TERMS_HASH,"Approved Terms sections differ"
 assert all(s.lower() not in terms.lower() for s in ("prepublication","unpublished","noindex"))
 public_article=normalized(extract(privacy,POLICY_MARKER,'<div class="legal-links">'))
