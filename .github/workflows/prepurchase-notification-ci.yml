@@ -148,6 +148,9 @@ jobs:
       - name: Run signed webhook, D1 ledger and mocked Resend end-to-end Workerd test
         working-directory: preorder/payment-service
         run: node --test worker.local.test.mjs
+      - name: Replay real-provider-shaped TEST link and refund events in isolated Workerd D1
+        working-directory: preorder/payment-service
+        run: node --test provider_observed_replay.workerd.local.test.mjs
       - name: Verify native Workerd signed TEST checkout to pending-only D1 outbox and rollback
         working-directory: preorder/payment-service
         run: node --test notification_enqueue.workerd.local.test.mjs
