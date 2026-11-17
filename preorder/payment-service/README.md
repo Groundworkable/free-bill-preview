@@ -1,5 +1,19 @@
 # Groundwork isolated sandbox payment receiver
 
+## NOVEMBER 17 VERIFIED STATUS — supersedes older prepublication/Stripe TEST inventory below
+
+**LEGAL DOCUMENTS PUBLISHED:** Founder expressly authorized and GitHub PR #22 merged. External GitHub Actions independent HTTPS probe verified live `https://groundworkbyable.online/privacy.html` (Privacy V2, effective November 17, 2026) and `https://groundworkbyable.online/prepurchase-terms/` (seven approved Terms, effective November 17, 2026). The Bloom is preserved; GA4 original measurement ID was founder-verified, and its consent-controlled public script is deployed. No live checkout was enabled.
+
+**STRIPE TEST TERMS CHECKBOXES CONFIGURED:** Existing $9.99 and $96 TEST Payment Links now both return `consent_collection.terms_of_service='required'` with approved November 17 Terms acceptance message. Their original one-time Prices, Stripe Tax and inactive state were independently re-read and preserved. Stripe LIVE unaffected. Do not recreate or reconfigure those links merely because older sections below say `consent_collection=null`.
+
+**ONE CONCRETE BLOCKER, INDEPENDENTLY REPRODUCED:** A brand-new Stripe TEST Checkout Session with `consent_collection.terms_of_service='required'` was **rejected by Stripe before creation**: `You cannot collect consent to your terms of service unless a URL is set in the Stripe Dashboard.` Stripe directs the owner to `https://dashboard.stripe.com/settings/business-details?edit=public` to set the public Terms of Service URL. Set it to **`https://groundworkbyable.online/prepurchase-terms/`** (not the previous review URL). The connected Stripe API does not expose the public-business-details Terms URL write operation. The user must do this once in the Dashboard; do not claim it has been completed. Afterwards, issue a new *unpaid, TEST-only* consent-session validation request and inspect that Terms are required. Don't enable Payment Links or collect money until the separately authorized end-to-end TEST gate.
+
+**REAL STRIPE TEST EVIDENCE:** The standalone prior $9.99 + $0.90 tax = $10.89 Stripe TEST Checkout and complete $10.89 TEST refund succeeded, but had **no recognized Groundwork Payment Link or Terms consent**; it must not count as a customer preorder. The isolated worker's verifier already rejects missing accepted Terms, unexpected links, and improper totals. Its genuine signed webhook+remote D1 integration and paid account activation are not yet demonstrated.
+
+**PRODUCTION GUARDS:** Payment Links inactive; TEST webhook disabled; payment Worker restricted; LIVE customer charging, member activation and customer emailing disabled; PR #17 and app PR #38 remain DRAFT/UNMERGED. No latest Stripe configuration performed on LIVE. No need to re-request the confirmed SC Retail License, support inbox tests, approved wording, or GA4 Measurement ID.
+
+---
+
 ## CURRENT STATUS — November 16, 2026 (supersedes historical setup steps below)
 
 **Working branch:** `site/prepurchase-checkout-gate-2026-11-13`, Draft [PR #17](https://github.com/Groundworkable/free-bill-preview/pull/17). **No live paid checkout, customer email sending, review/dispatch permission, or membership activation is authorized.** The rest of this README records a November 13 setup sequence and MUST NOT be used as a fresh to-do list. Refer to `FOUNDER_NEXT_RELEASE_GATE_2026-11-15.md` for subsequent source-backed checkpoints; prioritize this status where older text conflicts.
