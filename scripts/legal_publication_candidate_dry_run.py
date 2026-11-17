@@ -43,10 +43,19 @@ def policy_article(text, embedded):
 
 policy = PRIVACY.read_text(encoding="utf-8")
 terms = TERMS.read_text(encoding="utf-8")
-config = json.loads(CHECKOUT.read_text(encoding="utf-8"))
-assert not config["enabled"] and not config["termsApproved"]
-assert config["termsUrl"] is None and config["refundPolicyUrl"] is None
-assert all(offer["paymentLink"] is None for offer in config["offers"].values())
+# PR #20 is intentionally separate from draft payment PR #17, which owns
+# preorder/checkout-config.json. Absence here is expected: no checkout
+# artifact is introduced or enabled by this legal-only branch.
+if CHECKOUT.exists():
+    config = json.loads(CHECKOUT.read_text(encoding="utf-8"))
+    assert not config["enabled"] and not config["termsApproved"]
+    assert config["termsUrl"] is None and config["refundPolicyUrl"] is None
+    assert all(offer["paymentLink"] is None for offer in config["offers"].values())
+else:
+    assert not (ROOT / "preorder").exists(), (
+        "The legal-only PR unexpectedly added preorder/ without the fail-closed configuration"
+    )
+    config = None
 
 assert "Version: privacy-v2" in policy
 assert "Effective date: pending authorized publication" in policy
@@ -128,7 +137,7 @@ assert not (ROOT / "prepurchase-terms.html").exists(), (
 assert (ROOT / "review/prepurchase-terms.html").is_file()
 assert PRIVACY.read_text(encoding="utf-8") == policy
 assert TERMS.read_text(encoding="utf-8") == terms
-assert config["enabled"] is False
+assert config is None or config["enabled"] is False
 print("PASS: dry-run legal candidate; 13 Privacy sections and 7 Terms sections preserved.")
 print("NO PUBLICATION: synthetic date, no public Terms URL, review-only file remains, checkout disabled.")
 print("Publication still requires approved effective date, removal of the review-only route,")
