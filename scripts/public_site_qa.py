@@ -167,3 +167,37 @@ for _clone_path in _LEGAL_CLONES:
         assert "PRIVACY V2 · PUBLICATION REVIEW" in _html, f"Premature effective claim in {_clone_path}"
         assert "Privacy V2 is prepared but not yet effective" in _html, f"Missing prepublication notice in {_clone_path}"
 print("PASS: all 10 Company route mirrors match the 13-section Privacy reader and approved standalone policy")
+
+
+# PUBLIC ANALYTICS SOURCE AUDIT — informational, not proof of live behavior.
+# GA4 can be injected by the hosting layer. The static repository cannot
+# validate a Cloudflare/Zaraz-injected tag or the configured GA4 web stream.
+_ANALYTICS_FILES = sorted(set(ROOT.glob("*.html")) | set(ROOT.glob("*/index.html")) | set(ROOT.glob("assets/js/*.js")))
+_ANALYTICS_INIT = _legal_re.compile(
+    r"googletagmanager\.com/(?:gtag/js|gtm\.js)|"
+    r"google-analytics\.com/(?:analytics\.js|g/collect)|"
+    r"gtag\s*\(\s*['\"]config['\"]|"
+    r"(?:window\.)?dataLayer\s*=",
+    flags=_legal_re.IGNORECASE,
+)
+_analytics_tags = [
+    path.as_posix() for path in _ANALYTICS_FILES
+    if _ANALYTICS_INIT.search(path.read_text(encoding="utf-8"))
+]
+_if_claimed = (
+    "The public site currently uses Google Analytics."
+    in (ROOT / "privacy.html").read_text(encoding="utf-8")
+)
+if _if_claimed and not _analytics_tags:
+    print(
+        "RELEASE EVIDENCE GAP: Privacy V2 asserts current Google Analytics use, "
+        "but static public HTML/JS files contain no recognizable GA initializer. "
+        "A separately verified hosting-layer injection and matching live GA4 "
+        "web stream would be needed. DO NOT call analytics implementation verified."
+    )
+else:
+    print(
+        "ANALYTICS SOURCE ONLY: " + ", ".join(_analytics_tags)
+        if _analytics_tags else "ANALYTICS SOURCE ONLY: no GA bootstrap detected"
+    )
+print("This diagnostic does not verify live analytics, consent, cookies, or active data collection.")
