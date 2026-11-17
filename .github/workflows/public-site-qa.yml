@@ -13,6 +13,7 @@ on:
       - "scripts/clean_url_browser_qa.py"
       - "scripts/ga4_consent_browser_qa.py"
       - "scripts/legal_publication_release_qa.py"
+      - "scripts/verify_live_legal_release.readonly.py"
       - ".github/workflows/public-site-qa.yml"
 jobs:
   validate:
@@ -23,6 +24,7 @@ jobs:
         run: |
           python3 scripts/public_site_qa.py
           python3 scripts/legal_publication_release_qa.py
+          python3 scripts/verify_live_legal_release.readonly.py
   browser-validate:
     runs-on: ubuntu-latest
     steps:
