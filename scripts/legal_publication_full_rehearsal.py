@@ -170,13 +170,30 @@ end = published_terms.index("</article>", start)
 assert published_terms[start:end] == approved_terms_sections, "Approved Terms content modified"
 assert "PREPUBLICATION REVIEW" not in published_terms
 assert DATE in published_terms and TERMS_VERSION in published_terms
-assert not (ROOT / "prepurchase-terms").exists(), "Potential public route conflict"
-assert not (ROOT / "prepurchase-terms.html").exists(), "Legacy Terms route conflict"
+# A nested, independent review PR may stage a safely unpublished candidate
+# at the canonical route. It MUST stay noindex and explicitly ineffective.
+candidate_path = ROOT / "prepurchase-terms/index.html"
+if candidate_path.exists():
+    candidate = candidate_path.read_text(encoding="utf-8")
+    assert 'name="robots" content="noindex,nofollow,noarchive"' in candidate
+    assert 'rel="canonical" href="https://groundworkbyable.online/prepurchase-terms/"' in candidate
+    assert "PREPUBLICATION REVIEW — NOT EFFECTIVE · NO CHECKOUT OR PAYMENT ENABLED" in candidate
+    assert "Version and effective date:</strong> To be assigned when publication is authorized." in candidate
+    assert "Unpublished route candidate. Not effective and not a Stripe Terms of Service URL" in candidate
+    assert candidate.count("<h2>") == 7
+    preview_start = candidate.index("<h2>1. What you are buying</h2>")
+    preview_end = candidate.index("</article>", preview_start)
+    assert candidate[preview_start:preview_end] == approved_terms_sections, "Candidate altered approved Terms"
+    assert not (ROOT / "prepurchase-terms.html").exists(), "Legacy Terms route conflict"
+    print("PASS: staged canonical Terms route is explicitly noindex, ineffective, and preserves seven approved sections")
+else:
+    assert not (ROOT / "prepurchase-terms").exists(), "Unreviewed Terms directory"
+    assert not (ROOT / "prepurchase-terms.html").exists(), "Legacy Terms route conflict"
 
 # Approved content fingerprint, not customer data and not a publication.
 print("PASS: all ten Company pages simulate published V2 labels, date and identical 13-section legal text")
 print("PASS: simulated /prepurchase-terms/ retains all seven approved Terms sections, with version and date")
 print("PRIVACY_SECTIONS_SHA256=" + sha256(old_sections.encode("utf-8")).hexdigest())
 print("TERMS_SECTIONS_SHA256=" + sha256(approved_terms_sections.encode("utf-8")).hexdigest())
-print("NO WRITE / NO RELEASE: terms route does not exist, reviewed policy files unchanged, no checkout/payment activation")
+print("NO WRITE / NO RELEASE: no Terms effective date or authorized public publication; no checkout/payment activation")
 print("REMAINING: truthful actual date, owner publication authorization, correct GA disclosure, operational/legal clearance")
