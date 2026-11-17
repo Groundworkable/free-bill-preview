@@ -11,6 +11,7 @@ on:
       - "scripts/public_site_qa.py"
       - "scripts/legal_publication_candidate_dry_run.py"
       - "scripts/legal_publication_full_rehearsal.py"
+      - "scripts/live_analytics_probe.readonly.py"
       - "scripts/organizations_browser_qa.py"
       - "scripts/clean_url_browser_qa.py"
       - ".github/workflows/public-site-qa.yml"
@@ -24,6 +25,7 @@ jobs:
           python3 scripts/public_site_qa.py
           python3 scripts/legal_publication_candidate_dry_run.py
           python3 scripts/legal_publication_full_rehearsal.py
+          python3 scripts/live_analytics_probe.readonly.py
   browser-validate:
     runs-on: ubuntu-latest
     steps:
