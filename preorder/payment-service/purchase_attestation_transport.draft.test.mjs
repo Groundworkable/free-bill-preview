@@ -9,7 +9,7 @@ const env=()=>({
   PAYMENTS_MODE:"disabled",
   PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
 });
-const url="https://isolated.internal.invalid/internal/test-prepurchase-attestation";
+const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
 const body=()=>({sessionId:"cs_test_SyntheticOrder",buyerProof:{
   proof:{version:"synthetic-only",issuer:"synthetic-only"},signature:"a".repeat(64)
 }});
@@ -48,6 +48,7 @@ test("HTTP method, path, query, scheme and bearer authentication are required",a
     {method:"PUT",expected:405,headers:{"Authorization":"Bearer "+TOKEN,"Content-Type":"application/json"}},
     {url:"https://isolated.internal.invalid/internal/other",expected:404},
     {url:url+"?token=sensitive",expected:404},
+    {url:"https://attacker.example.invalid/internal/test-prepurchase-attestation",expected:404},
     {url:"http://isolated.internal.invalid/internal/test-prepurchase-attestation",expected:404},
     {headers:{"Authorization":"Bearer wrong","Content-Type":"application/json"},expected:401},
     {headers:{"Content-Type":"application/json"},expected:401},
