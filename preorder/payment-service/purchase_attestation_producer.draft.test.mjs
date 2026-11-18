@@ -16,7 +16,7 @@ const buyer="founder@example.invalid";
 const verifiedOwner="11111111-1111-4111-8111-111111111111";
 const envBase=()=>({
   PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
-  PAYMENTS_MODE:"sandbox",TERMS_APPROVED:"true",
+  PAYMENTS_MODE:"disabled",TERMS_APPROVED:"true",
   TERMS_VERSION:"prepurchase-v2026-11-16",
   STRIPE_TEST_SECRET_KEY:"sk_test_synthetic_no_network",
   MONTH_LINK_ID:"plink_TestMonthly", MONTH_PRICE_ID:"price_TestMonthly",
@@ -192,7 +192,7 @@ test("weak, missing, or reused secrets are forbidden",async()=>{
   {INDEPENDENT_BUYER_PROOF_HMAC_SECRET:""},
   {PURCHASER_CONTACT_HMAC_SECRET:"weak"},
   {INDEPENDENT_BUYER_PROOF_HMAC_SECRET:envBase().PURCHASE_ATTESTATION_HMAC_SECRET},
-  {PAYMENTS_MODE:"production"}, {TERMS_APPROVED:"false"},
+  {PAYMENTS_MODE:"sandbox"}, {PAYMENTS_MODE:"production"}, {TERMS_APPROVED:"false"},
   {TERMS_VERSION:"UNAPPROVED"}
  ]) await assert.rejects(()=>call({env}));
 });
