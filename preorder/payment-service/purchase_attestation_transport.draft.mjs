@@ -9,10 +9,10 @@
 import {prepareSignedTestPurchaseAttestation} from "./purchase_attestation_producer.draft.mjs";
 
 const ENDPOINT="/internal/test-prepurchase-attestation";
+const ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
 const MAX_BYTES=16384;
 const BODY_ORDER=/^cs_test_[A-Za-z0-9]+$/;
 const TOKEN=/^gwti_[A-Za-z0-9_-]{48,128}$/;
-const encoder=new TextEncoder();
 const noCache={"Cache-Control":"no-store","Content-Type":"text/plain; charset=utf-8"};
 function response(status,text) {
   return new Response(text,{status,headers:noCache});
@@ -47,7 +47,7 @@ export async function handleDraftInternalPurchaseAttestation(
   if(!(request instanceof Request))return response(400,"Invalid request");
   const url=new URL(request.url);
   if(url.pathname!==ENDPOINT || url.search || url.username || url.password ||
-     url.protocol!=="https:")return response(404,"Not found");
+     url.origin!==ORIGIN)return response(404,"Not found");
   if(request.method!=="POST")return response(405,"Method not allowed");
   if(!safeTokenMatches(request.headers.get("authorization"),
        env.PURCHASE_ATTESTATION_INTERNAL_TOKEN))
@@ -58,11 +58,28 @@ export async function handleDraftInternalPurchaseAttestation(
   const declared=request.headers.get("content-length");
   if(declared!==null && (!/^\d+$/.test(declared)||Number(declared)>MAX_BYTES))
     return response(413,"Request too large");
+  // The body length header can be absent or dishonest. Bound streamed bytes
+  // *before* allocating/decoding them, including chunked transfer bodies.
   let payload;
   try {
-    const body=await request.text();
-    if(encoder.encode(body).length>MAX_BYTES)return response(413,"Request too large");
-    payload=JSON.parse(body);
+    if(!request.body)return response(400,"Invalid request");
+    const reader=request.body.getReader();
+    const chunks=[];
+    let total=0;
+    while(true){
+      const {value,done}=await reader.read();
+      if(done)break;
+      total+=value.byteLength;
+      if(total>MAX_BYTES){
+        await reader.cancel().catch(()=>{});
+        return response(413,"Request too large");
+      }
+      chunks.push(value);
+    }
+    const bytes=new Uint8Array(total);
+    let offset=0;
+    for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+    payload=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(bytes));
   } catch {return response(400,"Invalid request");}
   if(!payload||typeof payload!=="object"||Array.isArray(payload)||
      Object.keys(payload).sort().join(",")!=="buyerProof,sessionId"||
