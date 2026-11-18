@@ -82,7 +82,10 @@ async function verifyIndependentBuyerProof(env,envelope,session,now){
 function requireEnv(env){
   if(env?.PURCHASE_ATTESTATION_MODE!=="sandbox_verified_buyer_only")
     throw new Error("Purchase attestation disabled");
-  if(env.PAYMENTS_MODE!=="sandbox"||env.TERMS_APPROVED!=="true"||
+  // Attest a completed order ONLY while the payment webhook receiver remains
+  // OFF. This draft verifies Stripe TEST + immutable D1 via read-only calls;
+  // no purchase endpoint, webhook or live charge is enabled for fulfillment.
+  if(env.PAYMENTS_MODE!=="disabled"||env.TERMS_APPROVED!=="true"||
      !TERMS.test(env.TERMS_VERSION||"")||
      !env.STRIPE_TEST_SECRET_KEY?.startsWith("sk_test_")||
      !env.DB?.prepare||
