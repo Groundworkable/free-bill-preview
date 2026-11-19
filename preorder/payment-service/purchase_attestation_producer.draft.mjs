@@ -49,11 +49,13 @@ export function canonicalIndependentBuyerProof(p){
     p.buyerContactHmac,p.buyerProofDigest,p.issuedAt,p.expiresAt,p.nonce
   ]);
 }
-async function verifyIndependentBuyerProof(env,envelope,session,now){
+// First authenticate the signed app-account/mailbox proof BEFORE any Stripe
+// or D1 lookup. Contact matching necessarily follows Stripe Checkout fetch.
+async function verifyIndependentBuyerProofSignature(env,envelope,sessionId,now){
   const p=envelope?.proof;
   if(!p||p.version!==PROOF_VERSION||
      p.issuer!=="groundwork-verified-identity-service"||
-     !TEST.test(p.orderReference||"")||p.orderReference!==session.id||
+     !TEST.test(p.orderReference||"")||p.orderReference!==sessionId||
      !UUID.test(p.verifiedOwnerId||"")||
      !HEX64.test(p.buyerContactHmac||"")||
      !HEX64.test(p.buyerProofDigest||"")||
@@ -65,19 +67,22 @@ async function verifyIndependentBuyerProof(env,envelope,session,now){
      !HEX64.test(envelope?.signature||"")) {
     throw new Error("Independent buyer proof unavailable");
   }
+  const expected=await hmac(env.INDEPENDENT_BUYER_PROOF_HMAC_SECRET,
+    canonicalIndependentBuyerProof(p));
+  if(!equal(expected,envelope.signature))
+    throw new Error("Buyer proof not authenticated");
+  return p;
+}
+async function verifyIndependentBuyerContact(env,proof,session) {
   const detail=normalizedEmail(session.customer_details?.email);
   const supplied=normalizedEmail(session.customer_email);
   if(!detail&&!supplied)throw new Error("Checkout buyer email not verified");
   if(detail&&supplied&&detail!==supplied)throw new Error("Checkout buyer email mismatch");
   const contactHmac=await hmac(env.PURCHASER_CONTACT_HMAC_SECRET,
     "groundwork-stripe-checkout-contact-v1:"+(detail||supplied));
-  if(!equal(contactHmac,p.buyerContactHmac))
+  if(!equal(contactHmac,proof.buyerContactHmac))
     throw new Error("Buyer proof and Stripe contact do not match");
-  const expected=await hmac(env.INDEPENDENT_BUYER_PROOF_HMAC_SECRET,
-    canonicalIndependentBuyerProof(p));
-  if(!equal(expected,envelope.signature))
-    throw new Error("Buyer proof not authenticated");
-  return p;
+  return proof;
 }
 function requireEnv(env){
   if(env?.PURCHASE_ATTESTATION_MODE!=="sandbox_verified_buyer_only")
@@ -128,6 +133,10 @@ export async function prepareSignedTestPurchaseAttestation(
   requireEnv(env);
   if(!TEST.test(sessionId||"")||!Number.isSafeInteger(now))
     throw new Error("Unverified TEST purchase request");
+  // Invalid, expired or tampered buyer proofs must never trigger provider or
+  // database reads. Stripe email control is checked independently below.
+  const authenticatedBuyer=await verifyIndependentBuyerProofSignature(
+    env,buyerProof,sessionId,now);
   const id=encodeURIComponent(sessionId);
   const [session,itemResponse]=await Promise.all([
     stripeGet(env,"checkout/sessions/"+id),
@@ -179,7 +188,7 @@ export async function prepareSignedTestPurchaseAttestation(
   ).bind(o.paymentIntent,chargeId).first();
   if(change)throw new Error("Refund/dispute change requires review");
 
-  const proof=await verifyIndependentBuyerProof(env,buyerProof,session,now);
+  const proof=await verifyIndependentBuyerContact(env,authenticatedBuyer,session);
   const nonce=Array.from(crypto.getRandomValues(new Uint8Array(32)),
     x=>x.toString(16).padStart(2,"0")).join("");
   const purchase=Object.freeze({
