@@ -14,6 +14,8 @@ on:
       - 'preorder/payment-service/attestation_request_nonce_ledger.test.py'
       - 'preorder/payment-service/private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs'
       - 'preorder/payment-service/private_attestation_entry.test.mjs'
+      - 'preorder/payment-service/wrangler.private-attestation.DRAFT_DO_NOT_DEPLOY.jsonc'
+      - 'preorder/payment-service/private_attestation_config.test.mjs'
       - 'preorder/payment-service/worker.mjs'
       - '.github/workflows/prepurchase-attestation-draft-ci.yml'
   pull_request:
@@ -27,6 +29,8 @@ on:
       - 'preorder/payment-service/attestation_request_nonce_ledger.test.py'
       - 'preorder/payment-service/private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs'
       - 'preorder/payment-service/private_attestation_entry.test.mjs'
+      - 'preorder/payment-service/wrangler.private-attestation.DRAFT_DO_NOT_DEPLOY.jsonc'
+      - 'preorder/payment-service/private_attestation_config.test.mjs'
       - 'preorder/payment-service/worker.mjs'
       - '.github/workflows/prepurchase-attestation-draft-ci.yml'
   workflow_dispatch:
@@ -46,5 +50,7 @@ jobs:
           node-version: '22'
       - name: Check isolated D1 replay nonce constraints without deployment
         run: python3 preorder/payment-service/attestation_request_nonce_ledger.test.py
+      - name: Check separate inert Worker configuration
+        run: node --test preorder/payment-service/private_attestation_config.test.mjs
       - name: Confirm draft-only receiver-disabled TEST purchase attestation
         run: node --test preorder/payment-service/purchase_attestation_producer.draft.test.mjs preorder/payment-service/purchase_attestation_transport.draft.test.mjs preorder/payment-service/purchase_attestation_transport.integration.test.mjs preorder/payment-service/private_attestation_entry.test.mjs
