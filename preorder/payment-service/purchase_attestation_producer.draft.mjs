@@ -114,8 +114,13 @@ function requireEnv(env){
       throw new Error("Payment price not configured");
 }
 async function stripeGet(env,path){
+  // The draft verifier must never follow an unexpected redirect with
+  // a Stripe TEST credential, cache a financial recheck, or wait forever.
   const r=await fetch("https://api.stripe.com/v1/"+path,{
     method:"GET",
+    redirect:"error",
+    cache:"no-store",
+    signal:AbortSignal.timeout(5000),
     headers:{Authorization:"Bearer "+env.STRIPE_TEST_SECRET_KEY}
   });
   if(!r.ok)throw new Error("Stripe verification request failed");
