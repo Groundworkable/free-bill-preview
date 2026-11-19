@@ -2,9 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createHmac} from "node:crypto";
 import {handleDraftInternalPurchaseAttestation} from "./purchase_attestation_transport.draft.mjs";
+import {canonicalIndependentBuyerProof} from "./purchase_attestation_producer.draft.mjs";
 
 const TOKEN="gwti_"+("A".repeat(56));
 const REQUEST_SECRET="synthetic-separate-request-auth-hmac-key-32plus";
+const BUYER_SECRET="synthetic-independent-buyer-proof-secret-32plus";
 const stamp=()=>String(Math.floor(Date.now()/1000));
 const nonce="a".repeat(64);
 const path="/internal/test-prepurchase-attestation";
@@ -29,6 +31,7 @@ const env=()=>{
     }
   },
   PURCHASE_ATTESTATION_REPLAY_MODE:"d1_atomic_nonce_v1",
+  INDEPENDENT_BUYER_PROOF_HMAC_SECRET:BUYER_SECRET,
   PURCHASE_ATTESTATION_TRANSPORT_MODE:"founder_test_only",
   PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
   PAYMENTS_MODE:"disabled",
@@ -37,9 +40,20 @@ const env=()=>{
   PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 };};
 const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
-const body=()=>({sessionId:"cs_test_SyntheticOrder",buyerProof:{
-  proof:{version:"synthetic-only",issuer:"synthetic-only"},signature:"a".repeat(64)
-}});
+const body=()=>{
+ const now=Math.floor(Date.now()/1000);
+ const proof={
+  version:"gw-independent-buyer-proof-test-v1",
+  issuer:"groundwork-verified-identity-service",
+  orderReference:"cs_test_SyntheticOrder",
+  verifiedOwnerId:"11111111-1111-4111-8111-111111111111",
+  buyerContactHmac:"a".repeat(64),buyerProofDigest:"b".repeat(64),
+  issuedAt:now,expiresAt:now+90,nonce:"c".repeat(64),
+ };
+ const signed=createHmac("sha256",BUYER_SECRET)
+  .update(canonicalIndependentBuyerProof(proof)).digest("hex");
+ return {sessionId:"cs_test_SyntheticOrder",buyerProof:{proof,signature:signed}};
+};
 const req=(override={})=>{
   const raw=override.body===undefined?JSON.stringify(body()):override.body;
   const t=stamp();
@@ -161,7 +175,8 @@ test("authorized TEST-only request delegates exactly one purchase verification a
   const r=await handleDraftInternalPurchaseAttestation(req(),env(),async(e,id,proof)=>{
     assert.equal(e.PAYMENTS_MODE,"disabled");
     assert.equal(id,"cs_test_SyntheticOrder");
-    assert.deepEqual(proof,body().buyerProof);
+    assert.equal(proof.proof.orderReference,"cs_test_SyntheticOrder");
+    assert.match(proof.signature,/^[a-f0-9]{64}$/);
     calls++;return result;
   });
   assert.equal(calls,1);
