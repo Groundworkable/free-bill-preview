@@ -7,6 +7,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createHmac} from "node:crypto";
 import {handleDraftInternalPurchaseAttestation} from "./purchase_attestation_transport.draft.mjs";
+import privateAttestationEntry from "./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs";
 import {
  canonicalIndependentBuyerProof,
  canonicalPurchaseAttestation,
@@ -77,8 +78,8 @@ function records(){
    status:"paid_unfulfilled"},
  };
 }
-async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
- const e={...config(),...changes};const rs=records();
+async function runCase({alterProof,alterRecords,changes,expectStatus=200,viaStandaloneEntry=false}={}){
+ const e={...config(),...(viaStandaloneEntry?{PURCHASE_ATTESTATION_ENTRY_MODE:"founder_test_only"}:{}),...changes};const rs=records();
  const seen=new Set();let replayWrites=0;
  alterRecords?.(rs);
  let stripeCalls=0,d1Calls=0;
@@ -140,7 +141,9 @@ async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
   throw new Error("Unknown Stripe endpoint");
  };
  try{
-  const resp=await handleDraftInternalPurchaseAttestation(request,e,undefined,{aud:ACCESS_AUD});
+  const resp=viaStandaloneEntry
+   ?await privateAttestationEntry.fetch(request,e,{access:{aud:ACCESS_AUD}})
+   :await handleDraftInternalPurchaseAttestation(request,e,undefined,{aud:ACCESS_AUD});
   assert.equal(resp.status,expectStatus);
   assert.equal(resp.headers.get("Cache-Control"),"no-store");
   return {resp,stripeCalls,d1Calls,replayWrites,e};
@@ -190,5 +193,36 @@ test("payment receiver stays OFF: any re-enable denies before Stripe/D1",async()
    changes:{PAYMENTS_MODE:mode},expectStatus:503
   });
   assert.equal(stripeCalls,0);assert.equal(d1Calls,0);
+ }
+});
+
+// Exercise the *actual default standalone Worker entrypoint*, not only the
+// injected handler mock. All provider/D1 operations remain in-process fakes.
+test("standalone draft Worker entry fetch completes signed TEST-only Stripe and D1 verification",async()=>{
+ const {resp,stripeCalls,d1Calls,replayWrites,e}=await runCase({viaStandaloneEntry:true});
+ assert.equal(resp.status,200);
+ assert.equal(e.PAYMENTS_MODE,"disabled");
+ assert.equal(stripeCalls,4);
+ assert.equal(d1Calls,2);
+ assert.equal(replayWrites,1);
+ const signed=await resp.json();
+ assert.equal(signed.purchase.status,"paid_unfulfilled");
+ assert.equal(signed.purchase.verifiedOwnerId,OWNER);
+ assert.equal(signed.signature,sign(e.PURCHASE_ATTESTATION_HMAC_SECRET,
+  canonicalPurchaseAttestation(signed.purchase)));
+ assert.equal(JSON.stringify(signed).includes(EMAIL),false);
+});
+test("standalone entry stays dark before any Stripe or D1 on missing entry enable or forbidden webhook origin",async()=>{
+ for(const changes of [
+  {PURCHASE_ATTESTATION_ENTRY_MODE:"disabled"},
+  {PURCHASE_ATTESTATION_PRIVATE_ORIGIN:"https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev"},
+ ]){
+  const {resp,stripeCalls,d1Calls,replayWrites}=await runCase({
+   viaStandaloneEntry:true,changes,expectStatus:503
+  });
+  assert.equal(resp.status,503);
+  assert.equal(stripeCalls,0);
+  assert.equal(d1Calls,0);
+  assert.equal(replayWrites,0);
  }
 });
