@@ -38,13 +38,14 @@ const env=()=>{
   PURCHASE_ATTESTATION_ACCESS_AUD:ACCESS_AUD,
   INDEPENDENT_BUYER_PROOF_HMAC_SECRET:BUYER_SECRET,
   PURCHASE_ATTESTATION_TRANSPORT_MODE:"founder_test_only",
+  PURCHASE_ATTESTATION_PRIVATE_ORIGIN:"https://synthetic-private-attestation.groundworkbyable.workers.dev",
   PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
   PAYMENTS_MODE:"disabled",
   PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
   PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"signed_test_only",
   PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 };};
-const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
+const url="https://synthetic-private-attestation.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
 const body=()=>{
  const now=Math.floor(Date.now()/1000);
  const proof={
@@ -98,6 +99,8 @@ test("Cloudflare Access authentication is mandatory before verifier, D1 and buye
 test("receiver may not be re-enabled, nor producer mode changed",async()=>{
   for(const override of [
     {PAYMENTS_MODE:"sandbox"},{PAYMENTS_MODE:"live"},
+    {PURCHASE_ATTESTATION_PRIVATE_ORIGIN:"https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev"},
+    {PURCHASE_ATTESTATION_PRIVATE_ORIGIN:"https://example.invalid"},
     {PURCHASE_ATTESTATION_ACCESS_MODE:"disabled"},
     {PURCHASE_ATTESTATION_ACCESS_AUD:"invalid"},
     {PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"disabled"},
