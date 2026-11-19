@@ -1,7 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {createHmac} from "node:crypto";
-import {handleDraftInternalPurchaseAttestation} from "./purchase_attestation_transport.draft.mjs";
+import {handleDraftInternalPurchaseAttestation as rawDraftHandler} from "./purchase_attestation_transport.draft.mjs";
+const ACCESS_AUD="a".repeat(64);
+const handleDraftInternalPurchaseAttestation=(request,env,issue,access={aud:ACCESS_AUD})=>
+  rawDraftHandler(request,env,issue,access);
 import {canonicalIndependentBuyerProof} from "./purchase_attestation_producer.draft.mjs";
 
 const TOKEN="gwti_"+("A".repeat(56));
@@ -31,6 +34,8 @@ const env=()=>{
     }
   },
   PURCHASE_ATTESTATION_REPLAY_MODE:"d1_atomic_nonce_v1",
+  PURCHASE_ATTESTATION_ACCESS_MODE:"cloudflare_access_service_auth_only",
+  PURCHASE_ATTESTATION_ACCESS_AUD:ACCESS_AUD,
   INDEPENDENT_BUYER_PROOF_HMAC_SECRET:BUYER_SECRET,
   PURCHASE_ATTESTATION_TRANSPORT_MODE:"founder_test_only",
   PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
@@ -78,9 +83,23 @@ test("default-closed adapter never calls its signer even with valid request",asy
   assert.equal(r.status,503);assert.equal(calls,0);
 });
 
+test("Cloudflare Access authentication is mandatory before verifier, D1 and buyer-proof checks",async()=>{
+ const e=env();
+ let calls=0, dbReads=0;
+ const original=e.DB.prepare;
+ e.DB.prepare=(...args)=>{dbReads++;return original(...args)};
+ for(const access of [undefined,null,{aud:"wrong"},{aud:""},{email:"forged@example.invalid"}]){
+  const r=await rawDraftHandler(req(),e,async()=>{calls++;return result},access);
+  assert.equal(r.status,403);
+ }
+ assert.equal(dbReads,0);
+ assert.equal(calls,0);
+});
 test("receiver may not be re-enabled, nor producer mode changed",async()=>{
   for(const override of [
     {PAYMENTS_MODE:"sandbox"},{PAYMENTS_MODE:"live"},
+    {PURCHASE_ATTESTATION_ACCESS_MODE:"disabled"},
+    {PURCHASE_ATTESTATION_ACCESS_AUD:"invalid"},
     {PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"disabled"},
     {PURCHASE_ATTESTATION_REPLAY_MODE:"disabled"},
     {DB:null},
