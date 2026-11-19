@@ -1,0 +1,35 @@
+{
+  // REVIEW ONLY; DOES NOT deploy anything. DO NOT rename or deploy before
+  // separate approval, complete code review and explicit rollback plan.
+  //
+  // This records the actual founder-provisioned TEST-only hostname + D1 binding.
+  // The previous unprovisioned/disabled-route draft stays unchanged.
+  // NEVER deploy this config to groundwork-payment-sandbox-isolated.
+  "name": "groundwork-private-attestation-test",
+  "main": "./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": true,
+  "routes": [],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "groundwork-payment-sandbox-isolated",
+      "database_id": "f37839b6-3ed4-4a73-89d7-b6cd6aef6125"
+    }
+  ],
+  "vars": {
+    "PAYMENTS_MODE": "disabled",
+    "PURCHASE_ATTESTATION_ENTRY_MODE": "disabled",
+    "PURCHASE_ATTESTATION_TRANSPORT_MODE": "disabled",
+    "PURCHASE_ATTESTATION_MODE": "disabled",
+    "PURCHASE_ATTESTATION_REQUEST_AUTH_MODE": "disabled",
+    "PURCHASE_ATTESTATION_REPLAY_MODE": "disabled",
+    "PURCHASE_ATTESTATION_ACCESS_MODE": "disabled",
+    "PURCHASE_ATTESTATION_PRIVATE_ORIGIN": "https://groundwork-private-attestation-test.groundworkbyable.workers.dev"
+  }
+  // One-time Cloudflare Service Auth token, private HMAC keys, TEST Stripe API
+  // credentials and Access AUD are NEVER provided in this file or repo.
+  // D1 nonce table exists, but all runtime flags remain OFF until future
+  // separately approved functional TEST-only attestation validation.
+  // No cron, queue, webhook path, custom route, live payment or membership.
+}
