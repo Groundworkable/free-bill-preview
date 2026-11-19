@@ -181,6 +181,31 @@ test("missing, altered, expired, wrong-account, wrong-order independent buyer pr
  await assert.rejects(()=>call({mutateProof:proof=>{proof.signature="0".repeat(64)}}));
  await assert.rejects(()=>call({mutateProof:proof=>{proof.proof.verifiedOwnerId=verifiedOwner==="x"?"y":"22222222-2222-4222-8222-222222222222"}}));
 });
+test("invalid and expired buyer proof never fetch Stripe or read D1",async()=>{
+ const cases=[
+  proof=>{proof.signature="0".repeat(64)},
+  proof=>{proof.proof.expiresAt=now-1},
+  proof=>{proof.proof.issuedAt=now-121},
+  proof=>{proof.proof.orderReference="cs_test_NotTheRequestedOrder"},
+  proof=>{proof.proof.verifiedOwnerId="22222222-2222-4222-8222-222222222222"},
+ ];
+ for(const mutateProof of cases){
+  const env={...envBase()};
+  let calls=0;
+  let queries=0;
+  env.DB={prepare(){queries++;throw new Error("D1 should never be read")}};
+  const proof=buyerProof(env);
+  mutateProof(proof);
+  const originalFetch=globalThis.fetch;
+  globalThis.fetch=async()=>{calls++;throw new Error("Stripe should never be read")};
+  try{
+   await assert.rejects(()=>prepareSignedTestPurchaseAttestation(
+     env,orderId,proof,now));
+   assert.equal(calls,0,"invalid buyer proof touched Stripe");
+   assert.equal(queries,0,"invalid buyer proof touched D1");
+  }finally{globalThis.fetch=originalFetch}
+ }
+});
 test("Stripe checkout email mismatch and removed signed proof fail closed",async()=>{
  await assert.rejects(()=>call({modifyStripe:x=>{x.session.customer_email="different@example.invalid"}}));
  await assert.rejects(()=>call({modifyStripe:x=>{x.session.customer_email=null;x.session.customer_details.email=null}}));
