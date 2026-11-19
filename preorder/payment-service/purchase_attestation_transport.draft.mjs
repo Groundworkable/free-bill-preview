@@ -9,7 +9,14 @@
 import {prepareSignedTestPurchaseAttestation,verifyIndependentBuyerProofSignature} from "./purchase_attestation_producer.draft.mjs";
 
 const ENDPOINT="/internal/test-prepurchase-attestation";
-const ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
+const OLD_WEBHOOK_ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
+const PRIVATE_ORIGIN=/^https:\/\/[a-z0-9][a-z0-9-]*\.groundworkbyable\.workers\.dev$/;
+function dedicatedPrivateOrigin(env){
+  const origin=env?.PURCHASE_ATTESTATION_PRIVATE_ORIGIN;
+  // A separate Worker MUST NOT occupy the existing webhook Worker's host.
+  return typeof origin==="string"&&PRIVATE_ORIGIN.test(origin)&&
+    origin!==OLD_WEBHOOK_ORIGIN?origin:null;
+}
 const MAX_BYTES=16384;
 const BODY_ORDER=/^cs_test_[A-Za-z0-9]+$/;
 const TOKEN=/^gwti_[A-Za-z0-9_-]{48,128}$/;
@@ -51,6 +58,7 @@ function authorizedEnv(env) {
   return env?.PURCHASE_ATTESTATION_TRANSPORT_MODE==="founder_test_only" &&
     env?.PURCHASE_ATTESTATION_MODE==="sandbox_verified_buyer_only" &&
     env?.PAYMENTS_MODE==="disabled" &&
+    dedicatedPrivateOrigin(env)!==null &&
     env?.PURCHASE_ATTESTATION_REQUEST_AUTH_MODE==="signed_test_only" &&
     TOKEN.test(env?.PURCHASE_ATTESTATION_INTERNAL_TOKEN||"") &&
     typeof env?.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET==="string" &&
@@ -87,7 +95,7 @@ export async function handleDraftInternalPurchaseAttestation(
   if(!(request instanceof Request))return response(400,"Invalid request");
   const url=new URL(request.url);
   if(url.pathname!==ENDPOINT || url.search || url.username || url.password ||
-     url.origin!==ORIGIN)return response(404,"Not found");
+     url.origin!==dedicatedPrivateOrigin(env))return response(404,"Not found");
   if(request.method!=="POST")return response(405,"Method not allowed");
   if(!safeTokenMatches(request.headers.get("authorization"),
        env.PURCHASE_ATTESTATION_INTERNAL_TOKEN))
