@@ -72,16 +72,25 @@ async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
  const e={...config(),...changes};const rs=records();
  alterRecords?.(rs);
  let stripeCalls=0,d1Calls=0;
- e.DB={prepare(sql){
-  return {bind(...p){return {first:async()=>{
-   d1Calls++;
-   if(sql.includes("FROM prepurchase_orders")){
-    assert.equal(p[0],ORDER);return rs.order;
-   }
-   if(sql.includes("FROM prepurchase_payment_changes"))return null;
-   throw new Error("Unexpected D1 operation");
-  }}}};
- }};
+ e.DB={
+  prepare(sql){
+   return {
+    bind(...p){
+     return {
+      first:async()=>{
+       d1Calls++;
+       if(sql.includes("FROM prepurchase_orders")){
+        assert.equal(p[0],ORDER);
+        return rs.order;
+       }
+       if(sql.includes("FROM prepurchase_payment_changes"))return null;
+       throw new Error("Unexpected D1 operation");
+      },
+     };
+    },
+   };
+  },
+ };
  const buyer=signedProof(e);alterProof?.(buyer);
  const request=new Request(url,{method:"POST",headers:{
   Authorization:"Bearer "+TOKEN,"Content-Type":"application/json",
