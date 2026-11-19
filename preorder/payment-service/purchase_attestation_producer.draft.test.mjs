@@ -100,7 +100,9 @@ async function call(overrides={}){
  globalThis.fetch=async(url,config)=>{
    urls.push(String(url));
    if(!String(url).startsWith("https://api.stripe.com/v1/")||
-      config?.method!=="GET" || config?.headers?.Authorization!=="Bearer "+env.STRIPE_TEST_SECRET_KEY)
+      config?.method!=="GET" || config?.redirect!=="error" ||
+      config?.cache!=="no-store" || !config?.signal ||
+      config?.headers?.Authorization!=="Bearer "+env.STRIPE_TEST_SECRET_KEY)
      throw new Error("Unexpected provider request");
    const path=new URL(String(url)).pathname;
    let result;
