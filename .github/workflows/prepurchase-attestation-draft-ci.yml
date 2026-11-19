@@ -9,6 +9,7 @@ on:
       - 'preorder/payment-service/purchase_attestation_producer.draft.test.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.draft.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.draft.test.mjs'
+      - 'preorder/payment-service/purchase_attestation_transport.integration.test.mjs'
       - 'preorder/payment-service/worker.mjs'
       - '.github/workflows/prepurchase-attestation-draft-ci.yml'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - 'preorder/payment-service/purchase_attestation_producer.draft.test.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.draft.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.draft.test.mjs'
+      - 'preorder/payment-service/purchase_attestation_transport.integration.test.mjs'
       - 'preorder/payment-service/worker.mjs'
       - '.github/workflows/prepurchase-attestation-draft-ci.yml'
   workflow_dispatch:
@@ -35,4 +37,4 @@ jobs:
         with:
           node-version: '22'
       - name: Confirm draft-only receiver-disabled TEST purchase attestation
-        run: node --test preorder/payment-service/purchase_attestation_producer.draft.test.mjs preorder/payment-service/purchase_attestation_transport.draft.test.mjs
+        run: node --test preorder/payment-service/purchase_attestation_producer.draft.test.mjs preorder/payment-service/purchase_attestation_transport.draft.test.mjs preorder/payment-service/purchase_attestation_transport.integration.test.mjs
