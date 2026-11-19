@@ -90,9 +90,12 @@ function requireEnv(env){
   // Attest a completed order ONLY while the payment webhook receiver remains
   // OFF. This draft verifies Stripe TEST + immutable D1 via read-only calls;
   // no purchase endpoint, webhook or live charge is enabled for fulfillment.
+  // Permit only TEST-mode standard OR read-restricted Stripe credentials.
+  // A restricted rk_test_ key should grant read-only checkout sessions,
+  // checkout line items, payment intents, and charges; never write permissions.
   if(env.PAYMENTS_MODE!=="disabled"||env.TERMS_APPROVED!=="true"||
      !TERMS.test(env.TERMS_VERSION||"")||
-     !env.STRIPE_TEST_SECRET_KEY?.startsWith("sk_test_")||
+     !/^((?:sk|rk)_test_)[A-Za-z0-9_]+$/.test(env.STRIPE_TEST_SECRET_KEY||"")||
      !env.DB?.prepare||
      typeof env.PURCHASE_ATTESTATION_HMAC_SECRET!=="string"||
      env.PURCHASE_ATTESTATION_HMAC_SECRET.length<32||
