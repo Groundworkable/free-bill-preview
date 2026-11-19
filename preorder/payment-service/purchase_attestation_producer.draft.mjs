@@ -51,7 +51,7 @@ export function canonicalIndependentBuyerProof(p){
 }
 // First authenticate the signed app-account/mailbox proof BEFORE any Stripe
 // or D1 lookup. Contact matching necessarily follows Stripe Checkout fetch.
-async function verifyIndependentBuyerProofSignature(env,envelope,sessionId,now){
+export async function verifyIndependentBuyerProofSignature(env,envelope,sessionId,now){
   const p=envelope?.proof;
   if(!p||p.version!==PROOF_VERSION||
      p.issuer!=="groundwork-verified-identity-service"||
