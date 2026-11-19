@@ -9,7 +9,9 @@
   "main": "./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs",
   "compatibility_date": "2026-11-19",
   "workers_dev": true,
+  "preview_urls": false,
   "routes": [],
+  "observability": {"enabled": true, "logs": {"enabled": true}},
   "d1_databases": [
     {
       "binding": "DB",
