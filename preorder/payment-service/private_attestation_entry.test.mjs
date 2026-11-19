@@ -2,9 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createDraftAttestationEntryForTest} from "./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs";
 
-const ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
+const ORIGIN="https://synthetic-private-attestation.groundworkbyable.workers.dev";
 const AUD="a".repeat(64);
 const env=()=>({
+ PURCHASE_ATTESTATION_PRIVATE_ORIGIN:ORIGIN,
  PURCHASE_ATTESTATION_ENTRY_MODE:"founder_test_only",
  PAYMENTS_MODE:"disabled",
  PURCHASE_ATTESTATION_ACCESS_MODE:"cloudflare_access_service_auth_only",
@@ -32,6 +33,20 @@ test("private candidate never serves a request by default, not even Access-authe
  assert.equal(r.status,503);
  assert.equal(calls,0);
  assert.equal(r.headers.get("Cache-Control"),"no-store");
+});
+
+test("candidate refuses missing origin and forbidden original webhook Worker host",async()=>{
+ const handler=createDraftAttestationEntryForTest(async()=>{throw Error("should not run")});
+ for(const origin of [
+  undefined,
+  "https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev",
+  "https://example.invalid",
+ ]){
+  const r=await handler.fetch(request(),{
+   ...env(),PURCHASE_ATTESTATION_PRIVATE_ORIGIN:origin,
+  },{access:{aud:AUD}});
+  assert.equal(r.status,503);
+ }
 });
 
 test("private entry refuses Stripe webhooks and all wrong origins/paths before any D1 or verifier",async()=>{
