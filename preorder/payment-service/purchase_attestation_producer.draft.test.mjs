@@ -147,6 +147,26 @@ test("fresh verified TEST payment and independently signed contact+account proof
  assert.equal(JSON.stringify(result).includes(env.PURCHASE_ATTESTATION_HMAC_SECRET),false);
  assert.equal(result.signature,sign(env.PURCHASE_ATTESTATION_HMAC_SECRET,canonicalPurchaseAttestation(result.purchase)));
 });
+test("read-restricted rk_test_ credential is accepted for exactly four read-only Stripe GETs",async()=>{
+ const {result,urls,queries}=await call({env:{STRIPE_TEST_SECRET_KEY:"rk_test_isolated_synthetic_no_network"}});
+ assert.equal(result.purchase.orderReference,orderId);
+ assert.equal(urls.length,4);
+ assert.equal(queries.length,2);
+});
+test("live-mode, publishable, restricted live, and malformed Stripe credentials fail before network",async()=>{
+ const invalid=["sk_live_synthetic","rk_live_synthetic","pk_test_synthetic",
+   "rk_test_","sk_test_","rk_test_bad-token"];
+ for(const secret of invalid) {
+  const original=globalThis.fetch;
+  let attempts=0;
+  globalThis.fetch=async()=>{attempts++;throw new Error("unexpected network")};
+  try {
+   const env={...envBase(),STRIPE_TEST_SECRET_KEY:secret};
+   await assert.rejects(()=>prepareSignedTestPurchaseAttestation(env,orderId,buyerProof(env),now),/not configured/);
+   assert.equal(attempts,0);
+  } finally {globalThis.fetch=original}
+ }
+});
 test("annual prepay is signed with correct amount and original 12-month offer",async()=>{
  const {result,env}=await call({annual:true});
  assert.equal(result.purchase.offer,"annual");
