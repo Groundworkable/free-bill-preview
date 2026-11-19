@@ -57,7 +57,9 @@ function authorizedEnv(env) {
     env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.PURCHASE_ATTESTATION_INTERNAL_TOKEN &&
     env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.INDEPENDENT_BUYER_PROOF_HMAC_SECRET &&
     env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.PURCHASE_ATTESTATION_HMAC_SECRET &&
-    env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.PURCHASER_CONTACT_HMAC_SECRET;
+    env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.PURCHASER_CONTACT_HMAC_SECRET &&
+    env?.PURCHASE_ATTESTATION_REPLAY_MODE==="d1_atomic_nonce_v1" &&
+    typeof env?.DB?.prepare==="function";
 }
 /**
  * An explicit deployment integration must call this only after validating
@@ -83,9 +85,8 @@ export async function handleDraftInternalPurchaseAttestation(
     return response(415,"Unsupported media type");
   // A bearer token by itself cannot authorize a payment lookup. Require a
   // separate HMAC of the EXACT body + method/path + fresh timestamp/nonce.
-  // Freshness narrows replay but does not provide nonce persistence; a
-  // replay ledger or independent Cloudflare Access gate is required before
-  // exposing this as a remotely routed endpoint.
+  // Atomic nonce registration in isolated D1 additionally rejects replays.
+  // An independent network access boundary is still required before routing.
   const stamp=request.headers.get("x-groundwork-test-timestamp");
   const nonce=request.headers.get("x-groundwork-test-nonce");
   const signature=request.headers.get("x-groundwork-test-signature");
@@ -130,6 +131,23 @@ export async function handleDraftInternalPurchaseAttestation(
      !payload.buyerProof||typeof payload.buyerProof!=="object"||
      Array.isArray(payload.buyerProof))
     return response(400,"Invalid request");
+
+  // Durable D1 PRIMARY KEY arbitrates exact nonce reuse, even across
+  // different Worker instances / concurrent requests. Never invoke the
+  // Stripe/D1 verifier until this single insertion has committed.
+  // No ON CONFLICT DO NOTHING: uniqueness errors must fail closed.
+  try {
+    const receipt=await env.DB.prepare(
+      "INSERT INTO prepurchase_attestation_request_nonces"+
+      "(nonce_hex,request_timestamp) VALUES (?,?)"
+    ).bind(nonce,parsed).run();
+    if(receipt?.success!==true || receipt?.meta?.changes!==1)
+      return response(503,"Attestation unavailable");
+  } catch {
+    // Both duplicate nonce and absent/unavailable D1 ledger are denied,
+    // without leaking whether a nonce was already recorded.
+    return response(503,"Attestation unavailable");
+  }
   try {
     const envelope=await issue(env,payload.sessionId,payload.buyerProof);
     // No customer email, OTP or raw access credential is in this response.
