@@ -10,7 +10,13 @@
 import {handleDraftInternalPurchaseAttestation} from "./purchase_attestation_transport.draft.mjs";
 import {prepareSignedTestPurchaseAttestation} from "./purchase_attestation_producer.draft.mjs";
 
-const ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
+const OLD_WEBHOOK_ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
+const PRIVATE_ORIGIN=/^https:\/\/[a-z0-9][a-z0-9-]*\.groundworkbyable\.workers\.dev$/;
+function privateOrigin(env){
+  const origin=env?.PURCHASE_ATTESTATION_PRIVATE_ORIGIN;
+  return typeof origin==="string"&&PRIVATE_ORIGIN.test(origin)&&
+    origin!==OLD_WEBHOOK_ORIGIN?origin:null;
+}
 const PATH="/internal/test-prepurchase-attestation";
 const NO_STORE={"Cache-Control":"no-store","Content-Type":"text/plain; charset=utf-8"};
 
@@ -27,12 +33,12 @@ export function createDraftAttestationEntryForTest(issue){
     async fetch(request,env,ctx){
       // Strictly default-OFF even before touching request data or D1.
       if(env?.PURCHASE_ATTESTATION_ENTRY_MODE!=="founder_test_only"||
-         env?.PAYMENTS_MODE!=="disabled")
+         env?.PAYMENTS_MODE!=="disabled"||!privateOrigin(env))
         return new Response("Not available",{status:503,headers:NO_STORE});
       if(!(request instanceof Request))
         return new Response("Invalid request",{status:400,headers:NO_STORE});
       const u=new URL(request.url);
-      if(u.origin!==ORIGIN||u.pathname!==PATH||u.search||
+      if(u.origin!==privateOrigin(env)||u.pathname!==PATH||u.search||
          u.username||u.password)
         return new Response("Not found",{status:404,headers:NO_STORE});
       // Deliberately NO Stripe webhook routing. /webhooks/stripe, sign-in,
