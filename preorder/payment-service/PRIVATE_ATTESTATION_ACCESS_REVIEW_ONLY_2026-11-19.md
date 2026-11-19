@@ -26,6 +26,16 @@ The current draft handler URL is fixed to `https://groundwork-payment-sandbox-is
 
 **Remaining account-specific checks before any configuration or route:** verify Zero Trust is available, that the exact `workers.dev` hostname/path is accepted by the dashboard, that no conflicting Access application overrides it, that only the private path matches the restricted policy, and that the original `/webhooks/stripe` path remains unaffected. No Service Auth application, token or route has been created. If actual account configuration contradicts the documented path option, do not fall back to whole-Worker Access; pause for a separately reviewed isolated host and update the app URL, transport HMAC path, expected Access audience and tests together.
 
+## Updated deployment decision — separate Worker origin REQUIRED (November 19)
+
+The review uncovered a conflict between the two previously considered approaches: Cloudflare supports **path-scoped Access** on a shared Worker, but this code is a **standalone Worker entrypoint**. Deploying a standalone Worker to the original webhook hostname could replace that existing Worker's routing or otherwise disrupt webhook delivery. The private draft now **requires a different, explicitly configured origin** and rejects the original webhook host, even when all other auth credentials are present.
+
+The current source contracts are `GROUNDWORK_PREPURCHASE_PRIVATE_ORIGIN` (app) and `PURCHASE_ATTESTATION_PRIVATE_ORIGIN` (private payment Worker). Both must be exactly the same **new** approved HTTPS Worker hostname. All tests use a synthetic, **not provisioned** private hostname. The code does not pick or create a real hostname. Path stays `/internal/test-prepurchase-attestation`; the signed request canonicalization binds that path. The original `groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev` is explicitly forbidden in both draft components.
+
+**This supersedes the earlier "preferred minimum-change" same-host, path-scoped approach for the current standalone Worker design.** The earlier option would instead require integrating the handler into the existing Worker, which has been excluded from this draft to protect the already-tested Stripe webhook. Do not combine those designs accidentally.
+
+Before any future deployment, the founder must separately approve: (1) the precise new Worker name/hostname and whether it creates a cost, (2) a scoped Cloudflare Access Service Auth policy and token on that new hostname/path, (3) migration of the isolated D1 nonce ledger, (4) segregated server-held keys and secrets, and (5) runtime tests showing the old webhook Worker was not changed. **No approval or deployment occurred during this code correction.**
+
 ## Required layered checks
 
 1. Access Service Auth policy authenticates only the intended service token at the exact protected hostname/path and sets `ctx.access`.
