@@ -16,6 +16,8 @@ const ORDER="cs_test_IntegrationProxy1";
 const OWNER="11111111-1111-4111-8111-111111111111";
 const EMAIL="founder@example.invalid";
 const TOKEN="gwti_"+("a".repeat(56));
+const REQUEST_SECRET="synthetic-private-request-bound-signing-key-long";
+const REQUEST_PATH="/internal/test-prepurchase-attestation";
 const NOW=Math.floor(Date.now()/1000);
 const sign=(key,v)=>createHmac("sha256",key).update(v).digest("hex");
 const config=()=>({
@@ -30,6 +32,8 @@ const config=()=>({
  INDEPENDENT_BUYER_PROOF_HMAC_SECRET:"test-independent-identity-proof-signing-secret",
  PURCHASER_CONTACT_HMAC_SECRET:"test-independent-stripe-contact-hmac-secret",
  PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
+ PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"signed_test_only",
+ PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 });
 const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
 function signedProof(e,changes={}){
@@ -92,9 +96,18 @@ async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
   },
  };
  const buyer=signedProof(e);alterProof?.(buyer);
+ const body=JSON.stringify({sessionId:ORDER,buyerProof:buyer});
+ const timestamp=String(Math.floor(Date.now()/1000));
+ const nonce="f".repeat(64);
+ const digest=sign(REQUEST_SECRET,JSON.stringify([
+  "gw-test-transport-v1","POST",REQUEST_PATH,timestamp,nonce,body
+ ]));
  const request=new Request(url,{method:"POST",headers:{
   Authorization:"Bearer "+TOKEN,"Content-Type":"application/json",
- },body:JSON.stringify({sessionId:ORDER,buyerProof:buyer})});
+  "X-Groundwork-Test-Timestamp":timestamp,
+  "X-Groundwork-Test-Nonce":nonce,
+  "X-Groundwork-Test-Signature":digest,
+ },body});
  const original=globalThis.fetch;
  globalThis.fetch=async(raw,init)=>{
   stripeCalls++;
