@@ -13,7 +13,9 @@ test("review-only config matches provisioned separate private Worker, never old 
   assert.notEqual(config.name,"groundwork-payment-sandbox-isolated");
   assert.equal(config.main,"./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs");
   assert.equal(config.workers_dev,true);
+  assert.equal(config.preview_urls,false);
   assert.deepEqual(config.routes,[]);
+  assert.deepEqual(config.observability,{enabled:true,logs:{enabled:true}});
   assert.deepEqual(config.d1_databases,[{
     binding:"DB",
     database_name:"groundwork-payment-sandbox-isolated",
