@@ -10,6 +10,8 @@ on:
       - 'preorder/payment-service/purchase_attestation_transport.draft.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.draft.test.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.integration.test.mjs'
+      - 'preorder/payment-service/remote_d1_attestation_request_nonce_DRAFT_DO_NOT_APPLY.sql'
+      - 'preorder/payment-service/attestation_request_nonce_ledger.test.py'
       - 'preorder/payment-service/worker.mjs'
       - '.github/workflows/prepurchase-attestation-draft-ci.yml'
   pull_request:
@@ -19,6 +21,8 @@ on:
       - 'preorder/payment-service/purchase_attestation_transport.draft.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.draft.test.mjs'
       - 'preorder/payment-service/purchase_attestation_transport.integration.test.mjs'
+      - 'preorder/payment-service/remote_d1_attestation_request_nonce_DRAFT_DO_NOT_APPLY.sql'
+      - 'preorder/payment-service/attestation_request_nonce_ledger.test.py'
       - 'preorder/payment-service/worker.mjs'
       - '.github/workflows/prepurchase-attestation-draft-ci.yml'
   workflow_dispatch:
@@ -36,5 +40,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check isolated D1 replay nonce constraints without deployment
+        run: python3 preorder/payment-service/attestation_request_nonce_ledger.test.py
       - name: Confirm draft-only receiver-disabled TEST purchase attestation
         run: node --test preorder/payment-service/purchase_attestation_producer.draft.test.mjs preorder/payment-service/purchase_attestation_transport.draft.test.mjs preorder/payment-service/purchase_attestation_transport.integration.test.mjs
