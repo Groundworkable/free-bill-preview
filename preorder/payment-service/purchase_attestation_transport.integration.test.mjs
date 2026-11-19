@@ -33,6 +33,7 @@ const config=()=>({
  PURCHASER_CONTACT_HMAC_SECRET:"test-independent-stripe-contact-hmac-secret",
  PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
  PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"signed_test_only",
+ PURCHASE_ATTESTATION_REPLAY_MODE:"d1_atomic_nonce_v1",
  PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 });
 const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
