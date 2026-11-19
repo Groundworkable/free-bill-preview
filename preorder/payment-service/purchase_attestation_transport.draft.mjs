@@ -16,6 +16,7 @@ const TOKEN=/^gwti_[A-Za-z0-9_-]{48,128}$/;
 const HEX64=/^[a-f0-9]{64}$/;
 const REQUEST_VERSION="gw-test-transport-v1";
 const MAX_CLOCK_SKEW=30;
+const ACCESS_AUD=/^[A-Za-z0-9_-]{20,128}$/;
 const encoder=new TextEncoder();
 async function signRequest(secret,raw,stamp,nonce){
   const canonical=JSON.stringify([
@@ -59,19 +60,30 @@ function authorizedEnv(env) {
     env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.PURCHASE_ATTESTATION_HMAC_SECRET &&
     env.PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET!==env.PURCHASER_CONTACT_HMAC_SECRET &&
     env?.PURCHASE_ATTESTATION_REPLAY_MODE==="d1_atomic_nonce_v1" &&
+    env?.PURCHASE_ATTESTATION_ACCESS_MODE==="cloudflare_access_service_auth_only" &&
+    ACCESS_AUD.test(env?.PURCHASE_ATTESTATION_ACCESS_AUD||"") &&
     typeof env?.DB?.prepare==="function";
 }
 /**
- * An explicit deployment integration must call this only after validating
- * hostname and HTTPS at its boundary. There is no exported fetch handler.
+ * A future separately reviewed Worker entry point must call:
+ * handleDraftInternalPurchaseAttestation(request, env,
+ *   prepareSignedTestPurchaseAttestation, ctx.access).
+ * ONLY ctx.access supplied by Cloudflare's Worker runtime is trusted.
+ * NEVER pass a request/header/body-provided access context or expose this
+ * draft on the existing payment webhook route. Cloudflare Access must use
+ * a Service Auth policy authorizing one scoped service token.
  *
- * The injected signer is for isolated tests only; production integration
- * should always use the default imported Stripe/D1 verifier.
+ * The injected signer/access context are for isolated tests only. There is
+ * currently no route, Access application, service token or deployed handler.
  */
 export async function handleDraftInternalPurchaseAttestation(
-  request,env,issue=prepareSignedTestPurchaseAttestation
+  request,env,issue=prepareSignedTestPurchaseAttestation,accessContext
 ) {
   if(!authorizedEnv(env))return response(503,"Attestation disabled");
+  // This must be the platform-authenticated context, NOT a supplied JWT
+  // header (headers are attacker-controllable until verified by Access).
+  if(!accessContext||accessContext.aud!==env.PURCHASE_ATTESTATION_ACCESS_AUD)
+    return response(403,"Access required");
   if(!(request instanceof Request))return response(400,"Invalid request");
   const url=new URL(request.url);
   if(url.pathname!==ENDPOINT || url.search || url.username || url.password ||
