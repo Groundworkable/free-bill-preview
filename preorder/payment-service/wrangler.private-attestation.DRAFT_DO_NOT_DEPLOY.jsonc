@@ -1,0 +1,25 @@
+{
+  // DRAFT ONLY. Do NOT rename to wrangler.jsonc, automatically deploy,
+  // connect to CI deployment, or enable its route without a separate review.
+  // Candidate name is NOT an existing/provisioned Worker. Must never reuse
+  // "groundwork-payment-sandbox-isolated" (the Stripe webhook Worker).
+  "name": "groundwork-private-attestation-test",
+  "main": "./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": false,
+  "routes": [],
+  "vars": {
+    "PAYMENTS_MODE": "disabled",
+    "PURCHASE_ATTESTATION_ENTRY_MODE": "disabled",
+    "PURCHASE_ATTESTATION_TRANSPORT_MODE": "disabled",
+    "PURCHASE_ATTESTATION_MODE": "disabled",
+    "PURCHASE_ATTESTATION_REQUEST_AUTH_MODE": "disabled",
+    "PURCHASE_ATTESTATION_REPLAY_MODE": "disabled",
+    "PURCHASE_ATTESTATION_ACCESS_MODE": "disabled",
+    "PURCHASE_ATTESTATION_PRIVATE_ORIGIN": "UNCONFIGURED"
+  }
+  // Intentionally no Stripe keys, HMAC keys, bearer, Access tokens, AUD or D1.
+  // Add the existing isolated payment D1 DB binding and reviewed secrets only
+  // after Cloudflare Access Service Auth policy is verified on the new Worker.
+  // This draft publishes NO workers.dev route, wildcard routes, or cron.
+}
