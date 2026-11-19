@@ -74,10 +74,21 @@ function records(){
 }
 async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
  const e={...config(),...changes};const rs=records();
+ const seen=new Set();let replayWrites=0;
  alterRecords?.(rs);
  let stripeCalls=0,d1Calls=0;
  e.DB={
   prepare(sql){
+   if(sql.includes("INSERT INTO prepurchase_attestation_request_nonces")){
+    return {bind(n,t){return {async run(){
+      replayWrites++;
+      if(seen.has(n))throw new Error("SQLITE_CONSTRAINT_PRIMARYKEY");
+      seen.add(n);
+      assert.match(n,/^[a-f0-9]{64}$/);
+      assert.ok(Number.isSafeInteger(t));
+      return {success:true,meta:{changes:1}};
+    }};}};
+   }
    return {
     bind(...p){
      return {
@@ -127,12 +138,13 @@ async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
   const resp=await handleDraftInternalPurchaseAttestation(request,e);
   assert.equal(resp.status,expectStatus);
   assert.equal(resp.headers.get("Cache-Control"),"no-store");
-  return {resp,stripeCalls,d1Calls,e};
+  return {resp,stripeCalls,d1Calls,replayWrites,e};
  }finally{globalThis.fetch=original}
 }
 test("full actual draft handler + producer verifies signed contact, TEST Stripe + immutable D1 and emits signed pending-only evidence",async()=>{
  const {resp,stripeCalls,d1Calls,e}=await runCase();
  assert.equal(stripeCalls,4);assert.equal(d1Calls,2);
+ assert.equal(replayWrites,1);
  const signed=await resp.json();const p=signed.purchase;
  assert.equal(p.orderReference,ORDER);
  assert.equal(p.verifiedOwnerId,OWNER);
