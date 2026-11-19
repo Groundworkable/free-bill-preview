@@ -18,6 +18,7 @@ const EMAIL="founder@example.invalid";
 const TOKEN="gwti_"+("a".repeat(56));
 const REQUEST_SECRET="synthetic-private-request-bound-signing-key-long";
 const REQUEST_PATH="/internal/test-prepurchase-attestation";
+const ACCESS_AUD="a".repeat(64);
 const NOW=Math.floor(Date.now()/1000);
 const sign=(key,v)=>createHmac("sha256",key).update(v).digest("hex");
 const config=()=>({
@@ -34,6 +35,8 @@ const config=()=>({
  PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
  PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"signed_test_only",
  PURCHASE_ATTESTATION_REPLAY_MODE:"d1_atomic_nonce_v1",
+ PURCHASE_ATTESTATION_ACCESS_MODE:"cloudflare_access_service_auth_only",
+ PURCHASE_ATTESTATION_ACCESS_AUD:ACCESS_AUD,
  PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 });
 const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
@@ -136,7 +139,7 @@ async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
   throw new Error("Unknown Stripe endpoint");
  };
  try{
-  const resp=await handleDraftInternalPurchaseAttestation(request,e);
+  const resp=await handleDraftInternalPurchaseAttestation(request,e,undefined,{aud:ACCESS_AUD});
   assert.equal(resp.status,expectStatus);
   assert.equal(resp.headers.get("Cache-Control"),"no-store");
   return {resp,stripeCalls,d1Calls,replayWrites,e};
