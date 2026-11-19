@@ -13,14 +13,29 @@ function signature(raw,t,n=nonce){
   .update(JSON.stringify(["gw-test-transport-v1","POST",path,t,n,raw]))
   .digest("hex");
 }
-const env=()=>({
+const env=()=>{
+  const seen=new Set();
+  return {
+  DB:{
+    prepare(sql){
+      assert.match(sql,/INSERT INTO prepurchase_attestation_request_nonces/);
+      return {bind(n,t){return {async run(){
+        if(!/^[a-f0-9]{64}$/.test(n)||!Number.isSafeInteger(t))
+          throw new Error("invalid synthetic nonce");
+        if(seen.has(n))throw new Error("SQLITE_CONSTRAINT_PRIMARYKEY");
+        seen.add(n);
+        return {success:true,meta:{changes:1}};
+      }}; }};
+    }
+  },
+  PURCHASE_ATTESTATION_REPLAY_MODE:"d1_atomic_nonce_v1",
   PURCHASE_ATTESTATION_TRANSPORT_MODE:"founder_test_only",
   PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
   PAYMENTS_MODE:"disabled",
   PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
   PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"signed_test_only",
   PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
-});
+};};
 const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
 const body=()=>({sessionId:"cs_test_SyntheticOrder",buyerProof:{
   proof:{version:"synthetic-only",issuer:"synthetic-only"},signature:"a".repeat(64)
@@ -53,6 +68,8 @@ test("receiver may not be re-enabled, nor producer mode changed",async()=>{
   for(const override of [
     {PAYMENTS_MODE:"sandbox"},{PAYMENTS_MODE:"live"},
     {PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"disabled"},
+    {PURCHASE_ATTESTATION_REPLAY_MODE:"disabled"},
+    {DB:null},
     {PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:"short"},
     {PURCHASE_ATTESTATION_MODE:"disabled"},{PURCHASE_ATTESTATION_INTERNAL_TOKEN:"weak"},
   ]){
@@ -152,6 +169,40 @@ test("authorized TEST-only request delegates exactly one purchase verification a
   assert.deepEqual(await r.json(),result);
   assert.equal(r.headers.get("Cache-Control"),"no-store");
   assert.equal(r.headers.get("X-Content-Type-Options"),"nosniff");
+});
+
+test("durable nonce ledger denies replay without calling provider twice",async()=>{
+  const binding=env();
+  let calls=0;
+  const r1=await handleDraftInternalPurchaseAttestation(req(),binding,async()=>{
+    calls++;return result;
+  });
+  assert.equal(r1.status,200);
+  const r2=await handleDraftInternalPurchaseAttestation(req(),binding,async()=>{
+    calls++;return result;
+  });
+  assert.equal(r2.status,503);
+  assert.equal(calls,1);
+});
+
+test("missing or broken nonce ledger denies before provider I/O",async()=>{
+  for(const db of [
+    null,
+    {prepare(){throw new Error("missing nonce table")}},
+    {prepare(){return {bind(){return {run:async()=>({
+      success:true,meta:{changes:0}
+    })}}}}},
+    {prepare(){return {bind(){return {run:async()=>({
+      success:false,meta:{changes:1}
+    })}}}}},
+  ]){
+    let calls=0;
+    const r=await handleDraftInternalPurchaseAttestation(req(),{
+      ...env(),DB:db,
+    },async()=>{calls++;return result});
+    assert.equal(r.status,db===null?503:503);
+    assert.equal(calls,0);
+  }
 });
 
 test("provider/DB errors do not reveal internal details",async()=>{
