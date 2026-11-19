@@ -2,6 +2,28 @@
 
 **Status:** DRAFT / not deployed or configured. Stripe checkout/webhook, Cloudflare payment Worker, and customer emails remain disabled. This is *not* authorization to create a new Worker, Access application, token, hostname, or secret.
 
+## Current operational gate — independently checked November 19, 2026
+
+**Use this section rather than older superseded same-host deployment suggestions below.** The selected draft is a **separate** future Worker, NOT an additional route on `groundwork-payment-sandbox-isolated`.
+
+**Current account state is NOT inspected.** No connected Cloudflare account-management tool is available; public documentation cannot establish which Access applications, service tokens, policy conflicts, hostname reservations or billing plan actually exist. Do not create/reconfigure anything merely because the source tests pass.
+
+1. **Account read-only preflight (founder browser / Work):** Cloudflare dashboard → **Zero Trust → Access controls → Applications**. Check that Zero Trust exists, inspect the application list for overlapping host/path policies and report only nonsecret policy names, actions, matching hostname/path and current plan. Then **Workers & Pages**: inspect the separate candidate name's availability and existing isolated webhook Worker name. Do not alter the webhook Worker, or use a Worker-wide / Protect-all setting.
+2. **Planned distinct test-only origin, NOT provisioned:** `https://groundwork-private-attestation-test.groundworkbyable.workers.dev` with exact protected path `/internal/test-prepurchase-attestation`. The app and payment private worker must use the same approved origin. No corresponding hostname currently confirmed. No route should go live before a **Service Auth-only** Access policy explicitly includes only the dedicated machine service token. Do not add Allow/Bypass or broad token tag selectors.
+3. **Crucial inert-config compatibility:** `wrangler.private-attestation.DRAFT_DO_NOT_DEPLOY.jsonc` deliberately has `workers_dev:false` and `routes:[]`. Cloudflare docs say `workers_dev:false` DISABLES the `workers.dev` deployment URL. Therefore the current candidate **cannot receive HTTP requests** at the proposed origin. Only after the Access application and service-token policy are in place and verified may a separately reviewed configuration enable this **new Worker's** exact `workers.dev` route (or select and update all caller/worker origin contracts for a dedicated custom domain). Never change the original webhook Worker route.
+4. **Account charge gate:** Cloudflare advertises Zero Trust Free ($0 for small teams) and Workers Free usage, but that does not establish this account's actual plan or whether limits/paid features apply. Inspect account billing **before** any upgrade, new recurring subscription or enabling paid Worker features; do not assume a new charge is authorized.
+5. **Before any signed real TEST traffic:** verify dedicated hostname routes to the new Worker; strict Service Auth credentials accepted; no unauthenticated/human login bypass; Cloudflare-runtime `ctx.access.aud` matches the intended Access application; private Worker D1 binding and reviewed nonce ledger present; all HMAC keys server-held; original payment Worker remains `PAYMENTS_MODE=disabled`. Token secret is shown once at creation—never paste into a chat, GitHub, test log, screenshot or URL.
+6. **Separate buyer gate:** app sandbox project `jcrwjhhuaihjlywjflbv` already exists. Before buyer OTP/claim issuance, independently establish a founder-controlled new Auth session and the original TEST buyer mailbox, and verify the dedicated sandbox-only service key belongs to that project. No real email or permanent Auth identity is authorized by a read-only preflight.
+
+**No-deploy checkpoint:** Complete step 1 with the actual account view, then review the exact plan/policy conflicts before any resource creation. This is a setup gate, not an instruction to send a test checkout or enable member access.
+
+Sources (independently read November 19, 2026):
+- https://developers.cloudflare.com/workers/configuration/cloudflare-access/
+- https://developers.cloudflare.com/workers/configuration/routing/workers-dev/
+- https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/
+- https://www.cloudflare.com/sase/products/access/
+- https://developers.cloudflare.com/workers/platform/pricing/
+
 ## Security boundary
 
 Cloudflare's current Workers Access documentation says authenticated direct Worker requests expose `ctx.access` with `aud`; unauthenticated requests have no `ctx.access`. Client-to-Access service authentication uses `CF-Access-Client-Id` and `CF-Access-Client-Secret`. Access **does not propagate** `ctx.access` through Service Bindings. Sources:
