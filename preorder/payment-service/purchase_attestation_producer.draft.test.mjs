@@ -208,6 +208,26 @@ test("invalid and expired buyer proof never fetch Stripe or read D1",async()=>{
   }finally{globalThis.fetch=originalFetch}
  }
 });
+test("real-style TEST checkout: customer_details.email alone is valid purchaser contact",async()=>{
+ // Observed in the independently read original Stripe TEST checkout:
+ // customer_details.email is present, customer_email is null.
+ const {result,queries,urls}=await call({modifyStripe:x=>{
+   x.session.customer_email=null;
+ }});
+ assert.equal(result.purchase.buyerProofMethod,"independent_mailbox_and_account_control");
+ assert.equal(result.purchase.status,"paid_unfulfilled");
+ assert.equal(result.purchase.verifiedOwnerId,verifiedOwner);
+ assert.equal(queries.length,2);
+ assert.equal(urls.length,4);
+ assert.equal(JSON.stringify(result).includes(buyer),false);
+});
+test("alternate valid checkout contact: customer_email alone also supports verified signed proof",async()=>{
+ const {result}=await call({modifyStripe:x=>{
+   x.session.customer_details.email=null;
+ }});
+ assert.equal(result.purchase.status,"paid_unfulfilled");
+ assert.equal(result.purchase.verifiedOwnerId,verifiedOwner);
+});
 test("Stripe checkout email mismatch and removed signed proof fail closed",async()=>{
  await assert.rejects(()=>call({modifyStripe:x=>{x.session.customer_email="different@example.invalid"}}));
  await assert.rejects(()=>call({modifyStripe:x=>{x.session.customer_email=null;x.session.customer_details.email=null}}));
