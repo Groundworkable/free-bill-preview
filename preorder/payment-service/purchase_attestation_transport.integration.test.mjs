@@ -143,7 +143,7 @@ async function runCase({alterProof,alterRecords,changes,expectStatus=200}={}){
  }finally{globalThis.fetch=original}
 }
 test("full actual draft handler + producer verifies signed contact, TEST Stripe + immutable D1 and emits signed pending-only evidence",async()=>{
- const {resp,stripeCalls,d1Calls,e}=await runCase();
+ const {resp,stripeCalls,d1Calls,replayWrites,e}=await runCase();
  assert.equal(stripeCalls,4);assert.equal(d1Calls,2);
  assert.equal(replayWrites,1);
  const signed=await resp.json();const p=signed.purchase;
