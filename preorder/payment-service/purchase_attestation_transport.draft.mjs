@@ -6,7 +6,7 @@
  * NEVER be used as a public checkout, customer endpoint, or paid-access issuer.
  * Payments mode MUST remain disabled.
  */
-import {prepareSignedTestPurchaseAttestation} from "./purchase_attestation_producer.draft.mjs";
+import {prepareSignedTestPurchaseAttestation,verifyIndependentBuyerProofSignature} from "./purchase_attestation_producer.draft.mjs";
 
 const ENDPOINT="/internal/test-prepurchase-attestation";
 const ORIGIN="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev";
@@ -132,6 +132,13 @@ export async function handleDraftInternalPurchaseAttestation(
      Array.isArray(payload.buyerProof))
     return response(400,"Invalid request");
 
+  // Reject invalid buyer identity before touching D1 at all.
+  try {
+    await verifyIndependentBuyerProofSignature(
+      env,payload.buyerProof,payload.sessionId,Math.floor(Date.now()/1000));
+  } catch {
+    return response(503,"Attestation unavailable");
+  }
   // Durable D1 PRIMARY KEY arbitrates exact nonce reuse, even across
   // different Worker instances / concurrent requests. Never invoke the
   // Stripe/D1 verifier until this single insertion has committed.
