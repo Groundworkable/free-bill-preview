@@ -1,23 +1,43 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {createHmac} from "node:crypto";
 import {handleDraftInternalPurchaseAttestation} from "./purchase_attestation_transport.draft.mjs";
 
 const TOKEN="gwti_"+("A".repeat(56));
+const REQUEST_SECRET="synthetic-separate-request-auth-hmac-key-32plus";
+const stamp=()=>String(Math.floor(Date.now()/1000));
+const nonce="a".repeat(64);
+const path="/internal/test-prepurchase-attestation";
+function signature(raw,t,n=nonce){
+ return createHmac("sha256",REQUEST_SECRET)
+  .update(JSON.stringify(["gw-test-transport-v1","POST",path,t,n,raw]))
+  .digest("hex");
+}
 const env=()=>({
   PURCHASE_ATTESTATION_TRANSPORT_MODE:"founder_test_only",
   PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
   PAYMENTS_MODE:"disabled",
   PURCHASE_ATTESTATION_INTERNAL_TOKEN:TOKEN,
+  PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"signed_test_only",
+  PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 });
 const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
 const body=()=>({sessionId:"cs_test_SyntheticOrder",buyerProof:{
   proof:{version:"synthetic-only",issuer:"synthetic-only"},signature:"a".repeat(64)
 }});
-const req=(override={})=>new Request(override.url??url,{
-  method:override.method??"POST",
-  headers:override.headers??{"Authorization":"Bearer "+TOKEN,"Content-Type":"application/json"},
-  body:override.body===undefined?JSON.stringify(body()):override.body,
-});
+const req=(override={})=>{
+  const raw=override.body===undefined?JSON.stringify(body()):override.body;
+  const t=stamp();
+  const headers=override.headers??{
+    "Authorization":"Bearer "+TOKEN,"Content-Type":"application/json",
+    "X-Groundwork-Test-Timestamp":t,
+    "X-Groundwork-Test-Nonce":nonce,
+    "X-Groundwork-Test-Signature":signature(raw,t),
+  };
+  return new Request(override.url??url,{
+    method:override.method??"POST",headers,body:raw,
+  });
+};
 const result={purchase:{version:"gw-prepurchase-test-v1",orderReference:"cs_test_SyntheticOrder"},signature:"b".repeat(64)};
 const issue=async()=>result;
 
@@ -32,6 +52,8 @@ test("default-closed adapter never calls its signer even with valid request",asy
 test("receiver may not be re-enabled, nor producer mode changed",async()=>{
   for(const override of [
     {PAYMENTS_MODE:"sandbox"},{PAYMENTS_MODE:"live"},
+    {PURCHASE_ATTESTATION_REQUEST_AUTH_MODE:"disabled"},
+    {PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:"short"},
     {PURCHASE_ATTESTATION_MODE:"disabled"},{PURCHASE_ATTESTATION_INTERNAL_TOKEN:"weak"},
   ]){
     let calls=0;
@@ -64,6 +86,31 @@ test("HTTP method, path, query, scheme and bearer authentication are required",a
   }
 });
 
+test("request HMAC rejects altered body, stale timestamp and wrong signature before handler",async()=>{
+ let calls=0;
+ const t=stamp();
+ const raw=JSON.stringify(body());
+ const altered=JSON.stringify({...body(),sessionId:"cs_test_Altered"});
+ const cases=[
+  {raw:altered,t,signature:signature(raw,t)},
+  {raw,t:String(Number(t)-120),signature:signature(raw,String(Number(t)-120))},
+  {raw,t,signature:"0".repeat(64)},
+ ];
+ for(const c of cases){
+  const request=new Request(url,{method:"POST",headers:{
+   "Authorization":"Bearer "+TOKEN,
+   "Content-Type":"application/json",
+   "X-Groundwork-Test-Timestamp":c.t,
+   "X-Groundwork-Test-Nonce":nonce,
+   "X-Groundwork-Test-Signature":c.signature,
+  },body:c.raw});
+  const r=await handleDraftInternalPurchaseAttestation(request,env(),async()=>{
+   calls++;return result;
+  });
+  assert.equal(r.status,401);
+ }
+ assert.equal(calls,0);
+});
 test("oversized, malformed, unexpected and invalid-order payloads are rejected before verification",async()=>{
   const invalid=[
     {body:"not json",expected:400},
@@ -81,8 +128,13 @@ test("oversized, malformed, unexpected and invalid-order payloads are rejected b
     assert.equal(calls,0);
   }
   let calls=0;
+  const t=stamp();const raw=JSON.stringify(body());
   const r=await handleDraftInternalPurchaseAttestation(req({headers:{
-    "Authorization":"Bearer "+TOKEN,"Content-Type":"application/json","Content-Length":"99999999",
+    "Authorization":"Bearer "+TOKEN,"Content-Type":"application/json",
+    "Content-Length":"99999999",
+    "X-Groundwork-Test-Timestamp":t,
+    "X-Groundwork-Test-Nonce":nonce,
+    "X-Groundwork-Test-Signature":signature(raw,t),
   }}),env(),async()=>{calls++;return result});
   assert.equal(r.status,413);assert.equal(calls,0);
 });
