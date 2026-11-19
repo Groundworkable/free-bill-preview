@@ -23,6 +23,7 @@ const NOW=Math.floor(Date.now()/1000);
 const sign=(key,v)=>createHmac("sha256",key).update(v).digest("hex");
 const config=()=>({
  PURCHASE_ATTESTATION_TRANSPORT_MODE:"founder_test_only",
+ PURCHASE_ATTESTATION_PRIVATE_ORIGIN:"https://synthetic-private-attestation.groundworkbyable.workers.dev",
  PURCHASE_ATTESTATION_MODE:"sandbox_verified_buyer_only",
  PAYMENTS_MODE:"disabled",TERMS_APPROVED:"true",
  TERMS_VERSION:"prepurchase-v2026-11-17",
@@ -39,7 +40,7 @@ const config=()=>({
  PURCHASE_ATTESTATION_ACCESS_AUD:ACCESS_AUD,
  PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET:REQUEST_SECRET,
 });
-const url="https://groundwork-payment-sandbox-isolated.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
+const url="https://synthetic-private-attestation.groundworkbyable.workers.dev/internal/test-prepurchase-attestation";
 function signedProof(e,changes={}){
  const p={
   version:"gw-independent-buyer-proof-test-v1",
