@@ -50,6 +50,15 @@ test("recorded original TEST offer and Terms values do not activate any mode",()
     assert.equal(candidate.vars[name],value);
   assert.equal(Object.keys(candidate.vars).length,Object.keys(original.vars).length+6);
 });
+test("all seven exact TEST secrets REQUIRED by name only, never plaintext vars",()=>{
+  assert.deepEqual(candidate.secrets?.required,secrets);
+  assert.equal(new Set(candidate.secrets.required).size,7);
+  for(const secret of secrets)
+    assert.equal(Object.hasOwn(candidate.vars,secret),false);
+  assert.equal(Object.hasOwn(original,"secrets"),false);
+  // Version upload must still be BLOCKED pending source-of-secrets ancestry
+  // confirmation; required names do not prove an inactive version is inherited.
+});
 test("secrets remain OUT of source and no authorizing mode or deployment is added",()=>{
   for(const secret of secrets)
     assert.equal(Object.hasOwn(candidate.vars,secret),false);
