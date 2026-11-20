@@ -16,8 +16,17 @@ CHECKOUT = "cs_test_a0wyfpMSTBjf3jPB2IktXBafoR3mMkHO7cjwNnEGG0WurnPxo8BPBRuirZ"
 def audit(db):
     # Read-only statement enforcement is at the SQLite authorizer, not merely
     # a best-effort SQL string search. A SELECT with side effects is blocked.
-    allowed = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION, sqlite3.SQLITE_RECURSIVE}
-    def guard(action, *_):
+    allowed = {
+        sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ,
+        sqlite3.SQLITE_FUNCTION, sqlite3.SQLITE_RECURSIVE,
+    }
+    def guard(action, arg1, arg2, *_):
+        # SQLite invokes the table-valued pragma_table_info() as a PRAGMA.
+        # Permit only the exact read-only schema introspection used by query 2.
+        if (action == sqlite3.SQLITE_PRAGMA and
+                arg1 == "table_info" and
+                arg2 == "prepurchase_attestation_request_nonces"):
+            return sqlite3.SQLITE_OK
         return sqlite3.SQLITE_OK if action in allowed else sqlite3.SQLITE_DENY
 
     db.set_authorizer(guard)
