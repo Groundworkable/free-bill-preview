@@ -16,6 +16,20 @@
   "preview_urls": false,
   "routes": [],
   "observability": {"enabled": true, "logs": {"enabled": true}},
+  // Wrangler supports required secret NAMES as an upload-time safety check.
+  // Not proof which inactive/active version supplies values: DO NOT UPLOAD.
+  // Secret values stay founder-private and NEVER appear here.
+  "secrets": {
+    "required": [
+      "STRIPE_TEST_SECRET_KEY",
+      "PURCHASE_ATTESTATION_ACCESS_AUD",
+      "PURCHASE_ATTESTATION_INTERNAL_TOKEN",
+      "PURCHASE_ATTESTATION_REQUEST_HMAC_SECRET",
+      "INDEPENDENT_BUYER_PROOF_HMAC_SECRET",
+      "PURCHASE_ATTESTATION_HMAC_SECRET",
+      "PURCHASER_CONTACT_HMAC_SECRET"
+    ]
+  },
   "d1_databases": [
     {
       "binding": "DB",
