@@ -53,12 +53,18 @@ ORDER BY required.column_name;
 -- Restrict to previously verified TEST $9.99 monthly offer, $0.90 TEST tax,
 -- immutable paid_unfulfilled row. Never print buyer email, checkout id,
 -- payment intent, charge ID, nor raw row. Missing/ambiguous = NOT_VERIFIED.
+-- D1 console rejected the previous digit-class GLOB as a complex pattern.
+-- Instead use basic SQLite length/substr tests, which check the recorded
+-- version's outer shape without inventing a Terms date. Application-side
+-- validation must still reject malformed digits or dates.
 SELECT 'original_test_terms' AS audit_area,
        COUNT(*) AS matching_order_count,
        CASE
          WHEN COUNT(*) = 1
-          AND MIN(terms_version) GLOB
-            'prepurchase-v[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+          AND length(MIN(terms_version)) = 23
+          AND substr(MIN(terms_version),1,13) = 'prepurchase-v'
+          AND substr(MIN(terms_version),18,1) = '-'
+          AND substr(MIN(terms_version),21,1) = '-'
          THEN MIN(terms_version)
          ELSE 'NOT_VERIFIED'
        END AS terms_version_result
