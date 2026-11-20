@@ -44,18 +44,35 @@ try {
     Write-Host 'PASS: All local Node synthetic verifier tests completed.'
 
     if ($IncludeSqlite) {
-        $py = Get-Command py -ErrorAction SilentlyContinue
-        if ($py) {
-            & py -3 attestation_request_nonce_ledger.test.py
-        } elseif (Get-Command python -ErrorAction SilentlyContinue) {
-            & python attestation_request_nonce_ledger.test.py
+        # Windows App Execution Aliases can present a 'python' executable that
+        # only opens the Microsoft Store. Detect this before treating the
+        # OPTIONAL SQLite suite as a genuine test failure.
+        $pythonAvailable = $false
+        $pyLauncher = Get-Command py -ErrorAction SilentlyContinue
+        if ($pyLauncher) {
+            & py -3 --version *> $null
+            if ($LASTEXITCODE -eq 0) {
+                $pythonAvailable = $true
+                & py -3 attestation_request_nonce_ledger.test.py
+            }
+        }
+        if (-not $pythonAvailable) {
+            $pyExe = Get-Command python -ErrorAction SilentlyContinue
+            if ($pyExe) {
+                & python --version *> $null
+                if ($LASTEXITCODE -eq 0) {
+                    $pythonAvailable = $true
+                    & python attestation_request_nonce_ledger.test.py
+                }
+            }
+        }
+        if (-not $pythonAvailable) {
+            Write-Host 'SKIP: Optional SQLite tests not run (Python 3 unavailable). Node tests passed.'
+        } elseif ($LASTEXITCODE -ne 0) {
+            throw 'STOP: Actual local SQLite nonce tests failed. No remote database writes.'
         } else {
-            throw 'STOP: Python 3 unavailable; optional local SQL nonce tests NOT run.'
+            Write-Host 'PASS: Optional local synthetic SQLite nonce tests completed.'
         }
-        if ($LASTEXITCODE -ne 0) {
-            throw 'STOP: Local synthetic SQLite nonce tests failed. No remote database writes.'
-        }
-        Write-Host 'PASS: Local synthetic SQLite nonce tests completed.'
     }
     Write-Host 'NO CLOUD WRITE / NO OTP / NO STRIPE / NO MEMBERSHIP / NO DEPLOY.'
 } finally {
