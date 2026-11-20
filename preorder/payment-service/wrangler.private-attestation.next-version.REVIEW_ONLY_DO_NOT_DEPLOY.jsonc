@@ -1,0 +1,52 @@
+{
+  // REVIEW-ONLY NEXT-VERSION CONFIG. NEVER DEPLOY OR UPLOAD DIRECTLY.
+  // Original founder staging succeeded only on INACTIVE version
+  // 9af6dacb-d635-4627-accd-775f5a9202a2 (7 secrets). This JSONC file does
+  // NOT contain or establish a safe secret-preserving version upload.
+  // Do NOT use with wrangler deploy / versions upload / secret put until
+  // independently reviewed operator, secret ancestry and explicit approval.
+  //
+  // This records the actual founder-provisioned TEST-only hostname + D1 binding.
+  // The previous unprovisioned/disabled-route draft stays unchanged.
+  // NEVER deploy this config to groundwork-payment-sandbox-isolated.
+  "name": "groundwork-private-attestation-test",
+  "main": "./private_attestation_entry.DRAFT_DO_NOT_DEPLOY.mjs",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [],
+  "observability": {"enabled": true, "logs": {"enabled": true}},
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "groundwork-payment-sandbox-isolated",
+      "database_id": "f37839b6-3ed4-4a73-89d7-b6cd6aef6125"
+    }
+  ],
+  "vars": {
+    "PAYMENTS_MODE": "disabled",
+    "PURCHASE_ATTESTATION_ENTRY_MODE": "disabled",
+    "PURCHASE_ATTESTATION_TRANSPORT_MODE": "disabled",
+    "PURCHASE_ATTESTATION_MODE": "disabled",
+    "PURCHASE_ATTESTATION_REQUEST_AUTH_MODE": "disabled",
+    "PURCHASE_ATTESTATION_REPLAY_MODE": "disabled",
+    "PURCHASE_ATTESTATION_ACCESS_MODE": "disabled",
+    "PURCHASE_ATTESTATION_PRIVATE_ORIGIN": "https://groundwork-private-attestation-test.groundworkbyable.workers.dev",
+    // Source of truth for these values is the previously verified original TEST
+    // offer IDs; remote isolated D1 founder screenshot confirms one original
+    // matching monthly purchase and terms_version prepurchase-v2026-11-17.
+    // TERMS_APPROVED represents existing historical TEST terms evidence ONLY.
+    // All seven functional Worker modes remain strictly disabled.
+    "TERMS_APPROVED": "true",
+    "TERMS_VERSION": "prepurchase-v2026-11-17",
+    "MONTH_LINK_ID": "plink_1UbK33JK9stEim4w7BvY2CnM",
+    "ANNUAL_LINK_ID": "plink_1UbK3MJK9stEim4w2nS3loNW",
+    "MONTH_PRICE_ID": "price_1UbK2YJK9stEim4wCsZ0tyao",
+    "ANNUAL_PRICE_ID": "price_1UbK2aJK9stEim4wgnY5LRVR"
+  }
+  // One-time Cloudflare Service Auth token, private HMAC keys, TEST Stripe API
+  // credentials and Access AUD are NEVER provided in this file or repo.
+  // D1 nonce table exists, but all runtime flags remain OFF until future
+  // separately approved functional TEST-only attestation validation.
+  // No cron, queue, webhook path, custom route, live payment or membership.
+}
