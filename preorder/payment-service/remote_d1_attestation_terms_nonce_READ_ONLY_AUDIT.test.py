@@ -16,7 +16,7 @@ CHECKOUT = "cs_test_a0wyfpMSTBjf3jPB2IktXBafoR3mMkHO7cjwNnEGG0WurnPxo8BPBRuirZ"
 def audit(db):
     # Read-only statement enforcement is at the SQLite authorizer, not merely
     # a best-effort SQL string search. A SELECT with side effects is blocked.
-    allowed = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION}
+    allowed = {sqlite3.SQLITE_SELECT, sqlite3.SQLITE_READ, sqlite3.SQLITE_FUNCTION, sqlite3.SQLITE_RECURSIVE}
     def guard(action, *_):
         return sqlite3.SQLITE_OK if action in allowed else sqlite3.SQLITE_DENY
 
