@@ -13,7 +13,14 @@ if ($LASTEXITCODE -ne 0 -or $branch -ne 'site/prepurchase-checkout-gate-2026-11-
     throw 'STOP: Not on exact payment TEST draft branch. No dry run attempted.'
 }
 $dirty = @(& git -C $repo status --porcelain)
-if ($LASTEXITCODE -ne 0 -or ($dirty | Where-Object { $_ }).Count -gt 0) {
+if ($LASTEXITCODE -ne 0) {
+    throw 'STOP: Could not verify local checkout cleanliness. Nothing executed.'
+}
+# Under Windows PowerShell 5.1 + StrictMode Latest, an empty pipeline returns
+# $null; accessing .Count directly on that $null raises PropertyNotFoundStrict.
+# Materialize the pipeline as an array before accessing Count.
+$changedPaths = @($dirty | Where-Object { $_ })
+if ($changedPaths.Count -gt 0) {
     throw 'STOP: Checkout contains local changes. Do not overwrite or run.'
 }
 $configPath = Join-Path $PSScriptRoot 'wrangler.private-attestation.next-version.REVIEW_ONLY_DO_NOT_DEPLOY.jsonc'
