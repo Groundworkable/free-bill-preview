@@ -60,7 +60,30 @@ js=(ROOT/"assets/js/ga4-consent.js").read_text(encoding="utf-8")
 assert "G-KZSJ1W4PXH" in js
 assert 'choice!=="granted"' in js and "globalPrivacyControl" in js
 assert "ad_personalization:\"denied\"" in js
-assert not (ROOT/"preorder").exists(),"Unapproved payment assets in legal release"
+# Controlled informational-only exception: preorder files are permitted only with checkout fail-closed.
+preorder=ROOT/"preorder"
+if preorder.exists():
+ import json
+ assert preorder.is_dir(),"Preorder path must be a directory"
+ assert {p.name for p in preorder.iterdir()}=={"index.html","checkout-config.json"},"Unexpected files in preorder"
+ cfg=json.loads((preorder/"checkout-config.json").read_text(encoding="utf-8"))
+ assert cfg["enabled"] is False and cfg["termsApproved"] is False,"Preorder checkout must remain disabled"
+ assert cfg["termsUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
+ assert cfg["refundPolicyUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
+ assert set(cfg["offers"])=={"monthly","annual"}
+ for key,amount in (("monthly",9.99),("annual",96)):
+  offer=cfg["offers"][key]
+  assert offer["paymentLink"] is None,(key,"LIVE checkout URL exposed")
+  assert offer["amountUsd"]==amount and offer["currency"]=="usd"
+  assert offer["paymentMode"]=="one_time" and offer["taxBehavior"]=="exclusive"
+  assert offer["taxCode"]=="txcd_10103000"
+ page=(preorder/"index.html").read_text(encoding="utf-8")
+ assert "https://buy.stripe.com/" not in page,"LIVE payment URL in page"
+ assert 'fetch("/preorder/checkout-config.json"' in page,"Missing config gate"
+ assert 'if(!valid){disable();return;}' in page,"Missing default-off guard"
+ assert 'const valid=cfg && cfg.enabled===true && cfg.termsApproved===true' in page
+ assert 'a.removeAttribute("href")' in page and 'a.setAttribute("aria-disabled","true")' in page
+ assert '<a href="/prepurchase-terms/">' in page,"Public legal terms not linked"
 assert not (ROOT/"review").exists(),"Unpublished legal review artifacts leaked to public build"
 assert not (ROOT/"groundwork-legal-cutover-PREVIEW-ONLY").exists(),"Offline previews leaked to public build"
 assert not (ROOT/"groundwork-LEGAL-PUBLICATION-STAGED-NOT-DEPLOYED").exists(),"Staging artifacts leaked"
@@ -71,4 +94,4 @@ assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
 print("PASS: authorized Nov 17 legal-only publication, approved legal SHA256 unchanged")
 print("PASS: 10 Company mirrors match standalone Privacy V2, 7-term public canonical route, 19 consent pages")
-print("PASS: no review/checkout/live payment/membership artifacts introduced")
+print("PASS: optional informational preorder page remains fail-closed; no LIVE checkout URL or membership artifacts")
