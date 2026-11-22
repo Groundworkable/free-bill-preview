@@ -14,7 +14,7 @@ COMPANY=[
  "careers/index.html","careers.html",
 ]
 PAGES=[
- "index.html","sign-in/index.html","tour.html","tour/index.html","free-tools.html",
+ "index.html","experience/index.html","sign-in/index.html","tour.html","tour/index.html","free-tools.html",
  "free-tools/index.html","organizations.html","organizations/index.html",
  "about.html","about/index.html","faqs.html","faqs/index.html",
  "contact.html","contact/index.html","careers.html","careers/index.html",
@@ -111,5 +111,5 @@ ET.fromstring(sitemap)
 assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
 print("PASS: staged Privacy V3 fingerprint and original purchaser Terms V1 body unchanged")
-print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 20 consent pages")
+print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 21 consent pages")
 print("PASS: LIVE checkout URLs pinned; inactive-link readiness gate fails closed; pre-purchase selected inside Tour membership panel")
