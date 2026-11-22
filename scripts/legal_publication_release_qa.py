@@ -21,8 +21,9 @@ PAGES=[
  "legal.html","legal/index.html","privacy.html","beta-terms.html",
 ]
 CONSENT='<script defer src="/assets/js/ga4-consent.js"></script>'
-DATE="2026-11-17"
-PRIVACY_HASH="9a037a57bbec36fcec5d5c6a10fdd35486c30829f640d52fb78485ef56c90380"
+DATE="2026-11-22"
+TERMS_DATE="2026-11-17"
+PRIVACY_HASH="83680bf325bb6276e63726903157697e0a6b54e2b0aeca913a43e6c1d4da3141"
 TERMS_HASH="8dcdd9d9b9efb73f91709c8df830bf0901796ebb5ef42073b8be10356085ed9d"
 POLICY_MARKER='<div class="kicker">Groundwork · Privacy</div>'
 def normalized(s):return re.sub(r"\s+"," ",s).strip()
@@ -34,11 +35,11 @@ privacy=(ROOT/"privacy.html").read_text(encoding="utf-8")
 terms=(ROOT/"prepurchase-terms/index.html").read_text(encoding="utf-8")
 assert privacy.count('<section class="legal-section">')==13
 assert terms.count("<h2>")==7
-assert "Version: privacy-v2" in privacy and f"Effective date: {DATE}" in privacy
-assert f"prepurchase-terms-v1 · {DATE}" in terms
+assert "Version: privacy-v3" in privacy and f"Effective date: {DATE}" in privacy
+assert f"prepurchase-terms-v1 · {TERMS_DATE}" in terms
 assert "https://groundworkbyable.online/prepurchase-terms/" in terms
 assert 'name="robots" content="index,follow"' in terms
-assert "Pre-purchase checkout remains unavailable" in terms
+assert "These terms govern one-time Groundwork pre-purchases when checkout is enabled." in terms
 assert "/prepurchase-terms/" in privacy
 assert sha(privacy[privacy.index('<section class="legal-section">'):privacy.rindex("</section>")+len("</section>")])==PRIVACY_HASH,"Approved Privacy sections differ"
 assert sha(extract(terms,'<h2>1. What you are buying</h2>','</article>'))==TERMS_HASH,"Approved Terms sections differ"
@@ -49,7 +50,7 @@ for path in COMPANY:
  assert normalized(extract(s,POLICY_MARKER,'\n\n </div></dialog>'))==public_article,path
  assert s.count('<section class="legal-section">')==13,path
  assert f"Effective date: {DATE}" in s,path
- assert "PUBLISHED PRIVACY POLICY · V2" in s,path
+ assert "PUBLISHED PRIVACY POLICY · V3" in s,path
  for banned in ("privacy-v1","prepublication","pending authorized publication","Founder Review","NOT YET EFFECTIVE","PRIVACY V2 · PUBLICATION REVIEW"):
   assert banned.lower() not in s.lower(),(path,banned)
 for path in PAGES:
@@ -92,6 +93,6 @@ sitemap=(ROOT/"sitemap.xml").read_text(encoding="utf-8")
 ET.fromstring(sitemap)
 assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
-print("PASS: authorized Nov 17 legal-only publication, approved legal SHA256 unchanged")
-print("PASS: 10 Company mirrors match standalone Privacy V2, 7-term public canonical route, 19 consent pages")
+print("PASS: staged Privacy V3 fingerprint and original purchaser Terms V1 body unchanged")
+print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 19 consent pages")
 print("PASS: optional informational preorder page remains fail-closed; no LIVE checkout URL or membership artifacts")
