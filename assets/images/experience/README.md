@@ -1,6 +1,6 @@
 # Experience — approved desktop preview provenance
 
-**Status:** Experience frontend is wired to these four exact paths, but binary images remain in the offline prepared pack and are NOT yet committed in the website repository. Missing files fail safely to the preexisting schematic. **Website visual approval applies to the Experience composition, not these screenshot substitutions.** Production approval remains separate.
+**Status:** Experience frontend is wired to these four exact paths, but binary images remain in the offline prepared pack and are NOT yet committed in the website repository. The explicit `approvedPreviewImagesInstalled=false` guard avoids requesting non-existent images. Missing files also fail safely to the preexisting schematic. **Website visual approval applies to the Experience composition, not these screenshot substitutions.** Production approval remains separate.
 
 ## Four authorized desktop design references
 
@@ -33,7 +33,7 @@
 1. Verify prepared file SHA-256 against the table above.
 2. Confirm no visible personally identifiable, payment, or authenticated data in every image.
 3. Place the four assets in the path above without changing global shell or room implementation.
-4. The preview-image branch is already wired with load/error fallback; verify each image genuinely loads after its binary asset is committed.
+4. After verifying all four image binaries exist and match the hashes, set `approvedPreviewImagesInstalled=true`; confirm each loads and its caption accurately states desktop design preview.
 5. Run desktop/mobile screenshot comparisons and existing website + legal regression tests.
 6. Obtain focused founder visual acceptance of the screenshot substitutions before any merge/release.
 
