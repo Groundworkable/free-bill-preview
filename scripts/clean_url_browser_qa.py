@@ -2,6 +2,7 @@
 
 Keep legacy *.html URLs usable; all new page links and route assets must resolve.
 """
+import base64
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -11,6 +12,14 @@ from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
+CAPTURES = ROOT / "review-captures"
+CAPTURES.mkdir(exist_ok=True)
+def capture(page, name, *, emit=False):
+    jpeg = page.screenshot(type="jpeg", quality=68, animations="disabled", full_page=False)
+    (CAPTURES / (name + ".jpg")).write_bytes(jpeg)
+    if emit:
+        print("GROUNDWORK_VISUAL_" + name + "_BASE64=" + base64.b64encode(jpeg).decode("ascii"), flush=True)
+
 SLUGS = ("tour", "free-tools", "organizations", "about", "faqs",
          "contact", "careers", "legal")
 
@@ -36,6 +45,7 @@ try:
             assert response and response.status == 200
             assert page.locator('[data-nav="/tour/"]').count() > 0
             assert page.locator('[data-nav="/organizations/"]').count() > 0
+            capture(page, f"home-{width}")
             video = page.locator('video#bloom source[type="video/mp4"]')
             assert video.count() == 1
             assert video.get_attribute("src") == "./media/groundwork-bloom-loop.mp4"
@@ -52,6 +62,9 @@ try:
             response = page.goto(base + "/tour", wait_until="domcontentloaded")
             assert response and response.status == 200
             assert urlparse(page.url).path == "/tour/", page.url
+            # Only capture the public Tour story; never real account or customer data.
+            page.goto(base + "/tour/", wait_until="domcontentloaded")
+            capture(page, f"tour-story-{width}")
             # Coherent pre-purchase journey; never invoke or complete an external payment.
             page.goto(base + "/tour/#membership", wait_until="domcontentloaded")
             # Hash-only navigation may legitimately return no new HTTP response.
@@ -60,6 +73,11 @@ try:
             assert page.locator('[data-offer-view="prepurchase"]').get_attribute("aria-pressed") == "true"
             assert page.locator('[data-plan="monthly"]').get_attribute("aria-pressed") == "true"
             assert page.locator("#priceTotal").inner_text() == "$9.99"
+            capture(page, f"membership-{width}", emit=True)
+            if width < 500:
+                page.locator(".page.pricing.active").evaluate("(el) => {el.scrollTop = el.scrollHeight;}")
+                capture(page, f"membership-mobile-bottom-{width}")
+                page.locator(".page.pricing.active").evaluate("(el) => {el.scrollTop = 0;}")
             assert page.locator("#prepurchaseSelectedLink").get_attribute("href") == "/preorder/?plan=monthly"
             page.locator('[data-plan="annual"]').click()
             assert page.locator("#priceTotal").inner_text() == "$96"
@@ -78,11 +96,13 @@ try:
             assert page.locator("#checkoutAnnual").get_attribute("href") is None
             assert page.locator("#checkoutAnnual").get_attribute("aria-disabled") == "true"
             assert page.locator("#checkoutMonthly").get_attribute("aria-disabled") == "true"
+            capture(page, f"preorder-closed-{width}")
             response = page.goto(base + "/sign-in/", wait_until="domcontentloaded")
             assert response and response.status == 200
             assert "not open yet" in page.locator("main").inner_text()
             assert page.locator("input").count() == 0
             assert page.locator("#days").inner_text() != "—"
+            capture(page, f"sign-in-holding-{width}")
             assert not errors, f"JavaScript errors {width}px: {errors}"
             print(f"PASS: {width}px viewport, Bloom/clean routes, membership switches, fail-closed preorder, sign-in holding state")
             context.close()
