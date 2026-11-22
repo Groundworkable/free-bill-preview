@@ -13,7 +13,7 @@
 body{margin:0;background:var(--ivory);color:var(--forest);font:15px/1.65 Inter,"Segoe UI",Arial,sans-serif}
 a{color:inherit}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .header{background:var(--forest);color:var(--ivory);display:flex;align-items:center;justify-content:space-between;padding:18px clamp(18px,5vw,70px);gap:20px}
-.brand{text-decoration:none;font:700 22px/1.1 Georgia,serif}.brand small{display:block;font:600 9px/1.5 Arial,sans-serif;letter-spacing:.22em;color:#e2c187}
+.brand{text-decoration:none;font:700 22px/1.1 Georgia,serif;display:flex;align-items:center;gap:11px}.brand img{width:36px;height:42px;object-fit:contain;flex:none}.brand small{display:block;font:600 9px/1.5 Arial,sans-serif;letter-spacing:.22em;color:#e2c187}
 .toplink{font-size:13px;color:#f4ddad;text-underline-offset:4px}
 main{max-width:1040px;margin:auto;padding:clamp(24px,4vw,52px) clamp(18px,4vw,36px) 72px}
 .eyebrow{font:700 11px/1.4 Inter,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8e6930}
@@ -39,16 +39,16 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
 </head>
 <body>
 <header class="header">
-  <a class="brand" href="/">Groundwork <small>BY ABLE</small></a>
-  <a class="toplink" href="/tour/">← Back to the experience</a>
+  <a class="brand" href="/"><img src="/assets/images/groundwork-tree-mark.svg" alt="" width="36" height="42"><span>Groundwork <small>BY ABLE</small></span></a>
+  <a class="toplink" href="/">← Back to Homepage</a>
 </header>
 <main>
   <div class="eyebrow">Groundwork / Membership pre-purchase</div>
   <h1>Choose what comes next.</h1>
-  <p class="lead">Groundwork's application is still being prepared for public membership. A pre-purchase is a payment for future access—not an account activation today.</p>
+  <p class="lead">Standard one-time pre-purchases for future membership access. They are not Founding Access reservations or app activation today. <a href="/tour/#membership">Compare all membership paths</a>.</p>
   <div class="notice" role="status" id="gateNotice">
-    <strong>Pre-purchases are not open yet.</strong>
-    <p>Checkout remains closed while final release checks are completed. No payment is collected on this page. You can review the published terms below.</p>
+    <strong>Pre-purchase checkout is temporarily unavailable.</strong>
+    <p>The LIVE payment links have not been cleared for this release. No payment is collected on this page. You can review the plans and published terms below.</p>
   </div>
   <div class="plans" aria-label="Current individual membership reference prices">
     <article class="plan" data-offer="monthly">
@@ -81,7 +81,7 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
       <label class="terms"><input type="checkbox" id="acceptTerms"> I have read the pre-purchase and refund terms, and understand that access is not available immediately.</label>
       <label class="terms"><input type="checkbox" id="confirmEligibility"> I confirm I am at least 18 years old and reside in the United States.</label>
     </div>
-    <p id="status" aria-live="polite">No payment is available until terms and payment processing are approved.</p>
+    <p id="status" aria-live="polite">Checkout remains unavailable until the existing LIVE Stripe links and release safeguards are verified.</p>
   </section>
 </main>
 <footer>© 2026 Able Systems LLC · Grounded. Growing. Enduring. · <a href="/privacy.html">Privacy</a> · <a href="/contact/">Contact</a></footer>
@@ -115,7 +115,7 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
   fetch("/preorder/checkout-config.json",{cache:"no-store"})
     .then(res=>{if(!res.ok)throw new Error("Configuration unavailable");return res.json();})
     .then(cfg=>{
-      const valid=cfg && cfg.enabled===true && cfg.termsApproved===true &&
+      const valid=cfg && cfg.enabled===true && cfg.termsApproved===true && cfg.livePaymentLinksVerifiedActive===true &&
         validPolicyLink(cfg.termsUrl) && validPolicyLink(cfg.refundPolicyUrl) &&
         Object.keys(offers).every(key=>{
           const offer=cfg.offers && cfg.offers[key];
@@ -130,9 +130,9 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
       notice.querySelector("strong").textContent="Secure pre-purchase checkout is available.";
       notice.querySelector("p").textContent="Review the offer and terms before continuing to Stripe. Groundwork does not collect your card details.";
       const update=()=>{
+        const allowed=consent.checked && eligibility.checked;
         for(const key of Object.keys(offers)){
           const a=ids[key];
-          const allowed=consent.checked && eligibility.checked;
           if(allowed){a.href=cfg.offers[key].paymentLink;a.removeAttribute("aria-disabled");a.removeAttribute("tabindex");a.textContent="Pay securely with Stripe — $"+offers[key].toFixed(2);}
           else {a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Review terms and eligibility to continue";}
         }
