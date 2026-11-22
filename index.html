@@ -20,7 +20,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #ffe9a6;outline-offset:3p
 .stage::after{content:"";z-index:-2;position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,30,19,.22),rgba(0,27,19,.18) 27%,transparent 51%)}
 .header{position:absolute;left:5.5%;right:3.7%;top:0;height:10.2%;display:flex;align-items:center;z-index:12;gap:2vw}
 .brand{display:flex;align-items:center;gap:14px;min-width:max-content;text-decoration:none;color:var(--pale)}
-.brand-logo{width:58px;height:53px;stroke:#e9ba53;stroke-width:1.45;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.brand-logo{width:58px;height:53px;object-fit:contain;flex:none}
 .brand-divider{height:50px;width:1px;background:#b28e3c88;margin:0 1px 0 0}
 .brand-type{font-family:Georgia,'Times New Roman',serif;font-size:clamp(22px,2.1vw,34px);letter-spacing:-.7px;line-height:.97}
 .brand-type small{font-family:Arial,Helvetica,sans-serif;display:block;font-size:clamp(12px,1vw,16px);font-weight:600;letter-spacing:-.1px;margin:4px 0 0 1px}
@@ -146,21 +146,21 @@ button:focus-visible,a:focus-visible{outline:2px solid #ffe9a6;outline-offset:3p
 <div class="stage" id="stage">
 <header class="header">
  <a href="/" class="brand" aria-label="Groundwork by Able home">
- <svg class="brand-logo" viewBox="0 0 60 58" aria-hidden="true"><path d="M29 53C11 45 4 33 5 19c13 0 21 5 24 19C32 24 43 19 56 19c1 16-10 30-27 34Z"/><path d="M29 53C15 40 16 21 29 5c13 16 14 35 0 48Z"/><path d="M29 53V19M11 31c9 3 15 10 18 22M49 31c-9 3-16 10-20 22"/></svg>
+ <img class="brand-logo" src="/assets/images/groundwork-tree-mark.svg" alt="" width="58" height="53">
  <span class="brand-divider" aria-hidden="true"></span><span class="brand-type">Groundwork<small>by Able</small></span></a>
  <nav class="nav" aria-label="Main navigation">
-  <button data-nav="/tour/">The experience <span class="chevron">⌄</span></button>
+  <button data-nav="/tour/">Take the Tour <span class="chevron">⌄</span></button>
   <button data-nav="/free-tools/">Free tools <span class="chevron">⌄</span></button>
   <button data-nav="/organizations/">For organizations</button>
-  <button class="prepurchase-nav" data-nav="/preorder/">Pre-purchase</button>
+  <button class="prepurchase-nav" data-nav="/tour/#membership">Memberships</button>
   <button data-soon="Groundwork Marketplace">Marketplace <span class="soon">soon</span></button>
-  <span class="sep" aria-hidden="true"></span><button data-soon="Sign in">Sign in</button>
-  <button class="top-cta" data-nav="/tour/">Take the tour <span aria-hidden="true">⟶</span></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button class="top-cta" data-nav="/sign-in/">Sign in <span aria-hidden="true">⟶</span></button>
  </nav>
  <button class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">☰ Menu</button>
 </header>
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
- <button data-nav="/tour/">The experience</button><button data-nav="/free-tools/">Free tools</button><button data-nav="/organizations/">For organizations</button><button data-nav="/preorder/">Pre-purchase</button><button data-soon="Groundwork Marketplace">Marketplace · soon</button><button data-soon="Sign in">Sign in</button><button data-nav="/tour/">Take the tour ⟶</button>
+ <button data-nav="/tour/">Take the Tour</button><button data-nav="/free-tools/">Free tools</button><button data-nav="/organizations/">For organizations</button><button data-nav="/tour/#membership">Memberships</button><button data-soon="Groundwork Marketplace">Marketplace · soon</button><button data-nav="/sign-in/">Sign in</button>
 </nav>
 <div class="mobile-display" aria-hidden="true"></div>
 <video class="bloom-video" id="bloom" autoplay muted loop playsinline disablepictureinpicture preload="auto" aria-label="The animated emerald-and-gold Bloom sculpture inside the glass showcase"><source src="./media/groundwork-bloom-loop.mp4" type="video/mp4"></video>
@@ -168,7 +168,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #ffe9a6;outline-offset:3p
  <h1 id="headline">Life doesn’t<br>happen in <em>pieces.</em></h1>
  <div class="rule" aria-hidden="true"></div>
  <p>Your money, time, and responsibilities are all connected. Groundwork helps you see where you stand, so you can make confident decisions, take the next right step, and keep more of life in balance.</p>
- <div class="actions"><button class="primary" data-nav="/tour/">Take the tour <span aria-hidden="true">⟶</span></button><button class="secondary" data-nav="/preorder/">Pre-purchase <span aria-hidden="true">→</span></button></div>
+ <div class="actions"><button class="primary" data-nav="/tour/">Take the tour <span aria-hidden="true">⟶</span></button></div>
 </section>
 <section class="tiles" aria-label="Explore Groundwork">
  <button class="tile" data-nav="/free-tools/"><span class="tile-icon" aria-hidden="true"><svg viewBox="0 0 26 33"><rect x="2" y="2" width="22" height="29" rx="2.5"/><rect x="6" y="6" width="14" height="7" rx="1"/><path d="M7 18h2m4 0h2m4 0h.5M7 23h2m4 0h2m4 0h.5M7 28h2m4 0h2m4 0h.5"/></svg></span><span><h2 class="tile-title">Free calculators</h2><p class="tile-text">Quick, practical tools for everyday decisions—no account required.</p></span><span class="tile-arrow" aria-hidden="true">→</span></button>
