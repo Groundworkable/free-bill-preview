@@ -97,6 +97,8 @@ if preorder.exists():
  assert 'id="prepurchaseSelectedLink" href="/preorder/?plan=monthly"' in tour
  assert 'class="prepurchase-tour-entry"' not in tour,"Pre-purchase must not appear as a detached room"
  assert 'See my sample confirmation' not in tour and 'id="commit"' not in tour,"No simulated personal checkout"
+ assert '<a href="/experience/"' not in tour,"Unfinished Experience cannot be linked from published Tour"
+ assert not (ROOT/"experience/index.html").exists(),"Paused Experience must remain unpublished"
  home=(ROOT/"index.html").read_text(encoding="utf-8")
  assert 'class="prepurchase-nav" data-nav="/tour/#membership"' in home,"Main entrance memberships link missing"
  assert 'class="secondary" data-nav="/preorder/"' not in home,"Remove hero sales pressure"
