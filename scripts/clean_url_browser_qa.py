@@ -45,7 +45,7 @@ try:
             assert response and response.status == 200
             assert page.locator('[data-nav="/tour/"]').count() > 0
             assert page.locator('[data-nav="/organizations/"]').count() > 0
-            capture(page, f"home-{width}")
+            capture(page, f"home-{width}", emit=True)
             video = page.locator('video#bloom source[type="video/mp4"]')
             assert video.count() == 1
             assert video.get_attribute("src") == "./media/groundwork-bloom-loop.mp4"
