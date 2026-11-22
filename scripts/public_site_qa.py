@@ -109,6 +109,9 @@ for slug in SLUGS:
 home = (ROOT/"index.html").read_text(encoding="utf-8")
 assert "Life doesn’t" in home
 assert 'data-nav="/tour/"' in home and 'data-nav="/free-tools/"' in home and 'data-nav="/organizations/"' in home
+assert 'data-nav="/experience/"' not in home, "Unfinished Experience must not be linked"
+assert not (ROOT/"experience").exists(), "Paused Experience must be excluded"
+assert "https://groundworkbyable.online/experience/" not in sitemap_text
 assert "./media/groundwork-bloom-loop.mp4" in home
 assert "./media/groundwork-bloom-backdrop.png" in home
 assert 'autoplay muted loop playsinline' in home

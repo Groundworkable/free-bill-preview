@@ -1,6 +1,7 @@
 {
   "enabled": true,
   "termsApproved": true,
+  "livePaymentLinksVerifiedActive": false,
   "termsUrl": "https://groundworkbyable.online/prepurchase-terms/",
   "refundPolicyUrl": "https://groundworkbyable.online/prepurchase-terms/",
   "offers": {

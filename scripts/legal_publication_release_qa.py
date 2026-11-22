@@ -14,7 +14,7 @@ COMPANY=[
  "careers/index.html","careers.html",
 ]
 PAGES=[
- "index.html","tour.html","tour/index.html","free-tools.html",
+ "index.html","sign-in/index.html","tour.html","tour/index.html","free-tools.html",
  "free-tools/index.html","organizations.html","organizations/index.html",
  "about.html","about/index.html","faqs.html","faqs/index.html",
  "contact.html","contact/index.html","careers.html","careers/index.html",
@@ -72,7 +72,8 @@ if preorder.exists():
  assert cfg["termsUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
  assert cfg["refundPolicyUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
  assert set(cfg["offers"])=={"monthly","annual"}
- assert cfg["enabled"] is True,"Sales release draft must contain the exact reviewed checkout setting"
+ assert cfg["enabled"] is True,"Existing enabled source setting must remain unchanged"
+ assert cfg["livePaymentLinksVerifiedActive"] is False,"Both LIVE Stripe links are inactive: draft must fail closed until verified and explicitly released"
  expected_links={"monthly":"https://buy.stripe.com/fZu9AU9Qw9gxdBt1Hw4gg00","annual":"https://buy.stripe.com/7sYdRa5Ag64lgNF2LA4gg01"}
  for key,amount in (("monthly",9.99),("annual",96)):
   offer=cfg["offers"][key]
@@ -84,18 +85,25 @@ if preorder.exists():
  assert "https://buy.stripe.com/" not in page,"LIVE payment URL must only appear in the reviewed configuration"
  assert 'fetch("/preorder/checkout-config.json"' in page,"Missing config gate"
  assert 'if(!valid){disable();return;}' in page,"Missing default-off guard"
- assert 'const valid=cfg && cfg.enabled===true && cfg.termsApproved===true' in page
+ assert 'const valid=cfg && cfg.enabled===true && cfg.termsApproved===true && cfg.livePaymentLinksVerifiedActive===true' in page
  assert 'a.removeAttribute("href")' in page and 'a.setAttribute("aria-disabled","true")' in page
  assert '<a href="/prepurchase-terms/">' in page,"Public legal terms not linked"
  assert 'id="confirmEligibility"' in page,"Missing adult US resident attestation"
  assert 'const allowed=consent.checked && eligibility.checked' in page,"Eligibility must gate both payment buttons"
  assert 'eligibility.addEventListener("change",update);' in page,"Eligibility must recheck gate"
  tour=(ROOT/"tour/index.html").read_text(encoding="utf-8")
- assert 'class="prepurchase-tour-entry"' in tour,"Separate pre-purchase offer is not prominent in the tour"
- assert '<a href="/preorder/" class="prepurchase-tour-link">' in tour,"Tour is missing dedicated pre-purchase CTA"
+ assert 'data-offer-view="prepurchase" aria-pressed="true"' in tour,"Pre-purchase must be default in membership panel"
+ assert 'data-offer-view="founding"' in tour and 'data-offer-view="lite"' in tour and 'data-offer-view="standard"' in tour
+ assert 'id="prepurchaseSelectedLink" href="/preorder/?plan=monthly"' in tour
+ assert 'class="prepurchase-tour-entry"' not in tour,"Pre-purchase must not appear as a detached room"
+ assert 'See my sample confirmation' not in tour and 'id="commit"' not in tour,"No simulated personal checkout"
+ assert '<a href="/experience/"' not in tour,"Unfinished Experience cannot be linked from published Tour"
+ assert not (ROOT/"experience/index.html").exists(),"Paused Experience must remain unpublished"
  home=(ROOT/"index.html").read_text(encoding="utf-8")
- assert 'class="prepurchase-nav" data-nav="/preorder/"' in home,"Main entrance pre-purchase navigation missing"
- assert 'class="secondary" data-nav="/preorder/"' in home,"Main entrance hero pre-purchase CTA missing"
+ assert 'class="prepurchase-nav" data-nav="/tour/#membership"' in home,"Main entrance memberships link missing"
+ assert 'class="secondary" data-nav="/preorder/"' not in home,"Remove hero sales pressure"
+ assert 'class="top-cta" data-nav="/sign-in/"' in home,"Sign-in CTA must point to truthful coming-soon page"
+ assert (ROOT/"sign-in/index.html").is_file(),"Missing truthful sign-in holding page"
 assert not (ROOT/"review").exists(),"Unpublished legal review artifacts leaked to public build"
 assert not (ROOT/"groundwork-legal-cutover-PREVIEW-ONLY").exists(),"Offline previews leaked to public build"
 assert not (ROOT/"groundwork-LEGAL-PUBLICATION-STAGED-NOT-DEPLOYED").exists(),"Staging artifacts leaked"
@@ -105,5 +113,5 @@ ET.fromstring(sitemap)
 assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
 print("PASS: staged Privacy V3 fingerprint and original purchaser Terms V1 body unchanged")
-print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 19 consent pages")
-print("PASS: LIVE checkout pinned; the entrance and tour offer separate visible one-time pre-purchase entry points")
+print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 20 consent pages")
+print("PASS: LIVE checkout URLs pinned; inactive-link readiness gate fails closed; pre-purchase selected inside Tour membership panel")
