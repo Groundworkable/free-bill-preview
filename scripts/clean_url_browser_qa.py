@@ -52,8 +52,38 @@ try:
             response = page.goto(base + "/tour", wait_until="domcontentloaded")
             assert response and response.status == 200
             assert urlparse(page.url).path == "/tour/", page.url
+            # Coherent pre-purchase journey; never invoke or complete an external payment.
+            response = page.goto(base + "/tour/#membership", wait_until="domcontentloaded")
+            assert response and response.status == 200
+            assert page.locator('.page.pricing.active').count() == 1
+            assert page.locator('[data-offer-view="prepurchase"]').get_attribute("aria-pressed") == "true"
+            assert page.locator('[data-plan="monthly"]').get_attribute("aria-pressed") == "true"
+            assert page.locator("#priceTotal").inner_text() == "$9.99"
+            assert page.locator("#prepurchaseSelectedLink").get_attribute("href") == "/preorder/?plan=monthly"
+            page.locator('[data-plan="annual"]').click()
+            assert page.locator("#priceTotal").inner_text() == "$96"
+            assert page.locator("#prepurchaseSelectedLink").get_attribute("href") == "/preorder/?plan=annual"
+            for view in ("founding", "lite", "standard"):
+                page.locator(f'[data-offer-view="{view}"]').click()
+                assert page.locator(f'[data-view="{view}"]').is_visible()
+                assert not page.locator('[data-view="prepurchase"]').is_visible()
+            page.locator('[data-offer-view="prepurchase"]').click()
+            assert page.locator('[data-view="prepurchase"]').is_visible()
+            # The existing consent page must fail closed while links remain inactive.
+            response = page.goto(base + "/preorder/?plan=annual", wait_until="domcontentloaded")
+            assert response and response.status == 200
+            page.locator("#gateNotice strong").wait_for()
+            assert page.locator("#checkoutMonthly").get_attribute("href") is None
+            assert page.locator("#checkoutAnnual").get_attribute("href") is None
+            assert page.locator("#checkoutAnnual").get_attribute("aria-disabled") == "true"
+            assert page.locator("#checkoutMonthly").get_attribute("aria-disabled") == "true"
+            response = page.goto(base + "/sign-in/", wait_until="domcontentloaded")
+            assert response and response.status == 200
+            assert "not open yet" in page.locator("main").inner_text()
+            assert page.locator("input").count() == 0
+            assert page.locator("#days").inner_text() != "—"
             assert not errors, f"JavaScript errors {width}px: {errors}"
-            print(f"PASS: {width}px viewport, approved Bloom media/navigation, all 8 clean routes, legacy pages, canonical URLs, redirects")
+            print(f"PASS: {width}px viewport, Bloom/clean routes, membership switches, fail-closed preorder, sign-in holding state")
             context.close()
         browser.close()
 finally:
