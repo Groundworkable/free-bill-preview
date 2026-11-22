@@ -108,7 +108,13 @@ for slug in SLUGS:
     assert "https://groundworkbyable.online/" + slug + "/" in sitemap_text
 home = (ROOT/"index.html").read_text(encoding="utf-8")
 assert "Life doesn’t" in home
-assert 'data-nav="/tour/"' in home and 'data-nav="/free-tools/"' in home and 'data-nav="/organizations/"' in home
+assert 'data-nav="/tour/"' in home and 'data-nav="/experience/"' in home and 'data-nav="/free-tools/"' in home and 'data-nav="/organizations/"' in home
+assert (ROOT / "experience/index.html").is_file()
+assert "https://groundworkbyable.online/experience/" in sitemap_text
+experience = (ROOT / "experience/index.html").read_text(encoding="utf-8")
+assert experience.count('class="piece" data-room=') == 15
+assert 'id="revealAll"' in experience and 'id="resetPuzzle"' in experience
+assert 'Illustrative schematic' in experience or 'Illustrative schematic'.lower() in experience.lower()
 assert "./media/groundwork-bloom-loop.mp4" in home
 assert "./media/groundwork-bloom-backdrop.png" in home
 assert 'autoplay muted loop playsinline' in home

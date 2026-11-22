@@ -36,3 +36,11 @@ jobs:
           python3 scripts/organizations_browser_qa.py
           python3 scripts/clean_url_browser_qa.py
           python3 scripts/ga4_consent_browser_qa.py
+      - name: Save public-page screenshots for founder visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: groundwork-pr28-visual-review
+          path: review-captures/*.jpg
+          if-no-files-found: warn
+          retention-days: 14
