@@ -73,6 +73,8 @@ try:
             assert page.locator('[data-offer-view="prepurchase"]').get_attribute("aria-pressed") == "true"
             assert page.locator('[data-plan="monthly"]').get_attribute("aria-pressed") == "true"
             assert page.locator("#priceTotal").inner_text() == "$9.99"
+            assert page.locator('.pricing .twocol').evaluate("(el) => el.scrollWidth <= el.clientWidth + 2"), "Membership content overflows its column"
+            assert page.locator('.pricing-panel').evaluate("(el) => el.getBoundingClientRect().right <= innerWidth + 2"), "Membership panel exceeds viewport"
             capture(page, f"membership-{width}", emit=True)
             if width < 500:
                 page.locator(".page.pricing.active").evaluate("(el) => {el.scrollTop = el.scrollHeight;}")
