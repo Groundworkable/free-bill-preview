@@ -61,30 +61,37 @@ js=(ROOT/"assets/js/ga4-consent.js").read_text(encoding="utf-8")
 assert "G-KZSJ1W4PXH" in js
 assert 'choice!=="granted"' in js and "globalPrivacyControl" in js
 assert "ad_personalization:\"denied\"" in js
-# Controlled informational-only exception: preorder files are permitted only with checkout fail-closed.
+# Controlled sales-opening gate: disabled or pinned and fully verified checkout configurations only.
 preorder=ROOT/"preorder"
 if preorder.exists():
  import json
  assert preorder.is_dir(),"Preorder path must be a directory"
  assert {p.name for p in preorder.iterdir()}=={"index.html","checkout-config.json"},"Unexpected files in preorder"
  cfg=json.loads((preorder/"checkout-config.json").read_text(encoding="utf-8"))
- assert cfg["enabled"] is False and cfg["termsApproved"] is False,"Preorder checkout must remain disabled"
+ assert cfg["enabled"] is cfg["termsApproved"],"Checkout and terms gates must move together"
  assert cfg["termsUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
  assert cfg["refundPolicyUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
  assert set(cfg["offers"])=={"monthly","annual"}
+ assert cfg["enabled"] is True,"Sales release draft must contain the exact reviewed checkout setting"
+ expected_links={"monthly":"https://buy.stripe.com/fZu9AU9Qw9gxdBt1Hw4gg00","annual":"https://buy.stripe.com/7sYdRa5Ag64lgNF2LA4gg01"}
  for key,amount in (("monthly",9.99),("annual",96)):
   offer=cfg["offers"][key]
-  assert offer["paymentLink"] is None,(key,"LIVE checkout URL exposed")
+  assert offer["paymentLink"]==expected_links[key],(key,"Wrong LIVE payment link")
   assert offer["amountUsd"]==amount and offer["currency"]=="usd"
   assert offer["paymentMode"]=="one_time" and offer["taxBehavior"]=="exclusive"
   assert offer["taxCode"]=="txcd_10103000"
  page=(preorder/"index.html").read_text(encoding="utf-8")
- assert "https://buy.stripe.com/" not in page,"LIVE payment URL in page"
+ assert "https://buy.stripe.com/" not in page,"LIVE payment URL must only appear in the reviewed configuration"
  assert 'fetch("/preorder/checkout-config.json"' in page,"Missing config gate"
  assert 'if(!valid){disable();return;}' in page,"Missing default-off guard"
  assert 'const valid=cfg && cfg.enabled===true && cfg.termsApproved===true' in page
  assert 'a.removeAttribute("href")' in page and 'a.setAttribute("aria-disabled","true")' in page
  assert '<a href="/prepurchase-terms/">' in page,"Public legal terms not linked"
+ assert 'id="confirmEligibility"' in page,"Missing adult US resident attestation"
+ assert 'const allowed=consent.checked && eligibility.checked' in page,"Eligibility must gate both payment buttons"
+ assert 'eligibility.addEventListener("change",update);' in page,"Eligibility must recheck gate"
+ tour=(ROOT/"tour/index.html").read_text(encoding="utf-8")
+ assert 'href="/preorder/"' in tour,"Pre-purchase page is not discoverable from the customer tour"
 assert not (ROOT/"review").exists(),"Unpublished legal review artifacts leaked to public build"
 assert not (ROOT/"groundwork-legal-cutover-PREVIEW-ONLY").exists(),"Offline previews leaked to public build"
 assert not (ROOT/"groundwork-LEGAL-PUBLICATION-STAGED-NOT-DEPLOYED").exists(),"Staging artifacts leaked"
@@ -95,4 +102,4 @@ assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
 print("PASS: staged Privacy V3 fingerprint and original purchaser Terms V1 body unchanged")
 print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 19 consent pages")
-print("PASS: optional informational preorder page remains fail-closed; no LIVE checkout URL or membership artifacts")
+print("PASS: staged sales checkout requires exact LIVE links, terms, adult-US eligibility and tour entry; public main unchanged until authorized merge")
