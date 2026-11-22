@@ -108,6 +108,15 @@ footer{background:var(--white);border-top:1px solid var(--line);padding:0 var(--
   .pricing .offer-views, .pricing .plan-tabs{min-width:0;width:100%}
   .pricing .offer-views button,.pricing .plan-tabs button{min-width:0}
 }
+/* Keep the original page shell from expanding its implicit CSS-grid track on phones. */
+@media(max-width:830px){
+  .site{width:100%;max-width:100vw;grid-template-columns:minmax(0,1fr)}
+  .site>header,.site>.state,.site>footer{min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+  .state,.page,.page.pricing{min-width:0;max-width:100%;width:100%;box-sizing:border-box}
+  .pricing .twocol{width:100%;max-width:100%;box-sizing:border-box}
+  .pricing .twocol>.stack,.pricing .twocol>.pricing-panel{width:100%;min-width:0;box-sizing:border-box}
+  header .nav{min-width:0}
+}
 </style><script defer src="/assets/js/ga4-consent.js"></script>
 </head><body>
 <div class="site">
