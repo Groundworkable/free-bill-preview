@@ -53,8 +53,9 @@ try:
             assert response and response.status == 200
             assert urlparse(page.url).path == "/tour/", page.url
             # Coherent pre-purchase journey; never invoke or complete an external payment.
-            response = page.goto(base + "/tour/#membership", wait_until="domcontentloaded")
-            assert response and response.status == 200
+            page.goto(base + "/tour/#membership", wait_until="domcontentloaded")
+            # Hash-only navigation may legitimately return no new HTTP response.
+            assert urlparse(page.url).path == "/tour/" and urlparse(page.url).fragment == "membership"
             assert page.locator('.page.pricing.active').count() == 1
             assert page.locator('[data-offer-view="prepurchase"]').get_attribute("aria-pressed") == "true"
             assert page.locator('[data-plan="monthly"]').get_attribute("aria-pressed") == "true"
