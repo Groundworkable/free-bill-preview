@@ -130,9 +130,9 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
       notice.querySelector("strong").textContent="Secure pre-purchase checkout is available.";
       notice.querySelector("p").textContent="Review the offer and terms before continuing to Stripe. Groundwork does not collect your card details.";
       const update=()=>{
+        const allowed=consent.checked && eligibility.checked;
         for(const key of Object.keys(offers)){
           const a=ids[key];
-          const allowed=consent.checked && eligibility.checked;
           if(allowed){a.href=cfg.offers[key].paymentLink;a.removeAttribute("aria-disabled");a.removeAttribute("tabindex");a.textContent="Pay securely with Stripe — $"+offers[key].toFixed(2);}
           else {a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Review terms and eligibility to continue";}
         }
