@@ -90,6 +90,24 @@ footer{background:var(--white);border-top:1px solid var(--line);padding:0 var(--
 .progressdots button.on{background:#b89456}.progressdots button:focus-visible{outline:2px solid var(--green);outline-offset:4px}
 @media(max-width:830px){.pricing .twocol{gap:12px}.pricing-panel{margin-bottom:12px}.offer-views button{font-size:10px;min-height:42px}.pricing .offerflag{font-size:9px;max-width:150px}.page-progress .progressdots{gap:5px}}
 @media(max-width:480px){.offer-views{grid-template-columns:repeat(2,minmax(0,1fr))}.offer-views button{min-height:36px}.pricing .selectedoffer{padding:13px}.pricing .benefits{grid-template-columns:1fr 1fr;font-size:10px}.pricing .offer-total{font-size:39px}.offerper strong{font-size:18px}.view-desc{font-size:11px}.offer-summary{padding:15px}.pricing-panel .terms{font-size:10px}}
+/* Founder visual QA: keep the full pricing panel within narrow mobile viewports. */
+@media(max-width:830px){
+  .pricing .twocol{grid-template-columns:minmax(0,1fr)!important;min-width:0;width:100%}
+  .pricing .twocol > *, .pricing-panel, .pricing .stack{min-width:0;max-width:100%}
+  .pricing .selectedoffer{min-width:0}
+  .pricing .selectedoffer > div{min-width:0}
+  .pricing .offerper{flex-shrink:1}
+  .pricing .offerper strong{overflow-wrap:anywhere}
+  .pricing .offerflag{overflow-wrap:anywhere}
+}
+@media(max-width:480px){
+  .pricing-panel{width:100%;box-sizing:border-box}
+  .pricing .pricing-top{flex-wrap:wrap}
+  .pricing .selectedoffer{flex-wrap:wrap;align-items:flex-start}
+  .pricing .offerper{text-align:left}
+  .pricing .offer-views, .pricing .plan-tabs{min-width:0;width:100%}
+  .pricing .offer-views button,.pricing .plan-tabs button{min-width:0}
+}
 </style><script defer src="/assets/js/ga4-consent.js"></script>
 </head><body>
 <div class="site">
