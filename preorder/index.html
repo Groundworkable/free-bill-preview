@@ -79,6 +79,7 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
     <div id="publishedTerms" hidden>
       <p><a id="termsLink" rel="noopener" target="_blank">Read the pre-purchase terms</a> · <a id="refundLink" rel="noopener" target="_blank">Refund and delay policy</a></p>
       <label class="terms"><input type="checkbox" id="acceptTerms"> I have read the pre-purchase and refund terms, and understand that access is not available immediately.</label>
+      <label class="terms"><input type="checkbox" id="confirmEligibility"> I confirm I am at least 18 years old and reside in the United States.</label>
     </div>
     <p id="status" aria-live="polite">No payment is available until terms and payment processing are approved.</p>
   </section>
@@ -94,6 +95,7 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
   const block = document.querySelector('[data-offer="'+selected+'"]');
   if(block) block.style.borderColor="#b9954e";
   const consent = document.querySelector("#acceptTerms");
+  const eligibility = document.querySelector("#confirmEligibility");
   const status = document.querySelector("#status");
   const notice = document.querySelector("#gateNotice");
   const validStripeLink = value => {
@@ -130,13 +132,14 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
       const update=()=>{
         for(const key of Object.keys(offers)){
           const a=ids[key];
-          const allowed=consent.checked;
+          const allowed=consent.checked && eligibility.checked;
           if(allowed){a.href=cfg.offers[key].paymentLink;a.removeAttribute("aria-disabled");a.removeAttribute("tabindex");a.textContent="Pay securely with Stripe — $"+offers[key].toFixed(2);}
-          else {a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Read and accept terms to continue";}
+          else {a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Review terms and eligibility to continue";}
         }
-        status.textContent=allowed?"You will continue to Stripe. This page cannot confirm a payment or activate an account.":"Accept the pre-purchase and refund terms to continue.";
+        status.textContent=allowed?"You will continue to Stripe. This page cannot confirm a payment or activate an account.":"Accept the terms and confirm age and US residency before continuing.";
       };
       consent.addEventListener("change",update);
+      eligibility.addEventListener("change",update);
       update();
     }).catch(()=>{disable();});
   for(const a of Object.values(ids)){
