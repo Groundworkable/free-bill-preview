@@ -91,7 +91,11 @@ if preorder.exists():
  assert 'const allowed=consent.checked && eligibility.checked' in page,"Eligibility must gate both payment buttons"
  assert 'eligibility.addEventListener("change",update);' in page,"Eligibility must recheck gate"
  tour=(ROOT/"tour/index.html").read_text(encoding="utf-8")
- assert 'href="/preorder/"' in tour,"Pre-purchase page is not discoverable from the customer tour"
+ assert 'class="prepurchase-tour-entry"' in tour,"Separate pre-purchase offer is not prominent in the tour"
+ assert '<a href="/preorder/" class="prepurchase-tour-link">' in tour,"Tour is missing dedicated pre-purchase CTA"
+ home=(ROOT/"index.html").read_text(encoding="utf-8")
+ assert 'class="prepurchase-nav" data-nav="/preorder/"' in home,"Main entrance pre-purchase navigation missing"
+ assert 'class="secondary" data-nav="/preorder/"' in home,"Main entrance hero pre-purchase CTA missing"
 assert not (ROOT/"review").exists(),"Unpublished legal review artifacts leaked to public build"
 assert not (ROOT/"groundwork-legal-cutover-PREVIEW-ONLY").exists(),"Offline previews leaked to public build"
 assert not (ROOT/"groundwork-LEGAL-PUBLICATION-STAGED-NOT-DEPLOYED").exists(),"Staging artifacts leaked"
@@ -102,4 +106,4 @@ assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
 print("PASS: staged Privacy V3 fingerprint and original purchaser Terms V1 body unchanged")
 print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 19 consent pages")
-print("PASS: staged sales checkout requires exact LIVE links, terms, adult-US eligibility and tour entry; public main unchanged until authorized merge")
+print("PASS: LIVE checkout pinned; the entrance and tour offer separate visible one-time pre-purchase entry points")
