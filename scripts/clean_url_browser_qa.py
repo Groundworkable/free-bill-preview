@@ -73,9 +73,11 @@ try:
             assert page.locator('[data-offer-view="prepurchase"]').get_attribute("aria-pressed") == "true"
             assert page.locator('[data-plan="monthly"]').get_attribute("aria-pressed") == "true"
             assert page.locator("#priceTotal").inner_text() == "$9.99"
+            capture(page, f"membership-{width}", emit=True)
+            geom=page.evaluate("""() => Object.fromEntries(['.site','.state','.page.pricing','.pricing .twocol','.pricing-panel'].map(selector=>{const r=document.querySelector(selector).getBoundingClientRect();return [selector,{left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)}]}))""")
+            print(f"GROUNDWORK_GEOMETRY_{width}: {geom} / viewport={width}",flush=True)
             assert page.locator('.pricing .twocol').evaluate("(el) => el.scrollWidth <= el.clientWidth + 2"), "Membership content overflows its column"
             assert page.locator('.pricing-panel').evaluate("(el) => el.getBoundingClientRect().right <= innerWidth + 2"), "Membership panel exceeds viewport"
-            capture(page, f"membership-{width}", emit=True)
             if width < 500:
                 page.locator(".page.pricing.active").evaluate("(el) => {el.scrollTop = el.scrollHeight;}")
                 capture(page, f"membership-mobile-bottom-{width}")
