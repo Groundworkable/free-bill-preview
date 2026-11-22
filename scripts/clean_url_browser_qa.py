@@ -69,6 +69,7 @@ try:
             response=page.goto(base + "/experience/", wait_until="domcontentloaded")
             assert response and response.status == 200
             assert page.locator('.piece').count() == 15
+            capture(page, f"experience-hero-{width}", emit=True)
             assert page.locator('#detailTitle').inner_text() == "Dashboard"
             page.locator('.piece[data-room="5"]').click()
             assert page.locator('#detailTitle').inner_text() == "Assets & Inventory"
@@ -76,11 +77,12 @@ try:
             assert page.locator('.piece.revealed').count() == 15
             page.locator('#resetPuzzle').click()
             assert page.locator('.piece.revealed').count() == 1
-            capture(page, f"experience-{width}", emit=True)
+            page.evaluate("window.scrollTo(0, document.querySelector('#explore').offsetTop)")
+            capture(page, f"experience-puzzle-{width}", emit=True)
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 2"), "Experience content extends past viewport"
             if width < 500:
                 page.locator('#explore').scroll_into_view_if_needed()
-                capture(page, f"experience-puzzle-mobile-{width}")
+                capture(page, f"experience-detail-mobile-{width}")
             # Coherent pre-purchase journey; never invoke or complete an external payment.
             page.goto(base + "/tour/#membership", wait_until="domcontentloaded")
             # Hash-only navigation may legitimately return no new HTTP response.
