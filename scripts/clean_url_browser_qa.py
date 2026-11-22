@@ -69,6 +69,8 @@ try:
             response=page.goto(base + "/experience/", wait_until="domcontentloaded")
             assert response and response.status == 200
             assert page.locator('.piece').count() == 15
+            assert page.locator('#approvedRoomImage').count() == 1
+            assert page.locator('#approvedRoomImage').is_hidden()
             capture(page, f"experience-hero-{width}", emit=True)
             assert page.locator('#detailTitle').inner_text() == "Dashboard"
             page.locator('.piece[data-room="5"]').click()
