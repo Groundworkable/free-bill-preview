@@ -110,7 +110,7 @@ if preorder.exists():
  assert '<a href="/experience/"' not in tour,"Unfinished Experience cannot be linked from published Tour"
  assert not (ROOT/"experience/index.html").exists(),"Paused Experience must remain unpublished"
  home=(ROOT/"index.html").read_text(encoding="utf-8")
- for link in ('href="/about/"','href="/contact/"','href="/privacy.html"','href="/legal/"'):
+ for link in ('href="/about/"','href="/contact/"','href="/privacy.html"','href="/legal/"','href="https://www.reddit.com/user/GroundworkByAble/"'):
   assert link in home,("Missing homepage company/legal navigation",link)
  assert 'class="prepurchase-nav" data-nav="/tour/#membership"' in home,"Main entrance memberships link missing"
  assert 'class="secondary" data-nav="/preorder/"' not in home,"Remove hero sales pressure"
