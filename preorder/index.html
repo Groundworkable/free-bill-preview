@@ -57,8 +57,8 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
       <div class="amount">$9.99</div>
       <div class="period">USD · one prepaid month of Groundwork</div>
       <p class="details">Current reference rate for the standard monthly membership. No recurring payment is authorized by this pre-purchase.</p>
-      <a class="button" id="checkoutMonthly" aria-disabled="true" tabindex="-1">Payment not available</a>
-      <p class="help">Access starts only under the separately published activation terms.</p>
+      <a class="button" id="checkoutMonthly" aria-disabled="true" tabindex="-1" target="_blank" rel="noopener noreferrer" aria-label="Pay securely for one-month pre-purchase in a new tab">Payment not available</a>
+      <p class="help">Access starts only under the separately published activation terms. Secure Stripe checkout opens in a new tab; keep Groundwork open to review your options.</p>
     </article>
     <article class="plan" data-offer="annual">
       <div class="eyebrow">One-time pre-purchase</div>
@@ -66,8 +66,8 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
       <div class="amount">$96</div>
       <div class="period">USD · one prepaid year of Groundwork</div>
       <p class="details">Current reference rate for a standard annual membership. This is not an automatic subscription or a claim that the application is live.</p>
-      <a class="button" id="checkoutAnnual" aria-disabled="true" tabindex="-1">Payment not available</a>
-      <p class="help">The twelve paid months and complimentary February are explained in the published Pre-Purchase Terms.</p>
+      <a class="button" id="checkoutAnnual" aria-disabled="true" tabindex="-1" target="_blank" rel="noopener noreferrer" aria-label="Pay securely for twelve-month pre-purchase in a new tab">Payment not available</a>
+      <p class="help">The twelve paid months and complimentary February are explained in the published Pre-Purchase Terms. Stripe opens in a new tab so you can return here before paying.</p>
     </article>
   </div>
   <section class="section" aria-label="Purchasing conditions">
@@ -136,7 +136,7 @@ footer{background:var(--dark);color:#d5e0d4;padding:22px 30px;text-align:center;
           if(allowed){a.href=cfg.offers[key].paymentLink;a.removeAttribute("aria-disabled");a.removeAttribute("tabindex");a.textContent="Pay securely with Stripe — $"+offers[key].toFixed(2);}
           else {a.removeAttribute("href");a.setAttribute("aria-disabled","true");a.setAttribute("tabindex","-1");a.textContent="Review terms and eligibility to continue";}
         }
-        status.textContent=allowed?"You will continue to Stripe. This page cannot confirm a payment or activate an account.":"Accept the terms and confirm age and US residency before continuing.";
+        status.textContent=allowed?"Stripe checkout opens in a new tab, leaving Groundwork here for you to review before paying. This page cannot confirm payment or activate an account.":"Accept the terms and confirm age and US residency before continuing.";
       };
       consent.addEventListener("change",update);
       eligibility.addEventListener("change",update);
