@@ -73,7 +73,7 @@ if preorder.exists():
  assert cfg["refundPolicyUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
  assert set(cfg["offers"])=={"monthly","annual"}
  assert cfg["enabled"] is True,"Existing enabled source setting must remain unchanged"
- assert cfg["livePaymentLinksVerifiedActive"] is False,"Both LIVE Stripe links are inactive: draft must fail closed until verified and explicitly released"
+ assert cfg["livePaymentLinksVerifiedActive"] is True,"Both previously verified LIVE payment links must be explicitly cleared for public checkout"
  expected_links={"monthly":"https://buy.stripe.com/fZu9AU9Qw9gxdBt1Hw4gg00","annual":"https://buy.stripe.com/7sYdRa5Ag64lgNF2LA4gg01"}
  for key,amount in (("monthly",9.99),("annual",96)):
   offer=cfg["offers"][key]
@@ -114,4 +114,4 @@ assert sitemap.count("https://groundworkbyable.online/prepurchase-terms/")==1
 assert sitemap.count("https://groundworkbyable.online/privacy.html")==1
 print("PASS: staged Privacy V3 fingerprint and original purchaser Terms V1 body unchanged")
 print("PASS: 10 Company mirrors match staged standalone Privacy V3, 7-term public canonical route, 20 consent pages")
-print("PASS: LIVE checkout URLs pinned; inactive-link readiness gate fails closed; pre-purchase selected inside Tour membership panel")
+print("PASS: authorized LIVE checkout URLs pinned with verified-active release flag; pre-purchase selected inside Tour membership panel")
