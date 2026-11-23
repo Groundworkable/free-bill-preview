@@ -60,9 +60,13 @@ for path in PAGES:
   assert '<a class="brand" href="/" aria-label="Groundwork homepage">' in s,(path,"Tour logo must link to homepage")
   assert '<button class="brand"' not in s,(path,"Tour logo must not act as page-zero navigation")
  assert "preorder/checkout" not in s,(path,"Unexpected preorder code")
+ if path=="tour/index.html":
+  assert 'id="chapterSelect"' in s,"Tour chapter picker must be present"
+  assert "active===0?window.location.assign('/')" in s,"Tour first-slide Home action missing"
 js=(ROOT/"assets/js/ga4-consent.js").read_text(encoding="utf-8")
 assert "G-KZSJ1W4PXH" in js
 assert 'choice!=="granted"' in js and "globalPrivacyControl" in js
+assert "shadow.appendChild(style)" in js and "if(/^\\/tour" in js,"Tour privacy control placement missing"
 assert "ad_personalization:\"denied\"" in js
 # Controlled sales-opening gate: disabled or pinned and fully verified checkout configurations only.
 preorder=ROOT/"preorder"
@@ -106,6 +110,8 @@ if preorder.exists():
  assert '<a href="/experience/"' not in tour,"Unfinished Experience cannot be linked from published Tour"
  assert not (ROOT/"experience/index.html").exists(),"Paused Experience must remain unpublished"
  home=(ROOT/"index.html").read_text(encoding="utf-8")
+ for link in ('href="/about/"','href="/contact/"','href="/privacy.html"','href="/legal/"'):
+  assert link in home,("Missing homepage company/legal navigation",link)
  assert 'class="prepurchase-nav" data-nav="/tour/#membership"' in home,"Main entrance memberships link missing"
  assert 'class="secondary" data-nav="/preorder/"' not in home,"Remove hero sales pressure"
  assert 'class="top-cta" data-nav="/sign-in/"' in home,"Sign-in CTA must point to truthful coming-soon page"
