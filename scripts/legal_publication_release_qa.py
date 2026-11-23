@@ -56,6 +56,9 @@ for path in COMPANY:
 for path in PAGES:
  s=(ROOT/path).read_text(encoding="utf-8")
  assert s.count(CONSENT)==1,(path,"GA4 consent missing/duplicate")
+ if path in ("tour.html","tour/index.html"):
+  assert '<a class="brand" href="/" aria-label="Groundwork homepage">' in s,(path,"Tour logo must link to homepage")
+  assert '<button class="brand"' not in s,(path,"Tour logo must not act as page-zero navigation")
  assert "preorder/checkout" not in s,(path,"Unexpected preorder code")
 js=(ROOT/"assets/js/ga4-consent.js").read_text(encoding="utf-8")
 assert "G-KZSJ1W4PXH" in js
