@@ -91,6 +91,9 @@ if preorder.exists():
  assert 'id="confirmEligibility"' in page,"Missing adult US resident attestation"
  assert 'const allowed=consent.checked && eligibility.checked' in page,"Eligibility must gate both payment buttons"
  assert 'eligibility.addEventListener("change",update);' in page,"Eligibility must recheck gate"
+ for key in ("checkoutMonthly","checkoutAnnual"):
+  assert re.search(r'<a class="button" id="'+key+r'"[^>]*target="_blank"[^>]*rel="noopener noreferrer"',page),"Stripe purchase must open in safe separate tab"
+ assert "Stripe checkout opens in a new tab" in page,"Customer must know how to return before paying"
  tour=(ROOT/"tour/index.html").read_text(encoding="utf-8")
  assert 'data-offer-view="prepurchase" aria-pressed="true"' in tour,"Pre-purchase must be default in membership panel"
  assert 'data-offer-view="founding"' in tour and 'data-offer-view="lite"' in tour and 'data-offer-view="standard"' in tour
