@@ -73,7 +73,7 @@ if preorder.exists():
  assert cfg["refundPolicyUrl"]=="https://groundworkbyable.online/prepurchase-terms/"
  assert set(cfg["offers"])=={"monthly","annual"}
  assert cfg["enabled"] is True,"Existing enabled source setting must remain unchanged"
- assert cfg["livePaymentLinksVerifiedActive"] is False,"Both LIVE Stripe links are inactive: draft must fail closed until verified and explicitly released"
+ assert cfg["livePaymentLinksVerifiedActive"] is True,"LIVE links must have been independently verified active before public checkout activation"
  expected_links={"monthly":"https://buy.stripe.com/fZu9AU9Qw9gxdBt1Hw4gg00","annual":"https://buy.stripe.com/7sYdRa5Ag64lgNF2LA4gg01"}
  for key,amount in (("monthly",9.99),("annual",96)):
   offer=cfg["offers"][key]
