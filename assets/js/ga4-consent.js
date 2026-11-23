@@ -52,6 +52,12 @@ function setup(){
  '<button class="accept" type="button">Allow analytics</button></div></section>'
  ].join("");
  document.body.appendChild(host);
+ // The Tour uses a fixed bottom action bar. Place optional privacy controls above it.
+ if(/^\/tour(?:\/|\.html|$)/.test(location.pathname)){
+  const style=document.createElement("style");
+  style.textContent=".switch{bottom:84px;right:12px}.panel{bottom:124px}@media(max-width:830px){.switch{bottom:81px;right:10px}.panel{bottom:118px}}";
+  shadow.appendChild(style);
+ }
  const toggle=shadow.querySelector(".switch"), panel=shadow.querySelector(".panel");
  const allow=shadow.querySelector(".accept"), decline=shadow.querySelector(".decline");
  function show(value){panel.hidden=!value;toggle.setAttribute("aria-expanded",String(value));if(gpc){allow.disabled=true;allow.title="Your browser's Global Privacy Control signal is honored";}}
