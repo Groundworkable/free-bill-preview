@@ -122,8 +122,30 @@ footer{background:var(--white);border-top:1px solid var(--line);padding:0 var(--
 .chapter-control{display:flex;align-items:center;gap:10px;color:#55715f;font-size:11px;font-weight:750;white-space:nowrap}
 .chapter-control select{max-width:250px;min-width:178px;border:1px solid #d1d9cb;border-radius:6px;padding:10px 12px;background:#fffdf8;color:#153e31;font:700 12px Inter,'Segoe UI',Arial,sans-serif}
 .chapter-control select:focus-visible{outline:3px solid #d7a95a;outline-offset:2px}
-@media(max-width:830px){.nav .navmain{display:none}.chapter-control span{display:none}.chapter-control select{max-width:174px;min-width:125px;font-size:11px;padding:8px 6px}}
-@media(max-width:400px){header{gap:7px}.chapter-control select{max-width:116px;min-width:90px;font-size:10px}.brandname{font-size:17px}.tree{width:25px;height:30px}}
+/* Keep both direct Memberships access and chapter selection visible on phones. */
+@media(max-width:830px){
+ .nav .navmain{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:10px;padding:8px 10px}
+ .chapter-control span{display:none}
+ .chapter-control select{max-width:174px;min-width:125px;font-size:11px;padding:8px 6px}
+}
+@media(max-width:480px){
+ header{gap:8px}
+ .nav{gap:5px}
+ .nav .navmain{font-size:10px;padding:8px 7px}
+ .chapter-control select{width:118px;min-width:0;max-width:118px;font-size:10px;padding:8px 4px}
+}
+@media(max-width:400px){
+ header{gap:6px;padding-left:14px;padding-right:14px}
+ .chapter-control select{width:102px;min-width:0;max-width:102px;font-size:9px;padding:8px 3px}
+ .nav .navmain{font-size:9px;padding:8px 5px}
+ .brandname{font-size:17px}.tree{width:25px;height:30px}
+}
+@media(max-width:340px){
+ header{gap:4px;padding-left:10px;padding-right:10px}
+ .brand{gap:5px}.brandname{font-size:16px}.tree{width:24px;height:28px}
+ .chapter-control select{width:88px;max-width:88px}
+ .nav .navmain{font-size:8px;padding:8px 4px}
+}
 </style><script defer src="/assets/js/ga4-consent.js"></script>
 </head><body>
 <div class="site">
